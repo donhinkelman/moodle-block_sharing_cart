@@ -1,0 +1,52 @@
+.block_sharing_cart .sc-indent-0 { margin-left:0em; }
+.block_sharing_cart .sc-indent-1 { margin-left:1em; }
+.block_sharing_cart .sc-indent-2 { margin-left:2em; }
+.block_sharing_cart .sc-indent-3 { margin-left:3em; }
+.block_sharing_cart .sc-indent-4 { margin-left:4em; }
+.block_sharing_cart .sc-indent-5 { margin-left:5em; }
+.block_sharing_cart .sc-indent-6 { margin-left:6em; }
+.block_sharing_cart .sc-indent-7 { margin-left:7em; }
+.block_sharing_cart .sc-indent-8 { margin-left:8em; }
+.block_sharing_cart .sc-indent-9 { margin-left:9em; }
+.block_sharing_cart .sc-indent-10 { margin-left:10em; }
+.block_sharing_cart .sc-indent-11 { margin-left:11em; }
+.block_sharing_cart .sc-indent-12 { margin-left:12em; }
+.block_sharing_cart .sc-indent-13 { margin-left:13em; }
+.block_sharing_cart .sc-indent-14 { margin-left:14em; }
+.block_sharing_cart .sc-indent-15 { margin-left:15em; }
+.block_sharing_cart .sc-space-1 { margin-left: 1px; }
+.block_sharing_cart .sc-space-2 { margin-left: 2px; }
+.block_sharing_cart .sc-space-3 { margin-left: 3px; }
+.block_sharing_cart .sc-space-4 { margin-left: 4px; }
+.block_sharing_cart .sc-space-5 { margin-left: 5px; }
+.course-content .move_target { content: url("pix/dropzone_arrow.svg"); max-width: 100%; border: 2px dashed #999; margin-top: 15px; margin-bottom: 15px; padding: 5px; }
+.course-content .clipboard {max-width: 100%; border: 2px dashed #999; margin-bottom: 15px; padding: 10px; font-weight: bold; }
+
+.modal-bg
+{
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999999;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: #000000;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-bg .spinner-container
+{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #000000;
+    padding: 15px 10px;
+    text-align: center;
+    width: 166px;
+    height: 120px;
+    margin-top: -60px;
+    margin-left: -83px;
+}
