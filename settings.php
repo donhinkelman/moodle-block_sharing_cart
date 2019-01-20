@@ -1,46 +1,32 @@
-<?php
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+<?php  //$Id: settings.php,v 1.1.2.2 2007/12/19 17:38:47 skodak Exp $
 
-/**
- *  Sharing Cart
- *
- *  @package    block_sharing_cart
- *  @copyright  2017 (C) VERSION2, INC.
- *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+require_once dirname(__FILE__).'/plugins.php';
 
-defined('MOODLE_INTERNAL') || die;
-
-require_once __DIR__.'/lib/settingslib.php';
-
-if ($ADMIN->fulltree) {
-    $settings->add(
-        new admin_setting_configmulticheckboxmodtypes(
-            'block_sharing_cart/userdata_copyable_modtypes',
-            get_string('settings:userdata_copyable_modtypes', 'block_sharing_cart'),
-            get_string('settings:userdata_copyable_modtypes_desc', 'block_sharing_cart'),
-            array('data' => 1, 'forum' => 1, 'glossary' => 1, 'wiki' => 1)
-        )
-    );
-    $settings->add(
-        new admin_setting_configmulticheckboxqtypes(
-            'block_sharing_cart/workaround_qtypes',
-            get_string('settings:workaround_qtypes', 'block_sharing_cart'),
-            get_string('settings:workaround_qtypes_desc', 'block_sharing_cart'),
-            array()
-        )
-    );
+sharing_cart_plugins::load();
+$plugin_names = sharing_cart_plugins::enum();
+if (empty($plugin_names)) {
+	$settings->add(
+		new admin_setting_heading(
+			'sharing_cart_heading',
+			get_string('conf_plugins_heading', 'block_sharing_cart'),
+			get_string('conf_plugins_nothing', 'block_sharing_cart')
+		)
+	);
+} else {
+	$settings->add(
+		new admin_setting_heading(
+			'sharing_cart_heading',
+			get_string('conf_plugins_heading', 'block_sharing_cart'),
+			null
+		)
+	);
+	$settings->add(
+		new admin_setting_configmultiselect(
+			'sharing_cart_plugins',
+			get_string('conf_plugins_enabled_head', 'block_sharing_cart'),
+			get_string('conf_plugins_enabled_desc', 'block_sharing_cart'),
+			$plugin_names,
+			array_combine($plugin_names, $plugin_names)
+		)
+	);
 }

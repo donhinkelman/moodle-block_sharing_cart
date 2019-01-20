@@ -1,133 +1,65 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- *  Sharing Cart
- *
- *  @package    block_sharing_cart
- *  @copyright  2017 (C) VERSION2, INC.
- *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
+    global $CFG, $THEME, $db;
 
-defined('MOODLE_INTERNAL') || die;
+    $result = true;
 
-/**
- *  Sharing Cart upgrade
- *  
- *  @global moodle_database $DB
- */
-function xmldb_block_sharing_cart_upgrade($oldversion = 0)
-{
-	global $DB;
-	
-	$dbman = $DB->get_manager();
-	
-	if ($oldversion < 2011111100) {
-		$table = new xmldb_table('sharing_cart');
-		
-		$field = new xmldb_field('user', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
-		$dbman->rename_field($table, $field, 'userid');
-		
-		$field = new xmldb_field('name', XMLDB_TYPE_CHAR, 32, null, XMLDB_NOTNULL, null, null);
-		$dbman->rename_field($table, $field, 'modname');
-		
-		$field = new xmldb_field('icon', XMLDB_TYPE_CHAR, 32, null, XMLDB_NOTNULL, null, null);
-		$dbman->rename_field($table, $field, 'modicon');
-		
-		$field = new xmldb_field('text', XMLDB_TYPE_CHAR, 255, null, XMLDB_NOTNULL, null, null);
-		$dbman->rename_field($table, $field, 'modtext');
-		$field = new xmldb_field('modtext', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
-		$dbman->change_field_type($table, $field);
-		
-		$field = new xmldb_field('time', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
-		$dbman->rename_field($table, $field, 'ctime');
-		
-		$field = new xmldb_field('file', XMLDB_TYPE_CHAR, 255, null, XMLDB_NOTNULL, null, null);
-		$dbman->rename_field($table, $field, 'filename');
-		
-		$field = new xmldb_field('sort', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
-		$dbman->rename_field($table, $field, 'weight');
-	}
-	
-	if ($oldversion < 2011111101) {
-		$table = new xmldb_table('sharing_cart_plugins');
-		
-		$field = new xmldb_field('user', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
-		$dbman->rename_field($table, $field, 'userid');
-	}
-	
-	if ($oldversion < 2012050800) {
-		$table = new xmldb_table('sharing_cart');
-		$dbman->rename_table($table, 'block_sharing_cart');
-		
-		$table = new xmldb_table('sharing_cart_plugins');
-		$dbman->rename_table($table, 'block_sharing_cart_plugins');
-	}
-
-	if ($oldversion < 2016032900) {
-		// Define key userid (foreign) to be added to block_sharing_cart.
-		$table = new xmldb_table('block_sharing_cart');
-		$key = new xmldb_key('userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
-
-		// Launch add key userid.
-		$dbman->add_key($table, $key);
-
-		// Sharing_cart savepoint reached.
-		upgrade_block_savepoint(true, 2016032900, 'sharing_cart');
-	}
-
-	if($oldversion < 2017071111)
-    {
-        $table = new xmldb_table('block_sharing_cart');
-
-        $field = new xmldb_field('course', XMLDB_TYPE_INTEGER, 10, null, XMLDB_NOTNULL, null, 0);
-        $key = new xmldb_key('course', XMLDB_KEY_FOREIGN, array('course'), 'course', array('id'));
-
-        if(!$dbman->field_exists($table, $field))
-        {
-            $dbman->add_field($table, $field);
-            $dbman->add_key($table, $key);
+    if ($oldversion < 2009020300) {
+        $result = execute_sql("ALTER TABLE `{$CFG->prefix}sharing_cart`
+            ADD `file` VARCHAR(255) NOT NULL DEFAULT '' AFTER `time`");
+        if ($result) {
+            require_once dirname(__FILE__).'../sharing_cart_table.php';
+            if ($shared_items = get_records('sharing_cart')) {
+                foreach ($shared_items as $shared_item) {
+                    $shared_item->file = sharing_cart_table::gen_zipname($shared_item->time);
+                    update_record('sharing_cart', $shared_item);
+                }
+            }
         }
-
-        upgrade_block_savepoint(true, 2017071111, 'sharing_cart');
     }
 
-    if($oldversion < 2017121200)
-    {
-        $table = new xmldb_table('block_sharing_cart');
-        $field = new xmldb_field('section', XMLDB_TYPE_INTEGER, 10, null, XMLDB_NOTNULL, null, 0);
-        if(!$dbman->field_exists($table, $field))
-        {
-            $dbman->add_field($table, $field);
-        }
-
-        $table = new xmldb_table('block_sharing_cart_sections');
-        if(!$dbman->table_exists($table))
-        {
-            $table->add_field('id', XMLDB_TYPE_INTEGER, 10, null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-            $table->add_field('name', XMLDB_TYPE_CHAR, 255, null, XMLDB_NOTNULL, null, '', 'id');
-            $table->add_field('summary', XMLDB_TYPE_TEXT, null, null, null, null, '', 'name');
-            $table->add_field('summaryformat', XMLDB_TYPE_INTEGER, 2, null, XMLDB_NOTNULL, null, 0, 'summary');
-
-            $table->add_key('id', XMLDB_KEY_PRIMARY, array('id'));
-            $dbman->create_table($table);
-        }
-
-        upgrade_block_savepoint(true, 2017121200, 'sharing_cart');
+    if ($oldversion < 2009040600) {
+        $result = execute_sql("CREATE TABLE `{$CFG->prefix}sharing_cart_plugins` (
+            `id`     INT(10) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `plugin` VARCHAR(32)      NOT NULL,
+            `user`   INT(10) UNSIGNED NOT NULL,
+            `data`   TEXT             NOT NULL
+        )");
     }
 
-	return true;
+    if ($oldversion < 2012053000) {
+        $table = new XMLDBTable('sharing_cart');
+        $fields = array(
+            'user' => array('userid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, '0', 'id'),
+            'name' => array('modname', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL, '', 'userid'),
+            'icon' => array('modicon', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL, '', 'modname'),
+            'text' => array('modtext', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, '', 'modicon'),
+            'time' => array('ctime', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, '0', 'modtext'),
+            'file' => array('filename', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, '', 'ctime'),
+            'sort' => array('weight', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, '0', 'tree'),
+            );
+        foreach ($fields as $oldname => $newinfo) {
+            list ($newname, $type, $precision, $unsigned, $notnull, $default, $previous) = $newinfo;
+            $field = new XMLDBField($oldname);
+            $field->setAttributes($type, $precision, $unsigned, $notnull, null, null, null, $default, $previous);
+            $result = $result && rename_field($table, $field, $newname);
+        }
+        $field = new XMLDBField('modtext');
+        $field->setAttributes(XMLDB_TYPE_TEXT, 'medium', null, XMLDB_NOTNULL, null, null, null, '', 'modicon');
+        $result = $result && change_field_type($table, $field);
+
+        $table = new XMLDBTable('sharing_cart_plugins');
+        $fields = array(
+            'user' => array('userid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, '0', 'id'),
+            );
+        foreach ($fields as $oldname => $newinfo) {
+            list ($newname, $type, $precision, $unsigned, $notnull, $default, $previous) = $newinfo;
+            $field = new XMLDBField($oldname);
+            $field->setAttributes($type, $precision, $unsigned, $notnull, null, null, null, $default, $previous);
+            $result = $result && rename_field($table, $field, $newname);
+        }
+    }
+
+    return $result;
 }

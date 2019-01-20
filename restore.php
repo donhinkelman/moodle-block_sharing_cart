@@ -1,124 +1,75 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-/**
- *  Sharing Cart - Restore Operation
- *
- *  @package    block_sharing_cart
- *  @copyright  2017 (C) VERSION2, INC.
- *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 
 require_once '../../config.php';
 
-require_once __DIR__.'/classes/controller.php';
-require_once __DIR__.'/classes/renderer.php';
-require_once __DIR__.'/classes/section_title_form.php';
+//error_reporting(E_ALL);
 
-$directory = required_param('directory', PARAM_BOOL);
-$id = null;
-$path = null;
+require_once './shared/SharingCart_Restore.php';
+require_once './sharing_cart_table.php';
 
-if($directory)
-{
-    $path = required_param('path', PARAM_TEXT);
-}
-else
-{
-    $id = required_param('id', PARAM_INT);
-}
-$courseid = required_param('course', PARAM_INT);
-$sectionnumber = required_param('section', PARAM_INT);
+$record_id = required_param('id', PARAM_INT);
+$course_id = required_param('course', PARAM_INT);
+$section_i = required_param('section', PARAM_INT);
+$return_to = urldecode(required_param('return'));
 
-if ($courseid == SITEID) {
-    $returnurl = new moodle_url('/');
-} else {
-    $returnurl = new moodle_url('/course/view.php', array('id' => $courseid));
-}
+// 共有アイテムが存在するかチェック
+$record = sharing_cart_table::get_record_by_id($record_id)
+    or print_error('err_shared_id', 'block_sharing_cart', $return_to);
 
-$returnurl .= '#section-' . $sectionnumber;
+// 自分が所有する共有アイテムかチェック
+$record->userid == $USER->id
+    or print_error('err_capability', 'block_sharing_cart', $return_to);
 
-require_login($courseid);
+// ZIPファイル名取得
+$zip_name = $record->filename;
 
 try {
-	$controller = new sharing_cart\controller();
 
-	if($directory)
-    {
-        $form = new \sharing_cart\section_title_form($directory, $path, $courseid, $sectionnumber, array());
-        if($form->is_cancelled())
-        {
-            redirect($returnurl);
-            exit;
-        }
+    // リストアオブジェクト (※ $restore は Moodle グローバル変数として予約されているので使用不可)
+    $worker = new SharingCart_Restore($course_id, $section_i);
 
-        $use_sc_section = optional_param('sharing_cart_section', -1, PARAM_INT);
+    // サイレントモード
+    $worker->setSilent();
 
-        if($path[0] == '/')
-        {
-            $path = substr($path, 1);
-        }
+    // 設定開始
+    $worker->beginPreferences();
 
-        if($use_sc_section < 0)
-        {
-            $sections = $controller->get_path_sections($path, $courseid, $sectionnumber);
-            if(count($sections) > 0)
-            {
-                $dest_section = $DB->get_record('course_sections', array('course' => $courseid, 'section' => $sectionnumber));
+    // ZIPファイル名設定
+    $worker->setZipName($zip_name);
 
-                $PAGE->set_pagelayout('standard');
-                $PAGE->set_url('/blocks/sharing_cart/restore.php');
-                $PAGE->set_title(get_string('pluginname', 'block_sharing_cart') . ' - ' . get_string('restore', 'block_sharing_cart'));
-                $PAGE->set_heading(get_string('restore', 'block_sharing_cart'));
-                $PAGE->navbar
-                    ->add(get_section_name($courseid, $sectionnumber), new moodle_url("/course/view.php?id={$courseid}#section-{$sectionnumber}"))
-                    ->add(get_string('pluginname', 'block_sharing_cart'))
-                    ->add(get_string('restore', 'block_sharing_cart'));
+    // 設定完了
+    $worker->endPreferences();
 
-                echo $OUTPUT->header();
-                echo $OUTPUT->heading(get_string('section_name_conflict', 'block_sharing_cart'));
+    // リストア実行
+    $worker->execute();
 
-                $form = new \sharing_cart\section_title_form($directory, $path, $courseid, $sectionnumber, $sections);
-                $form->display();
 
-                echo $OUTPUT->footer();
-                exit;
-            }
-
-            $use_sc_section = 0;
-        }
-
-        if($use_sc_section > -1)
-        {
-            $controller->restore_directory($path, $courseid, $sectionnumber, $use_sc_section);
-        }
-    }
-    else
-    {
-        $controller->restore($id, $courseid, $sectionnumber);
+    if ($worker->succeeded()) {
+        // 成功：リダイレクト
+        redirect($return_to);
+    } else {
+        // 失敗：「続行」画面
+        print_continue($return_to);
     }
 
-	redirect($returnurl);
+} catch (SharingCart_CourseException $e) {
+    //print_error('err_course_id', 'block_sharing_cart', $return_to);
+    error((string)$e); // デバッグ用に詳細メッセージを表示
 
-} catch (sharing_cart\exception $ex) {
-	print_error($ex->errorcode, $ex->module, $returnurl, $ex->a);
-} catch (Exception $ex) {
-	if (!empty($CFG->debug) and $CFG->debug >= DEBUG_DEVELOPER) {
-		print_error('notlocalisederrormessage', 'error', '', $ex->__toString());
-	} else {
-		print_error('unexpectederror', 'block_sharing_cart', $returnurl);
-	}
+} catch (SharingCart_SectionException $e) {
+    //print_error('err_section_id', 'block_sharing_cart', $return_to);
+    error((string)$e); // デバッグ用に詳細メッセージを表示
+
+} catch (SharingCart_ModuleException $e) {
+    //print_error('err_module_id', 'block_sharing_cart', $return_to);
+    error((string)$e); // デバッグ用に詳細メッセージを表示
+
+} catch (SharingCart_XmlException $e) {
+    //print_error('err_invalid_xml', 'block_sharing_cart', $return_to);
+    error((string)$e); // デバッグ用に詳細メッセージを表示
+
+} catch (SharingCart_Exception $e) {
+    //print_error('err_backup', 'block_sharing_cart', $return_to);
+    error((string)$e); // デバッグ用に詳細メッセージを表示
+
 }

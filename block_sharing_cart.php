@@ -1,190 +1,300 @@
-<?php
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+<?php // $Id: block_sharing_cart.php 918 2013-02-13 11:08:01Z malu $
 
-/**
- *  Sharing Cart block
- *
- *  @package    block_sharing_cart
- *  @copyright  2017 (C) VERSION2, INC.
- *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+require_once dirname(__FILE__).'/plugins.php';
+require_once dirname(__FILE__).'/sharing_cart_lib.php';
 
-require_once __DIR__.'/classes/controller.php';
+class block_sharing_cart extends block_base {
 
-class block_sharing_cart extends block_base
-{
-	public function init()
-	{
-		$this->title   = get_string('pluginname', __CLASS__);
-		$this->version = 2015012700;
-	}
+    function init() {
+        $this->title   = get_string('title', 'block_sharing_cart');
+        $this->version = 2013021300;
+        
+        sharing_cart_plugins::load();
+    }
 
-	public function applicable_formats()
-	{
-		return array(
-			'site'            => true,
-			'course'          => true,
-			'course-category' => false,
-			'mod'             => false,
-			'my'              => false,
-			'tag'             => false,
-			'admin'           => false,
-			);
-	}
+    function applicable_formats() {
+        return array('all' => true);
+    }
 
-	public function instance_can_be_docked()
-	{
-		return false; // AJAX won't work with Dock
-	}
+    function has_config() {
+        return (boolean)sharing_cart_plugins::enum();
+    }
 
-	public function has_config()
-	{
-		return true;
-	}
+    function get_content() {
+        global $CFG, $USER, $COURSE;
 
-	/**
-	 *  Get the block content
-	 *  
-	 *  @global object $CFG
-	 *  @global object $USER
-	 *  @return object|string
-	 */
-	public function get_content()
-	{
-		global $CFG, $USER;
-		
-		if ($this->content !== null)
-			return $this->content;
-		
-		if (!$this->page->user_is_editing())
-			return $this->content = '';
-		
-		$context = context_course::instance($this->page->course->id);
-		if (!has_capability('moodle/backup:backupactivity', $context))
-			return $this->content = '';
-		
-		$controller = new sharing_cart\controller();
-		$html = $controller->render_tree($USER->id);
-		
-        /* Place the <noscript> tag to give out an error message if JavaScript is not enabled in the browser.
-         * Adding bootstrap classes to show colored info in bootstrap based themes. */
-        $noscript = html_writer::tag('noscript',
-            html_writer::tag('div', get_string('requirejs', __CLASS__), array('class' => 'error alert alert-danger'))
-            );
-        $html = $noscript . $html;
+        //error_reporting(E_ALL);
 
-        $html .= '<div class="modal-bg" style="display: none;" id="sharing-cart-spinner-modal"><div class="spinner-container"><div style="margin-top: 10px;">' . get_string('inprogess_pleasewait', 'block_sharing_cart') . '</div></div></div>';
-		
-		$this->page->requires->css('/blocks/sharing_cart/styles.css');
-		if ($this->is_special_version()) {
-			$this->page->requires->css('/blocks/sharing_cart/custom.css');
-		}
-//		$this->page->requires->js('/blocks/sharing_cart/module.js');
-//		$this->page->requires->yui_module('block_sharing_cart', 'M.block_sharing_cart.init', array(), null, true);
-        $this->page->requires->jquery();
-		$this->page->requires->js('/blocks/sharing_cart/script.js');
-        $this->page->requires->strings_for_js(
-			array('yes', 'no', 'ok', 'cancel', 'error', 'edit', 'move', 'delete', 'movehere'),
-			'moodle'
-			);
-		$this->page->requires->strings_for_js(
-			array('copyhere', 'notarget', 'backup', 'restore', 'movedir', 'clipboard',
-					'confirm_backup', 'confirm_backup_section', 'confirm_userdata', 'confirm_userdata_section', 'confirm_delete'),
-			__CLASS__
-			);
-		
-		$footer = '<div style="display:none;">'
-				. '<div class="header-commands">' . $this->get_header() . '</div>'
-				. '</div>';
-		return $this->content = (object)array('text' => $html, 'footer' => $footer);
-	}
+        if ($this->content !== NULL) {
+            return $this->content;
+        }
 
-	/**
-	 *  Get the block header
-	 *  
-	 *  @global core_renderer $OUTPUT
-	 *  @return string
-	 */
-	private function get_header()
-	{
-		global $OUTPUT;
-		// link to bulkdelete
-		$alt = get_string('bulkdelete', __CLASS__);
-		$src = $OUTPUT->image_url('bulkdelete', __CLASS__);
-		$url = new moodle_url('/blocks/sharing_cart/bulkdelete.php', array('course' => $this->page->course->id));
-		
-		return $this->get_bulk_delete($src, $alt, $url) . $this->get_help_icon();
-	}
-	
-	/**
-	 *  Get bulk delete
-	 *  
-	 *  @param string $src
-	 *  @param string $alt
-	 *  @param moodle_url $url
-	 *  @return string
-	 */
-	private function get_bulk_delete($src, $alt, $url)
-	{	
-		$bulkdelete = '<a class="editing_bulkdelete" title="' . s($alt) . '" href="' . s($url) . '">'
-		        . '<img src="' . s($src) . '" alt="' . s($alt) . '" />'
-		                . '</a>';
-		
-		return $bulkdelete;
-	}
-	
-	/**
-	 *  Get help icon
-	 *  
-	 *  @return string
-	 */
-	private function get_help_icon()
-	{
-		global $OUTPUT;
-		$helpicon = $OUTPUT->help_icon('sharing_cart', __CLASS__);
-		$helpicon = str_replace('class="', 'class="help-icon ', $helpicon);
-		return $helpicon;
-	}
-	
-	/**
-	 *  Check Moodle 3.2 or later
-	 * 
-	 *  @return boolean
-	 */
-	private function is_special_version()
-	{
-		return moodle_major_version() >= 3.2;
-	}
+        if (empty($this->instance)) {
+            return $this->content = '';
+        }
 
-	/**
-	 *  Get the block content for no-AJAX
-	 *  
-	 *  @global core_renderer $OUTPUT
-	 *  @return string
-	 */
-	private function get_content_noajax()
-	{
-		global $OUTPUT;
-		
-		$html = '<div class="error">' . get_string('requireajax', __CLASS__) . '</div>';
-		if (has_capability('moodle/site:config', context_system::instance())) {
-			$url = new moodle_url('/admin/settings.php?section=ajax');
-			$link = '<a href="' . s($url) . '">' . get_string('ajaxuse') . '</a>';
-			$html .= '<div>' . $OUTPUT->rarrow() . ' ' . $link . '</div>';
-		}
-		return $html;
+        if (empty($USER->id)) {
+            return $this->content = '';
+        }
+
+        $course  = $COURSE->id == $this->instance->pageid
+                 ? $COURSE
+                 : get_record('course', 'id', $this->instance->pageid);
+
+        $context = get_context_instance(CONTEXT_COURSE, $course->id);
+        $editing = isediting($this->instance->pageid) && has_capability('moodle/course:manageactivities', $context);
+
+        if (!$editing) {
+            return $this->content = '';
+        }
+
+        // DBから取得したアイテムを表示すべきものだけ抜き出し、木構造化
+        // また、ここでドロップダウンリスト用にフォルダ名列挙もしておく
+        $tree = array();
+        $dirs = array();
+        if ($items = get_records('sharing_cart', 'userid', $USER->id)) {
+            foreach ($items as $item) {
+                $node   =& self::path_to_node($tree, explode('/', $item->tree));
+                $node[] = $item;
+                $dirs[$item->tree] = $item->tree;
+            }
+            self::sort_tree($tree);
+            unset($dirs['']);
+            usort($dirs, 'strnatcasecmp');
+        }
+
+        // ツリーをHTMLにレンダリング
+        $text = "<ul class=\"list\">\n".self::render_tree($tree).'</ul>';
+
+        require_once dirname(__FILE__).'/shared/SharingCart_CourseScript.php';
+        $courseScript = new SharingCart_CourseScript();
+
+        $js_import = $courseScript->import($CFG->wwwroot.'/blocks/sharing_cart/sharing_cart.js', true);
+        foreach (sharing_cart_plugins::get_imports() as $import) {
+            $js_import .= $courseScript->import($CFG->wwwroot.'/blocks/sharing_cart/plugins/'.$import, true);
+        }
+
+        $js_pre = '
+<script type="text/javascript">
+//<![CDATA[
+var sharing_cart = new sharing_cart_handler({
+	wwwroot     : "'.$CFG->wwwroot.'",
+	pixpath     : "'.$CFG->pixpath.'",
+	instance_id : '.$this->instance->id.',
+	course_id   : '.$course->id.',
+	return_url  : "'.urlencode($_SERVER['REQUEST_URI']).'",
+	directories : [
+		'.implode(',
+		', array_map(create_function('$dir', '
+			return "\"".addslashes($dir)."\"";
+		'), $dirs)).'
+	],
+	str : {
+		rootdir        : "'.get_string('rootdir', 'block_sharing_cart').'",
+		notarget       : "'.get_string('notarget', 'block_sharing_cart').'",
+		copyhere       : "'.get_string('copyhere', 'block_sharing_cart').'",
+		movehere       : "'.get_string('movehere').'",
+		edit           : "'.get_string('edit').'",
+		cancel         : "'.get_string('cancel').'",
+		backup         : "'.get_string('backup', 'block_sharing_cart').'",
+		clipboard      : "'.addslashes(get_string('clipboard', 'block_sharing_cart')).'",
+		confirm_backup : "'.addslashes(get_string('confirm_backup', 'block_sharing_cart')).'",
+		confirm_delete : "'.addslashes(get_string('confirm_delete', 'block_sharing_cart')).'"
 	}
+});
+'. implode('
+', sharing_cart_plugins::get_scripts()) .'
+//]]>
+</script>
+';
+        $js_post = $courseScript->addLoadEvent('sharing_cart.init();', true);
+
+        $footer_html = '';
+        $footers = sharing_cart_plugins::get_footers();
+        if (!empty($footers)) {
+            foreach ($footers as &$footer) {
+                $footer = '<div style="margin-top:4px; border-top:1px dashed; padding-top:1px;">'
+                        . $footer
+                        . '</div>';
+            }
+            $footer_html = implode('', $footers);
+        }
+
+        $this->content         = new stdClass;
+        $this->content->text   = $js_import
+                               . $js_pre
+                               . $text;
+        $this->content->footer = '<div id="sharing_cart_header">'
+                               . self::get_header_icons()
+                               . implode('', sharing_cart_plugins::get_headers())
+                               . helpbutton('sharing_cart', $this->title, 'block_sharing_cart', true, false, '', true)
+                               . '</div>'
+                               . $footer_html
+                               . $js_post;
+
+        return $this->content;
+    }
+    
+/** Internal **/
+    
+    /**
+     * header icons
+     */
+    private static function get_header_icons() {
+        $alt = get_string('bulkdelete', 'block_sharing_cart');
+        $dir = $GLOBALS['CFG']->wwwroot.'/blocks/sharing_cart';
+        $url = $dir.'/bulkdelete.php?course='.$GLOBALS['COURSE']->id;
+        return '<a class="icon" title="'.$alt.'" href="'.$url.'">'.
+                   '<img src="'.$dir.'/pix/bulkdelete.gif" alt="'.$alt.'" />'.
+               '</a>';
+    }
+    /**
+     * path string ("foo/bar/baz") -> tree (["foo"]["bar"]["baz"])
+     */
+    private static function & path_to_node(&$tree, $path) {
+        $i = array_shift($path);
+        if (!isset($tree[$i]))
+            $tree[$i] = array();
+        if ($i == '')
+            return $tree[$i];
+        return self::path_to_node($tree[$i], $path);
+    }
+    /**
+     * sort tree
+     */
+    private static function sort_tree(&$node) {
+        foreach ($node as $k => &$v) {
+            if (!is_numeric($k))
+                self::sort_tree($v);
+        }
+        uksort($node, array(__CLASS__, 'sort_tree_cmp'));
+    }
+    private static function sort_tree_cmp($lhs, $rhs) {
+        // directory first
+        if ($lhs == '') return +1;
+        if ($rhs == '') return -1;
+        return strnatcasecmp($lhs, $rhs);
+    }
+    /**
+     * sort item
+     */
+    private static function sort_item(&$node) {
+        usort($node, array(__CLASS__, 'sort_item_cmp'));
+    }
+    private static function sort_item_cmp($lhs, $rhs) {
+        // by sharing_cart->weight field
+        if ($lhs->weight < $rhs->weight) return -1;
+        if ($lhs->weight > $rhs->weight) return +1;
+        // or by text
+        return strnatcasecmp($lhs->modtext, $rhs->modtext);
+    }
+    /**
+     * render tree as HTML
+     */
+    private static function render_tree($tree) {
+        if (empty(self::$str_cache)) {
+            self::$str_cache          = new stdClass;
+            self::$str_cache->move    = get_string('move');
+            self::$str_cache->delete  = get_string('delete');
+            self::$str_cache->restore = get_string('restore', 'block_sharing_cart');
+            self::$str_cache->movedir = get_string('movedir', 'block_sharing_cart');
+        }
+        $text = array();
+        self::render_node($text, $tree);
+        return implode('', $text);
+    }
+    private static function render_node(&$text, $node, $depth = 0, $id = 0, $dir = array()) {
+        foreach ($node as $name => $leaf) {
+            if ($name != '') {
+                $path = array_merge($dir, array($name));
+                self::render_diro($text, $depth, $name, $id, $path);
+                $id = self::render_node($text, $leaf, $depth + 1, $id + 1, $path);
+                self::render_dirc($text, $depth, $name, $id, $path);
+            } else {
+                self::sort_item($leaf);
+                foreach ($leaf as $item) {
+                    self::render_item($text, $depth, $item);
+                }
+            }
+        }
+        return $id;
+    }
+    private static function render_item(&$text, $depth, $item) {
+        global $CFG;
+        
+        $text[] = str_repeat("\t", $depth + 1)
+                . '<li class="r0" id="shared_item_'.$item->id.'">';
+        
+        $text[] = '<div class="icon column c0">';
+        if ($depth) {
+            $text[] = print_spacer(10, $depth * 10, false, true);
+        }
+        if ($icon = sharing_cart_lib::get_icon($item->modname, $item->modicon)) {
+            $text[] = $icon;
+        }
+        $text[] = '</div>';
+        
+        $text[] = '<div class="column c1">'.$item->modtext.'</div>';
+        
+        $text[] = '<span class="commands">';
+        {
+            // ディレクトリ移動[→]
+            $text[] = '<a title="'.self::$str_cache->movedir.'" href="javascript:void(0);"'
+                    . ' onclick="return sharing_cart.movedir(this, '
+                    . '\''.addslashes(htmlspecialchars($item->tree)).'\');">'
+                    . '<img src="'.$CFG->pixpath.'/t/right.gif" class="iconsmall"'
+                    . ' alt="'.self::$str_cache->movedir.'" />'
+                    . '</a>';
+            
+            // 並べ替え[↓↑]
+            $text[] = '<a title="'.self::$str_cache->move.'" href="javascript:void(0);"'
+                    . ' onclick="return sharing_cart.move(this, '
+                    . '\''.addslashes(htmlspecialchars($item->tree)).'\');">'
+                    . '<img src="'.$CFG->pixpath.'/t/move.gif" class="iconsmall"'
+                    . ' alt="'.self::$str_cache->move.'" />'
+                    . '</a>';
+            
+            // 削除[×]
+            $text[] = '<a title="'.self::$str_cache->delete.'" href="javascript:void(0);"'
+                    . ' onclick="return sharing_cart.remove(this);">'
+                    . '<img src="'.$CFG->pixpath.'/t/delete.gif" class="iconsmall"'
+                    . ' alt="'.self::$str_cache->delete.'" />'
+                    . '</a>';
+            
+            // コースへコピー[■→]
+            $text[] = '<a title="'.self::$str_cache->restore.'" href="javascript:void(0);"'
+                    . ' onclick="return sharing_cart.restore(this);">'
+                    . '<img src="'.$CFG->pixpath.'/i/restore.gif" class="iconsmall"'
+                    . ' alt="'.self::$str_cache->restore.'" />'
+                    . '</a>';
+            
+            // plugins
+            $text = array_merge($text, sharing_cart_plugins::get_commands());
+        }
+        $text[] = '</span>';
+        
+        $text[] = "</li>\n";
+    }
+    private static function render_diro(&$text, $depth, $name, $id, $path) {
+        global $CFG;
+        $text[] = str_repeat("\t", $depth + 1)
+                . '<li class="r0">';
+        $text[] = '<div title="'.htmlspecialchars(implode('/', $path)).'" style="cursor:pointer;"'
+                . ' onclick="return sharing_cart.toggle(this, '.$id.');">';
+        {
+            $text[] = '<div class="column c0">';
+            if ($depth) {
+                $text[] = print_spacer(10, $depth * 10, false, true);
+            }
+            $text[] = '<img id="sharing_cart_'.$id.'_icon" src="'.$CFG->pixpath.'/i/open.gif" alt="" />'
+                    . '</div>';
+            $text[] = '<div class="column c1">'.htmlspecialchars($name).'</div>';
+        }
+        $text[] = '</div>';
+        $text[] = '<ul id="sharing_cart_'.$id.'_item" class="list">'."\n";
+    }
+    private static function render_dirc(&$text, $depth, $name, $id, $path) {
+        $text[] = str_repeat("\t", $depth + 1)."</ul></li>\n";
+    }
+    private static $str_cache;
 }
