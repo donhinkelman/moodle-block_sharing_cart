@@ -3,72 +3,81 @@
  *  Sharing Cart - Bulk Delete Operation
  *  
  *  @author  VERSION2, Inc.
- *  @version $Id: bulkdelete.php 945 2013-03-28 11:42:00Z malu $
+ *  @version $Id: bulkdelete.php 942 2013-03-28 10:42:54Z malu $
  */
 
 require_once '../../config.php';
 
-require_once './classes/storage.php';
-require_once './classes/record.php';
-require_once './classes/view.php';
+require_once __DIR__.'/classes/storage.php';
+require_once __DIR__.'/classes/record.php';
+require_once __DIR__.'/classes/renderer.php';
 
-$course_id = required_param('course', PARAM_INT);
-$return_to = $CFG->wwwroot.'/course/view.php?id='.$course_id;
+if (false) {
+    $DB     = new mysqli_native_moodle_database;
+    $CFG    = new stdClass;
+    $USER   = new stdClass;
+    $PAGE   = new moodle_page;
+    $OUTPUT = new core_renderer;
+}
 
-require_login($course_id);
+$courseid = required_param('course', PARAM_INT);
+$returnurl = new moodle_url('/course/view.php', array('id' => $courseid));
+
+require_login($courseid);
 
 $delete_param = function_exists('optional_param_array')
 	? optional_param_array('delete', null, PARAM_RAW)
 	: optional_param('delete', null, PARAM_RAW);
 if (is_array($delete_param)) try {
 	
+	confirm_sesskey();
 	set_time_limit(0);
-	
-	$notifications = array();
 	
 	$delete_ids = array_map('intval', array_keys($delete_param));
 	
 	list ($sql, $params) = $DB->get_in_or_equal($delete_ids);
-	$records = $DB->get_records_select(sharing_cart\record::TABLE,
-		"userid = $USER->id AND id $sql", $params);
+	$records = $DB->get_records_select(sharing_cart\record::TABLE, "userid = $USER->id AND id $sql", $params);
 	if (!$records)
-		throw new sharing_cart\exception('record_id');
+		throw new sharing_cart\exception('recordnotfound');
 	
 	$storage = new sharing_cart\storage();
 	
-	$delete_ids = array();
+	$deleted_ids = array();
 	foreach ($records as $record) {
 		$storage->delete($record->filename);
-		$delete_ids[] = $record->id;
+		$deleted_ids[] = $record->id;
 	}
 	
-	list ($sql, $params) = $DB->get_in_or_equal($delete_ids);
+	list ($sql, $params) = $DB->get_in_or_equal($deleted_ids);
 	$DB->delete_records_select(sharing_cart\record::TABLE, "id $sql", $params);
 	
 	sharing_cart\record::renumber($USER->id);
 	
-	redirect($return_to);
+	redirect($returnurl);
+} catch (sharing_cart\exception $ex) {
+	print_error($ex->errorcode, $ex->module, $returnurl, $ex->a);
 } catch (Exception $ex) {
 	if (!empty($CFG->debug) and $CFG->debug >= DEBUG_DEVELOPER) {
 		print_error('notlocalisederrormessage', 'error', '', $ex->__toString());
 	} else {
-		print_error('err:delete', 'block_sharing_cart', $return_to);
+		print_error('unexpectederror', 'block_sharing_cart', $returnurl);
 	}
 }
 
 $orderby = 'tree,weight,modtext';
-if ($CFG->dbtype == 'mssql' || $CFG->dbtype == 'sqlsrv') {
-	// MS SQL Server does not support ordering by TEXT field.
+if ($DB->get_dbfamily() == 'mssql' || $DB->get_dbfamily() == 'oracle') {
+	// SQL Server and Oracle do not support ordering by TEXT field.
 	$orderby = 'tree,weight,CAST(modtext AS VARCHAR(255))';
 }
 $items = $DB->get_records(sharing_cart\record::TABLE, array('userid' => $USER->id), $orderby);
 
 $title = get_string('bulkdelete', 'block_sharing_cart');
 
-$PAGE->set_url($CFG->wwwroot.'/blocks/sharing_cart/bulkdelete.php?course='.$course_id);
+$PAGE->set_pagelayout('standard');
+$PAGE->set_url('/blocks/sharing_cart/bulkdelete.php', array('course' => $courseid));
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
-$PAGE->navbar->add($title, '');
+$PAGE->navbar->add(get_string('pluginname', 'block_sharing_cart'))->add($title, '');
 
 echo $OUTPUT->header();
 {
@@ -107,7 +116,7 @@ echo $OUTPUT->header();
 			}
 			function confirm_delete_selected()
 			{
-				return confirm("', htmlspecialchars(
+				return confirm("', s(
 					get_string('confirm_delete_selected', 'block_sharing_cart')
 				), '");
 			}
@@ -125,10 +134,11 @@ echo $OUTPUT->header();
 			}
 		//]]>
 		</script>
-		<form action="', $CFG->wwwroot.'/blocks/sharing_cart/bulkdelete.php"
+		<form action="', $PAGE->url->out_omit_querystring(), '"
 		 method="post" id="form" onsubmit="return confirm_delete_selected();">
+		<input type="hidden" name="sesskey" value="', s(sesskey()), '" />
 		<div style="display:none;">
-			<input type="hidden" name="course" value="', $course_id, '" />
+			' . html_writer::input_hidden_params($PAGE->url) . '
 		</div>
 		<div><label style="cursor:default;">
 			<input type="checkbox" checked="checked" onclick="check_all(this);"
@@ -144,9 +154,9 @@ echo $OUTPUT->header();
 			<li style="list-style-type:none; clear:left;">
 				<input type="checkbox" name="delete['.$id.']" checked="checked" onclick="check();"
 				 style="float:left; height:16px;" id="delete_'.$id.'" />
-				<div style="float:left;">', sharing_cart\view\icon($item), '</div>
+				<div style="float:left;">', sharing_cart\renderer::render_modicon($item), '</div>
 				<div style="float:left;">
-					<label for="delete_'.$id.'">', $item->modtext, '</label>
+					<label for="delete_'.$id.'">', format_string($item->modtext), '</label>
 				</div>
 			</li>';
 			if (++$i % 10 == 0) {
@@ -161,8 +171,8 @@ echo $OUTPUT->header();
 		echo '
 		<div style="clear:both;"><!-- clear floating --></div>
 		<div>
-			<input type="button" onclick="history.back();" value="', get_string('cancel'), '" />
-			<input type="submit" name="delete_checked" value="', get_string('deleteselected'), '" />
+			<input type="button" onclick="history.back();" value="', s(get_string('cancel')), '" />
+			<input type="submit" name="delete_checked" value="', s(get_string('deleteselected')), '" />
 		</div>
 		</form>';
 	}
