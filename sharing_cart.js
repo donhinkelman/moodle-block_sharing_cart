@@ -1,460 +1,505 @@
 /**
- * Sharing Cart: Script
- *
- * @author VERSION2 Inc.
- * @version $Id: sharing_cart.js 909 2012-12-05 10:05:54Z malu $
- * @package sharingcart
+ *  Sharing Cart - Script
+ *  
+ *  @author  VERSION2, Inc.
+ *  @version $Id: sharing_cart.js 764 2012-07-04 09:20:58Z malu $
  */
 
 /**
-	parameters = {
-		wwwroot     : "'.$CFG->wwwroot.'",
-		pixpath     : "'.$CFG->pixpath.'",
-		instance_id : $this->instance->id,
-		course_id   : $course_id,
-		return_url  : "'.$return_url.'",
-		directories : ['.implode(',', array_map(create_function('$dir',
-		               'return "\"".addslashes($dir)."\"";'), $dirs)).'],
+	params = {
 		str : {
-			rootdir        : "'.$str->rootdir.'",
-			notarget       : "'.$str->notarget.'",
-			movehere       : "'.$str->movehere.'",
-			copyhere       : "'.$str->copyhere.'",
-			edit           : "'.$str->edit.'",
-			cancel         : "'.$str->cancel.'",
-			backup         : "'.$str->backup.'".
-			clipboard      : "'.$str->clipboard.'",
-			confirm_delete : "'.$str->confirm_delete.'",
-			confirm_backup : "'.$str->confirm_backup.'"
+			notarget       : "Target not found",
+			movehere       : "Move here",
+			copyhere       : "Copy here",
+			edit           : "Edit",
+			cancel         : "Cancel",
+			backup         : "Copy to Sharing Cart".
+			clipboard      : "Copying this shared item",
+			confirm_delete : "Are you sure you want to delete?",
+			confirm_backup : "Are you sure you want to copy to Sharing Cart?"
 		}
+		wwwroot  : "http://example.com",
+		pix_url  : "http://example.com/theme/image.php?theme=standard&image=%s",
+		instance : $this->instance->id,
+		course   : $this->page->course->id,
 	}
  */
-function sharing_cart_handler(parameters)
+function sharing_cart(params)
 {
-	parameters.block_root = parameters.wwwroot + "/blocks/sharing_cart/";
-// private:
-	var createLink = function (title, href, params)
+	if (!Array.prototype.map ||
+		!Array.prototype.filter ||
+		!Array.prototype.forEach ||
+		!Array.prototype.indexOf)
 	{
-		href = href
-			? parameters.block_root + href
-				+ (params ? "?" + params.join("&") : "")
-			: "javascript:void(0);";
-		var link   = document.createElement("a");
-		link.title = title;
-		link.href  = href;
-		return link;
-	};
-	var createIcon = function (src, alt, cls)
-	{
-		var icon       = document.createElement("img");
-		icon.src       = parameters.pixpath + "/" + src + ".gif";
-		icon.alt       = alt;
-		icon.className = cls;
-		return icon;
-	};
-	var createIndent = function (cx)
-	{
-		var indent       = document.createElement("img");
-		indent.src       = parameters.wwwroot + "/pix/spacer.gif";
-		indent.alt       = "";
-		indent.className = "icon";
-		indent.width     = cx;
-		indent.height    = 10;
-		return indent;
-	};
-	var createHidden = function (name, value)
-	{
-		var hidden   = document.createElement("input");
-		hidden.type  = "hidden";
-		hidden.name  = name;
-		hidden.value = value;
-		return hidden;
-	};
-	
-	var folder = {
-		state : (function()
+		Array.prototype.map = function (callback, thisObject)
 		{
-			// make Array [ 0, 0, 0, ... ]
-			var a = new Array(parameters.directories.length);
-			for (var i = 0; i < a.length; i++)
-				a[i] = 0;
-			return a;
-		})(),
-		change : function (i, open)
-		{
-			var icon = document.getElementById("sharing_cart_" + i + "_icon");
-			var item = document.getElementById("sharing_cart_" + i + "_item");
-			icon.src = parameters.pixpath + "/i/" + (open ? "open" : "closed") + ".gif";
-			item.style.display = open ? "block" : "none";
-			folder.state[i] = open;
-		},
-		get_cookie : function ()
-		{
-			// cookie value: "sharing_cart_folder_state=0,1,0,0,1,1,...;other=...;"
-			var cookie = document.cookie.split(";");
-			for (var i = 0; i < cookie.length; i++) {
-				cookie[i].match(/^\s*(.+)?\s*=\s*(.+)\s*$/);
-				var key = RegExp.$1;
-				var val = RegExp.$2;
-				if (key == "sharing_cart_folder_state") {
-					var state = val.split(",");
-					for (var k = 0; k < state.length; k++) {
-						if (k >= folder.state.length)
-							break;
-						folder.state[k] = parseInt(state[k]) ? 1 : 0;
-					}
-					break;
-				}
-			}
-			for (var i = 0; i < folder.state.length; i++)
-				folder.change(i, folder.state[i]);
+			var n = this.length, r = new Array(n);
+			for (var i = 0; i < n; i++)
+				r[i] = callback.call(thisObject, this[i], i, this);
+			return r;
 		}
-	};
-	
-	var restore_target = new Array();
-	
-// public:
-	this.a2id = function (a)
-	{
-		// <div id="shared_item_***">
-		//   <span>
-		//       <a onclick="sharing_cart.command(this)">command</a>
-		//   </span>
-		// </div>
-		return parseInt(a.parentNode.parentNode.id.split("_").pop());
-	};
-	
-	this.toggle = function (a, i)
-	{
-		var open = folder.state[i] ? 0 : 1;
-		folder.change(i, open);
-		// save state to cookie
-		var time = new Date();
-		time.setDate(time.getDate() + 30);
-		document.cookie = "sharing_cart_folder_state=" + folder.state.join(",") + ";"
-		                + "expires=" + time.toGMTString() + ";";
-		return false;
-	};
-	
-	this.restore = function (a)
-	{
-		if (restore_target.length == 0) {
-			alert(parameters.str.notarget);
-			return false;
-		}
-		
-		var clipbd_id = "sharing_cart_clipboard";
-		
-		var cancel = function ()
+		Array.prototype.filter = function (callback, thisObject)
 		{
-			var clipbd = document.getElementById(clipbd_id);
-			if (clipbd) {
-				clipbd.parentNode.removeChild(clipbd);
-				clipbd = null;
+			var n = this.length, r = new Array();
+			for (var i = 0; i < n; i++) {
+				if (callback.call(thisObject, this[i], i, this))
+					r.push(this[i]);
 			}
-			for (var i = 0; i < restore_target.length; i++) {
-				var el = restore_target[i].elm;
-				while (el.hasChildNodes())
-					el.removeChild(el.firstChild);
-				el.style.display = "none";
-			}
-			return false;
-		};
-		cancel();
-		
-		for (var i = 0; i < restore_target.length; i++) {
-			var link = createLink(parameters.str.copyhere, "restore.php", [
-				"id="      + this.a2id(a),
-				"course="  + parameters.course_id,
-				"section=" + restore_target[i].sec,
-				"return="  + parameters.return_url
-			]);
-			link.appendChild(createIcon("movehere", link.title, "movetarget"));
-			restore_target[i].elm.appendChild(link);
-			restore_target[i].elm.style.display = "block";
+			return r;
 		}
-		var clipbd = document.createElement("div");
-		clipbd.id  = clipbd_id;
-		clipbd.appendChild(document.createTextNode(parameters.str.clipboard + ": "));
-		clipbd.appendChild(a.parentNode.previousSibling.firstChild.cloneNode(true));
-		clipbd.appendChild(document.createTextNode("  ("));
-		var link     = createLink(parameters.str.cancel);
-		link.onclick = cancel;
-		link.appendChild(document.createTextNode(link.title));
-		clipbd.appendChild(link);
-		clipbd.appendChild(document.createTextNode(")"));
-		clipbd.style.padding = "0px 2px 4px 2px";
-		var outlines = getElementsByClassName(document.body, "h2", "outline");
-		if (outlines.length) {
-			// course
-			var outline = outlines[0];
-			outline.parentNode.insertBefore(clipbd, outline.nextSibling);
-		} else {
+		Array.prototype.forEach = function (callback, thisObject)
+		{
+			var n = this.length;
+			for (var i = 0; i < n; i++)
+				callback.call(thisObject, this[i], i, this);
+		}
+		Array.prototype.indexOf = function (value, startIndex)
+		{
+			var n = this.length;
+			for (var i = startIndex || 0; i < n; i++) {
+				if (this[i] == value)
+					return i;
+			}
+			return -1;
+		}
+	}
+	
+	function Cookie(key)
+	{
+		var exp = new Date();
+		exp.setDate(exp.getDate() + 30);
+		
+		this.load = function ()
+		{
+			var list = document.cookie.split(";");
+			for (var i = 0; i < list.length; i++) {
+				var m = /^\s*(.+)?\s*=\s*(.+)\s*$/.exec(list[i]);
+				if (m && m[1] == key)
+					return m[2];
+			}
+			return "";
+		}
+		this.save = function (value)
+		{
+			document.cookie = key + "=" + value + ";"
+			                + "expires=" + exp.toGMTString() + ";";
+		}
+	}
+	
+	function merge(target, source)
+	{
+		for (var k in source)
+			target[k] = source[k];
+	}
+	
+	function clear(node)
+	{
+		while (node.hasChildNodes())
+			node.removeChild(node.lastChild);
+	}
+	
+	function create(tag, attrs, style)
+	{
+		var e = document.createElement(tag);
+		if (attrs)
+			merge(e, attrs);
+		if (style)
+			merge(e.style, style);
+		return e;
+	}
+	
+	function descendants(node, tagName, className)
+	{
+		return Array.prototype.filter.call(node.getElementsByTagName(tagName), function (e)
+		{
+			return e.className && e.className.split(/\s+/).indexOf(className) >= 0;
+		});
+	}
+	function children(node, tagName, className)
+	{
+		return Array.prototype.filter.call(node.childNodes, function (e)
+		{
+			return e.tagName && e.tagName.toLowerCase() == tagName.toLowerCase()
+				&& e.className && e.className.split(/\s+/).indexOf(className) >= 0;
+		});
+	}
+	
+	function opacity(node, value)
+	{
+		node.style.filter = "alpha(opacity=" + (100 * value) + ")";
+		node.style.opacity = value;
+		node.style.MozOpacity = value;
+	}
+	
+	var this_url = params.wwwroot + "/course/view.php?id=" + params.course;
+	
+	function pix_url(name)
+	{
+		return params.pix_url.replace("%s", name);
+	}
+	function action_url(name, args)
+	{
+		var url = params.wwwroot + "/blocks/sharing_cart/" + name + ".php";
+		if (args) {
+			var q = [];
+			for (var k in args)
+				q.push(k + "=" + args[k]);
+			url += "?" + q.join("&");
+		}
+		return url;
+	}
+	
+	function icon(name, alt, css)
+	{
+		return create("img", { src: pix_url(name), alt: alt, className: css });
+	}
+	function link(title)
+	{
+		return create("a", { title: title, href: "javascript:void(0)" });
+	}
+	function hidden(name, value)
+	{
+		return create("input", { type: "hidden", name: name, value: value });
+	}
+	function option(value, title)
+	{
+		var e = create("option", { value: value });
+		e.appendChild(document.createTextNode(title || value));
+		return e;
+	}
+	
+	
+	function Clipboard(oncancel)
+	{
+		var board = create("div", null, { display: "none", verticalAlign: "middle" });
+		var outline = descendants(document.body, "h2", "outline").shift();
+		var content = descendants(document.body, "div", "course-content").shift();
+		var sitetopic = descendants(document.body, "div", "sitetopic").shift();
+		if (outline) {
+			// course (Moodle 2.0 to 2.2)
+			outline.parentNode.insertBefore(board, outline.nextSibling);
+		} else if (content) {
+			// course (Moodle 2.3)
+			content.insertBefore(board, content.firstChild);
+		} else if (sitetopic) {
 			// frontpage
-			var as = document.getElementsByTagName("a");
-			for (var i = 0; i < as.length; i++) {
-				var a = as[i];
-				if (a.href && a.href.indexOf("course/editsection.php") >= 0) {
-					a.parentNode.insertBefore(clipbd, a);
-					return false;
-				}
-			}
-			var mc = document.getElementById("maincontent");
-			mc.parentNode.insertBefore(clipbd, mc.nextSibling);
+			sitetopic.insertBefore(board, sitetopic.firstChild);
+		} else {
+			// unknown...
 		}
-		return false;
-	};
-	
-	this.remove = function (a)
-	{
-		if (confirm(parameters.str.confirm_delete)) {
-			location.href = parameters.block_root + "delete.php?" + [
-				"id="     + this.a2id(a),
-				"return=" + parameters.return_url
-			].join("&");
-		}
-		return false;
-	};
-	
-	this.move = function (a, to)
-	{
-		var moving_item = null;
-		var move_target = null;
-		var move_cancel = function ()
-		{
-			if (moving_item) {
-				for (var i = 0; i < move_target.length; i++)
-					move_target[i].parentNode.removeChild(move_target[i]);
-				moving_item.style.display = "block";
-				move_target = null;
-				moving_item = null;
-			}
-		}
-		move_cancel();
 		
-		var id = this.a2id(a);
-		var ul = a.parentNode.parentNode.parentNode;
-		var li = ul.getElementsByTagName("li");
-		move_target = new Array();
-		var insert_b4 = new Array();
-		var indent_cx = 0;
-		for (var i = 0; i < li.length; i++) {
-			if (li[i].parentNode != ul || !li[i].id || li[i].id.indexOf("shared_item_") != 0)
-				continue;
-			if (!indent_cx && li[i].firstChild.firstChild.className == "spacer")
-				indent_cx = li[i].firstChild.firstChild.width;
-			if (move_target.length == 0) {
-				var cancel = document.createElement("li");
-				cancel.appendChild(createIndent(indent_cx));
-				var link = createLink(parameters.str.cancel);
-				link.onclick = move_cancel;
-				link.appendChild(document.createTextNode(link.title));
-				cancel.appendChild(link);
-				move_target.push(cancel);
-				insert_b4.push(li[i]);
-			}
-			var insert = parseInt(li[i].id.split("_").pop());
-			if (insert == id) {
-				moving_item = li[i];
-				moving_item.style.display = "none";
-				continue;
-			}
-			var target = document.createElement("li");
-			target.appendChild(createIndent(indent_cx));
-			var link = createLink(parameters.str.movehere, "move.php", [
-				"id="     + id,
-				"to="     + insert,
-				"return=" + parameters.return_url
-			]);
-			link.appendChild(createIcon("movehere", link.title, "movetarget"));
-			target.appendChild(link);
-			move_target.push(target);
-			insert_b4.push(li[i]);
+		this.show = function (id)
+		{
+			this.hide();
+			
+			var item = document.getElementById("sharing_cart-item-" + id);
+			var text = children(item, "div", "c1").shift().firstChild.cloneNode(true);
+			
+			var title = document.createTextNode(params.str.clipboard + ": ");
+			var cancel = link(params.str.cancel);
+			cancel.onclick = oncancel;
+			cancel.appendChild(icon("t/delete", cancel.title, "iconsmall"));
+			[ title, text, cancel ].map(function (e) { board.appendChild(e); });
+			board.style.display = "block";
 		}
-		for (var i = 0; i < insert_b4.length; i++)
-			ul.insertBefore(move_target[i], insert_b4[i]);
-		var target = document.createElement("li");
-		target.appendChild(createIndent(indent_cx));
-		var link = createLink(parameters.str.movehere, "move.php", [
-			"id="     + id,
-			"to="     + 0,
-			"return=" + parameters.return_url
-		]);
-		link.appendChild(createIcon("movehere", link.title, "movetarget"));
-		target.appendChild(link);
-		ul.appendChild(target);
-		move_target.push(target);
-		return false;
-	};
+		this.hide = function ()
+		{
+			clear(board);
+			board.style.display = "none";
+		}
+	}
 	
-	this.movedir = function (a, to)
+	function Section(node, index)
 	{
-		var movedir_form = null;
-		var movedir_hide = null;
-		var movedir_cancel = function ()
-		{
-			if (movedir_form) {
-				movedir_form.parentNode.removeChild(movedir_form);
-				movedir_hide.style.display = "block";
-				movedir_form = null;
-				movedir_hide = null;
-			}
-		};
-		movedir_cancel();
+		var target = null;
 		
-		var form    = document.createElement("form");
-		form.action = parameters.block_root + "movedir.php";
-		form.appendChild(createHidden("id", this.a2id(a)));
-		form.appendChild(createHidden("return", parameters.return_url));
-		
-		var list = (function ()
+		var section = descendants(node, "ul", "section").shift();
+		var summary = children(node, "div", "summary").shift();
+		if (section) {
+			// activities exist -> append after them
+			target = create("li", { className: "activity" }, { display: "none" });
+			section.appendChild(target);
+		} else if (summary) {
+			// no activities -> insert after summary
+			target = create("div", { className: "activity" }, { display: "none" });
+			node.insertBefore(target, summary.nextSibling);
+		} else {
+			// frontpage -> insert before menus
+			var menus = children(node, "div", "section_add_menus").shift();
+			var ul = create("ul", { className: "section" });
+			target = create("li", { className: "activity" }, { display: "none" });
+			ul.appendChild(target);
+			node.insertBefore(ul, menus);
+		}
+		descendants(node, "span", "commands").forEach(function (commands)
 		{
-			var select  = document.createElement("select");
-			select.name = "to";
-			var option   = document.createElement("option");
-			option.value = "";
-			option.appendChild(document.createTextNode(parameters.str.rootdir));
-			select.appendChild(option);
-			for (var i = 0; i < parameters.directories.length; i++) {
-				var option   = document.createElement("option");
-				option.value = parameters.directories[i];
-				option.appendChild(document.createTextNode(parameters.directories[i]));
-				select.appendChild(option);
-				if (option.value == to)
-					select.selectedIndex = 1/*rootdir*/ + i;
-			}
-			select.onchange = function ()
+			var cmid = /(\d+)$/.exec(commands.parentNode.parentNode.id)[1];
+			var backup = link(params.str.backup);
+			backup.href = action_url("backup", {
+				"course" : params.course,
+				"section": index,
+				"module" : cmid,
+				"return" : this_url
+			});
+			backup.onclick = function () { return confirm(params.str.confirm_backup); }
+			backup.appendChild(icon("i/backup", backup.title, "iconsmall"));
+			commands.appendChild(backup);
+		});
+		
+		this.showTarget = function (item_id)
+		{
+			this.hideTarget();
+			
+			var restore = link(params.str.copyhere);
+			restore.href = action_url("restore", {
+				"id"      : item_id,
+				"course"  : params.course,
+				"section" : index,
+				"return"  : this_url
+			});
+			restore.appendChild(icon("movehere", restore.title, "movetarget"));
+			target.appendChild(restore);
+			target.style.display = "block";
+		}
+		this.hideTarget = function ()
+		{
+			clear(target);
+			target.style.display = "none";
+		}
+	}
+	
+	function Folder(node)
+	{
+		var icon = descendants(node, "img", "sharing_cart-dir").shift();
+		var item = node.getElementsByTagName("ul")[0];
+		var open = false;
+		this.get = function () { return open; }
+		this.set = function (o)
+		{
+			icon.src = pix_url(o ? "i/open" : "i/closed");
+			item.style.display = o ? "block" : "none";
+			open = o;
+		}
+		this.set(false);
+		this.title = node.getElementsByTagName("div")[0].title;
+	}
+	
+	
+	var clipboard = null, sections = [], folders = [], actions = new function ()
+	{
+		function a2id(a) { return parseInt(/(\d+)$/.exec(a.parentNode.parentNode.id)[1]); }
+		
+		this["movedir"] = function ()
+		{
+			var commands = this.parentNode;
+			
+			var dir = commands.parentNode.parentNode.parentNode;
+			var path = (dir.className.split(/\s+/).indexOf("sharing_cart-dir") >= 0)
+				? dir.getElementsByTagName("div")[0].title
+				: "/";
+			
+			var form = create("form", { action: action_url("movedir") });
+			form.appendChild(hidden("id", a2id(this)));
+			form.appendChild(hidden("return", this_url));
+			
+			var list = create("select", { name: "to" });
+			list.appendChild(option("/", "/"));
+			folders.forEach(function (folder, i)
 			{
-				form.submit();
-			};
-			return select;
-		})();
-		form.appendChild(list);
-		
-		var edit = (function ()
-		{
-			var link     = createLink(parameters.str.edit);
-			link.onclick = function ()
+				list.appendChild(option(folder.title));
+				if (folder.title == path)
+					list.selectedIndex = 1 + i;
+			});
+			list.onchange = function () { this.form.submit(); }
+			form.appendChild(list);
+			
+			var edit = link(params.str.edit);
+			edit.appendChild(icon("t/edit", edit.title, "iconsmall"));
+			edit.onclick = function ()
 			{
-				var text   = document.createElement("input");
-				text.type  = "text";
-				text.size  = 20;
-				text.name  = "to";
-				text.value = to;
-				if (typeof YAHOO != "undefined")
-					text.onclick = text.focus;
+				var text = create("input", { type: "text", name: "to", size: 20 });
+				text.value = path;
 				form.replaceChild(text, list);
-				form.removeChild(link);
+				form.removeChild(edit);
 				text.focus();
-			};
-			link.appendChild(createIcon("t/edit", link.title, "iconsmall"));
-			return link;
-		})();
-		form.appendChild(edit);
-		
-		var hide = (function ()
-		{
-			var link     = createLink(parameters.str.cancel);
-			link.onclick = movedir_cancel;
-			link.appendChild(createIcon("t/delete", link.title, "iconsmall"));
-			return link;
-		})();
-		form.appendChild(hide);
-		
-		form.style.marginTop = 0;
-		movedir_form = form;
-		movedir_hide = a.parentNode;
-		movedir_hide.style.display = "none";
-		movedir_hide.parentNode.insertBefore(movedir_form, movedir_hide);
-		list.focus();
-		if (list.options.length <= 1)
-			edit.onclick();
-		return false;
-	};
-	
-	this.init = function ()
-	{
-		var insert = function (sec, sec_i)
-		{
-			var list = getElementsByClassName(sec, "ul", "section");
-			if (list && list.length) {
-				// activities exist - append after them
-				var dest           = document.createElement("li");
-				dest.className     = "activity";
-				dest.style.display = "none";
-				list[0].appendChild(dest);
-				restore_target.push({ sec: sec_i, elm: dest });
-			} else {
-				// no activities - insert before menu
-				var menu = getElementsByClassName(sec, "div", "section_add_menus");
-				if (menu && menu.length) {
-					var dest           = document.createElement("div");
-					dest.className     = "activity";
-					dest.style.display = "none";
-					menu[0].parentNode.insertBefore(dest, menu[0]);
-					restore_target.push({ sec: sec_i, elm: dest });
-				}
 			}
-			var cmds = getElementsByClassName(sec, "span", "commands");
-			for (var i = 0; i < cmds.length; i++) {
-				var mod_id = cmds[i].parentNode.id.split("-")[1];
-				var link = createLink(parameters.str.backup, "backup.php", [
-					"course="  + parameters.course_id,
-					"section=" + sec_i,
-					"module="  + mod_id,
-					"return="  + parameters.return_url
-				]);
-				link.onclick = function ()
-				{
-					return confirm(parameters.str.confirm_backup);
-				};
-				link.appendChild(createIcon("i/backup", link.title, "iconsmall"));
-				cmds[i].appendChild(link);
-			}
-		};
-		if (document.getElementById("section-0")) {
-			// course
-			for (var sec_i = 0, sec = null;
-				sec = document.getElementById("section-" + sec_i);
-				sec_i++)
+			form.appendChild(edit);
+			
+			var cancel = link(params.str.cancel);
+			cancel.appendChild(icon("t/delete", cancel.title, "iconsmall"));
+			cancel.onclick = function ()
 			{
-				insert(sec, sec_i);
+				commands.removeChild(form);
+				Array.prototype.forEach.call(commands.childNodes,
+					function (c) { c.style.display = "inline"; });
 			}
-		} else {
-			// frontpage
-			var menus = getElementsByClassName(document.body, "div", "section_add_menus");
-			for (var i = 0; i < menus.length; i++)
-				insert(menus[i].parentNode, i);
+			form.appendChild(cancel);
+			
+			Array.prototype.forEach.call(commands.childNodes,
+				function (c) { c.style.display = "none"; });
+			commands.appendChild(form);
+			
+			if (folders.length == 0)
+				edit.onclick();
 		}
 		
-		// move command icons into block header
-		var header = document.getElementById("sharing_cart_header");
-		if (header) {
-			var block = document.getElementById("inst" + parameters.instance_id);
-			var commands = getElementsByClassName(block, "div", "commands")[0];
-			if (!commands) {
-				// sticky block
-				var h2 = block.getElementsByTagName("h2")[0];
-				commands = document.createElement("div");
-				commands.className = "commands";
-				h2.parentNode.appendChild(commands);
+		this["move"] = function ()
+		{
+			var TARGET_CLASS = "sharing_cart-move-target";
+			
+			var id = a2id(this), self = this.parentNode.parentNode;
+			var spacer = descendants(self.parentNode, "img", "spacer").shift();
+			
+			if (children(self.parentNode, "li", TARGET_CLASS).length)
+				return;
+			
+			function target(to)
+			{
+				var e = create("li", { className: ["r0", TARGET_CLASS].join(" ") });
+				if (spacer) {
+					e.appendChild(create("img", { src: params.wwwroot + "/pix/spacer.gif",
+						alt: "", width: spacer.width, height: 10, className: "spacer" }));
+				}
+				var a = link(params.str.movehere);
+				a.href = action_url("move", { "id": id, "to": to, "return": this_url });
+				a.appendChild(icon("movehere", a.title, "movetarget"));
+				e.appendChild(a);
+				return e;
 			}
+			
+			var cancel = link(params.str.cancel);
+			cancel.onclick = function ()
+			{
+				children(self.parentNode, "li", TARGET_CLASS).forEach(function (target)
+				{
+					target.parentNode.removeChild(target);
+				});
+				cancel.parentNode.removeChild(cancel);
+				
+				children(self.parentNode, "li", "sharing_cart-item").forEach(function (item)
+				{
+					children(item, "span", "commands").shift().style.display = "inline";
+				});
+				opacity(self, 1.0);
+			}
+			cancel.appendChild(icon("t/left", cancel.title, "iconsmall"));
+			children(self.parentNode, "li", "sharing_cart-item").forEach(function (item)
+			{
+				children(item, "span", "commands").shift().style.display = "none";
+			});
+			opacity(self, 0.5);
+			self.appendChild(cancel);
+			
+			var current = false;
+			children(self.parentNode, "li", "sharing_cart-item").forEach(function (item)
+			{
+				var to = parseInt(/(\d+)$/.exec(item.id)[1]);
+				if (to == id)
+					current = true;
+				else if (!current)
+					self.parentNode.insertBefore(target(to), item);
+				else
+					current = false;
+			});
+			if (!current)
+				self.parentNode.appendChild(target(0));
+		}
+		
+		this["delete"] = function ()
+		{
+			if (!confirm(params.str.confirm_delete))
+				return;
+			location.href = action_url("delete", { "id": a2id(this), "return": this_url });
+		}
+		
+		this["restore"] = function ()
+		{
+			if (sections.length == 0)
+				alert(params.str.notarget);
+			else {
+				var id = a2id(this);
+				sections.forEach(function (section) { section.showTarget(id); });
+				clipboard.show(id);
+			}
+		}
+	}
+	
+	
+	function init()
+	{
+		var block = document.getElementById("inst" + params.instance);
+		
+		// modifies block header
+		var header = document.getElementById("sharing_cart-header");
+		if (header) {
+			var commands = descendants(block, "div", "commands").shift();
 			while (header.hasChildNodes())
 				commands.appendChild(header.firstChild);
 			header.style.display = "none";
 		}
 		
-		// set folder states from cookie
-		folder.get_cookie();
-	};
+		// prepare clipboard and sections
+		clipboard = new Clipboard(function ()
+		{
+			sections.forEach(function (section) { section.hideTarget(); });
+			clipboard.hide();
+		});
+		var choosers = descendants(document.body, "div", "addresourcemodchooser");
+		var menus = descendants(document.body, "div", "section_add_menus");
+		if (choosers.length) {
+			// Moodle 2.3
+			choosers.forEach(function (chooser, i)
+			{
+				sections.push(new Section(chooser.parentNode, i));
+			});
+		} else if (menus.length) {
+			// Moodle 2.0 to 2.2
+			menus.forEach(function (menu, i)
+			{
+				sections.push(new Section(menu.parentNode, i));
+			});
+		}
+		
+		// prepare folders
+		var cookie_dir = new Cookie("sharing_cart-dir");
+		descendants(block, "li", "sharing_cart-dir").forEach(function (dir, i)
+		{
+			var header = dir.getElementsByTagName("div")[0];
+			header.id = "sharing_cart-dir-" + i;
+			header.onclick = function ()
+			{
+				var i = parseInt(/(\d+)$/.exec(this.id)[1]);
+				folders[i].set(!folders[i].get());
+				cookie_dir.save(folders.map(function (f) { return f.get() ? 1 : 0; }).join(","));
+			}
+			header.style.cursor = "pointer";
+			folders.push(new Folder(dir));
+		});
+		cookie_dir.load().split(",").slice(0, folders.length).forEach(function (state, i)
+		{
+			folders[i].set(parseInt(state));
+		});
+		
+		// bind item actions
+		descendants(block, "li", "sharing_cart-item").forEach(function (item)
+		{
+			Array.prototype.forEach.call(item.getElementsByTagName("a"), function (command)
+			{
+				var action = /(\w+)$/.exec(command.className)[1];
+				command.onclick = actions[action];
+			});
+		});
+	}
 	
-	// for plugins
-	this.getParam = function (name)
+	
+	(function (init)
 	{
-		return parameters[name];
-	}
-	this.setParam = function (name, value)
-	{
-		parameters[name] = value;
-	}
+		if (window.addEventListener) window.addEventListener("load", init, false);
+		else if (window.attachEvent) window.attachEvent("onload", init);
+		else if (typeof window.onload != "function") window.onload = init;
+		else {
+			var pre = window.onload;
+			window.onlaod = function () { pre(); init(); };
+		}
+	})(init);
 }

@@ -1,77 +1,87 @@
 <?php
+/**
+ *  Sharing Cart - Bulk Delete Operation
+ *  
+ *  @author  VERSION2, Inc.
+ *  @version $Id: bulkdelete.php 945 2013-03-28 11:42:00Z malu $
+ */
 
 require_once '../../config.php';
-require_once './sharing_cart_table.php';
-require_once './sharing_cart_lib.php';
 
-//error_reporting(E_ALL);
-
-require_login();
+require_once './classes/storage.php';
+require_once './classes/record.php';
+require_once './classes/view.php';
 
 $course_id = required_param('course', PARAM_INT);
 $return_to = $CFG->wwwroot.'/course/view.php?id='.$course_id;
 
-// 続行可能な通知メッセージがあれば直接リダイレクトせずにそれを表示
-$notifications = array();
+require_login($course_id);
 
-if (is_array($delete = optional_param('delete'))) {
-	// 削除実行
+$delete_param = function_exists('optional_param_array')
+	? optional_param_array('delete', null, PARAM_RAW)
+	: optional_param('delete', null, PARAM_RAW);
+if (is_array($delete_param)) try {
 	
-	// SQLインジェクション対策のためintvalでフィルタリング
-	$delete_ids = array_map('intval', array_keys($delete))
-		or print_error('err_shared_id', 'block_sharing_cart', $return_to);
+	set_time_limit(0);
 	
-	$items = get_records_select('sharing_cart',
-	                            'userid = '.$USER->id.' AND '.
-	                            'id IN ('.implode(',', $delete_ids).')')
-		or print_error('err_shared_id', 'block_sharing_cart', $return_to);
+	$notifications = array();
 	
-	$user_dir = make_user_directory($USER->id, true);
+	$delete_ids = array_map('intval', array_keys($delete_param));
 	
-	// ファイル削除に成功したIDのみをDB削除に渡す
+	list ($sql, $params) = $DB->get_in_or_equal($delete_ids);
+	$records = $DB->get_records_select(sharing_cart\record::TABLE,
+		"userid = $USER->id AND id $sql", $params);
+	if (!$records)
+		throw new sharing_cart\exception('record_id');
+	
+	$storage = new sharing_cart\storage();
+	
 	$delete_ids = array();
-	foreach ($items as $id => $item) {
-		if (@unlink($user_dir.'/'.$item->filename)) {
-			$delete_ids[] = $id;
-		} else {
-			$notifications[] = get_string('err_delete', 'block_sharing_cart');
-		}
+	foreach ($records as $record) {
+		$storage->delete($record->filename);
+		$delete_ids[] = $record->id;
 	}
-	delete_records_select('sharing_cart', 'id IN ('.implode(',', $delete_ids).')');
 	
-	sharing_cart_table::renumber($USER->id);
+	list ($sql, $params) = $DB->get_in_or_equal($delete_ids);
+	$DB->delete_records_select(sharing_cart\record::TABLE, "id $sql", $params);
 	
+	sharing_cart\record::renumber($USER->id);
 	
-	if (count($notifications)) {
-		notice(implode('<br />', $notifications), $return_to);
+	redirect($return_to);
+} catch (Exception $ex) {
+	if (!empty($CFG->debug) and $CFG->debug >= DEBUG_DEVELOPER) {
+		print_error('notlocalisederrormessage', 'error', '', $ex->__toString());
 	} else {
-		redirect($return_to);
+		print_error('err:delete', 'block_sharing_cart', $return_to);
 	}
-	exit;
 }
+
+$orderby = 'tree,weight,modtext';
+if ($CFG->dbtype == 'mssql' || $CFG->dbtype == 'sqlsrv') {
+	// MS SQL Server does not support ordering by TEXT field.
+	$orderby = 'tree,weight,CAST(modtext AS VARCHAR(255))';
+}
+$items = $DB->get_records(sharing_cart\record::TABLE, array('userid' => $USER->id), $orderby);
 
 $title = get_string('bulkdelete', 'block_sharing_cart');
 
-$navlinks = array();
-if ($course_id != SITEID) {
-	$navlinks[] = array(
-		'name' => get_field('course', 'shortname', 'id', $course_id),
-		'link' => $CFG->wwwroot.'/course/view.php?id='.$course_id,
-		'type' => 'title'
-	);
-}
-$navlinks[] = array(
-	'name' => $title,
-	'link' => '',
-	'type' => 'title'
-);
-print_header_simple($title, '', build_navigation($navlinks));
+$PAGE->set_url($CFG->wwwroot.'/blocks/sharing_cart/bulkdelete.php?course='.$course_id);
+$PAGE->set_title($title);
+$PAGE->set_heading($title);
+$PAGE->navbar->add($title, '');
+
+echo $OUTPUT->header();
 {
-	print_heading($title);
+	echo $OUTPUT->heading($title);
 	
 	echo '
 	<div style="width:100%; text-align:center;">';
-	if ($items = get_records('sharing_cart', 'userid', $USER->id, 'tree,weight,modtext')) {
+	if (empty($items)) {
+		echo '
+		<div>
+			<input type="button" onclick="history.back();" value="', get_string('back'), '" />
+		</div>';
+	} else {
 		echo '
 		<script type="text/javascript">
 		//<![CDATA[
@@ -123,7 +133,7 @@ print_header_simple($title, '', build_navigation($navlinks));
 		<div><label style="cursor:default;">
 			<input type="checkbox" checked="checked" onclick="check_all(this);"
 			 style="height:16px; vertical-align:middle;" />
-			<span>', get_string('checkall'), '</span>
+			<span>', get_string('selectall'), '</span>
 		</label></div>';
 		
 		$i = 0;
@@ -131,12 +141,12 @@ print_header_simple($title, '', build_navigation($navlinks));
 		<ul style="list-style-type:none; float:left;">';
 		foreach ($items as $id => $item) {
 			echo '
-			<li style="clear:left;">
+			<li style="list-style-type:none; clear:left;">
 				<input type="checkbox" name="delete['.$id.']" checked="checked" onclick="check();"
 				 style="float:left; height:16px;" id="delete_'.$id.'" />
-				<div style="float:left;">', sharing_cart_lib::get_icon($item->modname, $item->modicon), '</div>
+				<div style="float:left;">', sharing_cart\view\icon($item), '</div>
 				<div style="float:left;">
-					<label for="delete_'.$id.'">', htmlspecialchars($item->modtext), '</label>
+					<label for="delete_'.$id.'">', $item->modtext, '</label>
 				</div>
 			</li>';
 			if (++$i % 10 == 0) {
@@ -155,13 +165,8 @@ print_header_simple($title, '', build_navigation($navlinks));
 			<input type="submit" name="delete_checked" value="', get_string('deleteselected'), '" />
 		</div>
 		</form>';
-	} else {
-		echo '
-		<div>
-			<input type="button" onclick="history.back();" value="', get_string('back'), '" />
-		</div>';
 	}
 	echo '
 	</div>';
 }
-print_footer();
+echo $OUTPUT->footer();

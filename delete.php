@@ -1,43 +1,36 @@
 <?php
+/**
+ *  Sharing Cart - Delete Operation
+ *  
+ *  @author  VERSION2, Inc.
+ *  @version $Id: delete.php 785 2012-09-11 09:01:38Z malu $
+ */
 
 require_once '../../config.php';
-require_once './sharing_cart_table.php';
 
-//error_reporting(E_ALL);
+require_once './classes/storage.php';
+require_once './classes/record.php';
 
 require_login();
 
 $record_id = required_param('id', PARAM_INT);
-$return_to = urldecode(required_param('return'));
+$return_to = urldecode(required_param('return', PARAM_TEXT));
 
-// 続行可能な通知メッセージがあれば直接リダイレクトせずにそれを表示
-$notifications = array();
-
-// 共有アイテムが存在するかチェック
-$record = sharing_cart_table::get_record_by_id($record_id)
-    or print_error('err_shared_id', 'block_sharing_cart', $return_to);
-
-// 自分が所有する共有アイテムかチェック
-$record->userid == $USER->id
-    or print_error('err_capability', 'block_sharing_cart', $return_to);
-
-$zip_path = make_user_directory($USER->id, true).'/'.$record->filename;
-
-// ZIP削除
-//$oldmask = umask(0);
-//chmod($zip_path, 0666);
-unlink($zip_path)
-    or $notifications[] = get_string('err_delete', 'block_sharing_cart');
-//umask($oldmask);
-
-// DB削除
-sharing_cart_table::delete_record($record)
-    or print_error('err_delete', 'block_sharing_cart', $return_to);
-
-//if (headers_sent()) die;
-
-if (count($notifications)) {
-    notice(implode('<br />', $notifications), $return_to);
-} else {
-    redirect($return_to);
+try {
+	$record = sharing_cart\record::from_id($record_id);
+	if ($record->userid != $USER->id)
+		throw new sharing_cart\exception('capability');
+	
+	$storage = new sharing_cart\storage();
+	$storage->delete($record->filename);
+	
+	$record->delete();
+	
+	redirect($return_to);
+} catch (Exception $ex) {
+	if (!empty($CFG->debug) and $CFG->debug >= DEBUG_DEVELOPER) {
+		print_error('notlocalisederrormessage', 'error', '', $ex->__toString());
+	} else {
+		print_error('err:delete', 'block_sharing_cart', $return_to);
+	}
 }

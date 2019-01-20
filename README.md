@@ -1,14 +1,13 @@
 Sharing Cart
 ============
 
-version 1.9, release 17 - 2013.02.13 (Moodle 1.9 compatibility branch)
-
+version 2.2, release 1 patch 4 - 2013.03.28 (Moodle 2.2 compatibility branch)
 
 Change Log
 ----------
 
-* 1.9, release 17
-  * Improvement: restore non-existing sibling's course files as target course's
+* 2.2, release 1 patch 4
+  * Used wrong string from core in bulkdelete.php (issue #8)
 
 
 Purpose
@@ -26,7 +25,7 @@ serving as a library of frequently used course items available for duplication.
 Requirements
 ------------
 
-Moodle 1.9.4 or later (not compatible with Moodle 2.x)
+Moodle 2.0 to 2.3
 
 
 License
