@@ -1,7 +1,7 @@
 Sharing Cart
 ============
 
-Version 3.3, release 3 - 2018.01.24
+Version 3.6, release 1 - 2019.01.20
 
 The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
@@ -11,12 +11,17 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
-* 3.3, release 3
+* 3.6, release 1    2019.01.20
+  * No code changes, fixed text in Readme and version.php
+  * Tested OK in Moodle 3.6
+* 3.5, release 1    2018.12.24
+  * Fixed some theme issues
+* 3.3, release 3    2018.01.24
   * No longer compatible with Moodle 3.2 or earlier
 * 3.3, release 2
-  * Fix problem in PostgreSQL
-  * Fix warning messages from using deprecated functions
-  * Ability to copy section title
+  * Fixed problem in PostgreSQL
+  * Fixed warning messages from using deprecated functions
+  * Added ability to copy section title
 * 3.3, release 1
   * Compatible with Moodle 3.3
 * 3.2, release 1
@@ -92,8 +97,8 @@ serving as a library of frequently used course items available for duplication.
 
 Requirements
 ------------
-
-Moodle 2.3.1 or later, with AJAX enabled
+New Versions:  Moodle 3.3 or later
+Older Versions: Moodle 2.3.1 or later, with AJAX enabled
 
 
 License
