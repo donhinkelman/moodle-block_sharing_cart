@@ -1082,6 +1082,7 @@ require(['jquery'], function ($)
                     }
 
                     li.find('span').html(str('backup'));
+                    li.find('a').attr('data-action', 'backup');
                     $menu.append(li);
                     // if($menu.find('i.fa').length)
                     // {
