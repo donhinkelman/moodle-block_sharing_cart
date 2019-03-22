@@ -237,7 +237,7 @@ YUI.add('block_sharing_cart', function (Y)
                         .append(
                             Y.Node.create('<img class="move_target"/>')
                                 .set('alt', str('movehere'))
-                                .set('src', M.util.image_url('movehere'))
+                                .set('src', M.util.image_url('dropzone_arrow', 'block_sharing_cart'))
                             );
                     var $target = Y.Node.create('<li class="activity"/>')
                         .append($indent.cloneNode(false).append($anchor));
@@ -289,7 +289,7 @@ YUI.add('block_sharing_cart', function (Y)
                     .append(
                         Y.Node.create('<img class="move_target"/>')
                             .set('alt', str('copyhere'))
-                            .set('src', M.util.image_url('movehere'))
+                            .set('src', M.util.image_url('dropzone_arrow', 'block_sharing_cart'))
                         );
                 targets.push($target);
                 return $target;
