@@ -19,7 +19,7 @@
 .block_sharing_cart .sc-space-3 { margin-left: 3px; }
 .block_sharing_cart .sc-space-4 { margin-left: 4px; }
 .block_sharing_cart .sc-space-5 { margin-left: 5px; }
-.course-content .move_target { content: url("pix/dropzone_arrow.svg"); max-width: 100%; border: 2px dashed #999; margin-top: 15px; margin-bottom: 15px; padding: 5px; }
+.course-content .move_target { max-width: 100%; border: 2px dashed #999; margin-top: 15px; margin-bottom: 15px; padding: 5px; }
 .course-content .clipboard {max-width: 100%; border: 2px dashed #999; margin-bottom: 15px; padding: 10px; font-weight: bold; }
 
 .modal-bg

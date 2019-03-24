@@ -466,7 +466,7 @@ require(['jquery'], function ($)
                         .append(
                             $('<img class="move_target"/>')
                                 .attr('alt', str('movehere'))
-                                .attr('src', M.util.image_url('movehere'))
+                                .attr('src', M.util.image_url('dropzone_arrow', 'block_sharing_cart'))
                         );
 
                     var $target = $('<li class="activity"/>')
@@ -547,7 +547,7 @@ require(['jquery'], function ($)
                     .append(
                         $('<img class="move_target"/>')
                             .attr('alt', str('copyhere'))
-                            .attr('src', M.util.image_url('movehere'))
+                            .attr('src', M.util.image_url('dropzone_arrow', 'block_sharing_cart'))
                     );
 
                 targets.push($target);
