@@ -308,7 +308,17 @@ class controller
 
 
             // Backup all
-            $modules = $DB->get_records("course_modules", array("section" => $sectionid));
+            $modulesequence = explode(',', $section->sequence);
+            $modulecount = $DB->count_records('course_modules', ['section' => $sectionid]);
+
+            if (count($modulesequence) != $modulecount) {
+                $modules = $DB->get_records('course_modules', ['section' => $sectionid]);
+            } else {
+                $modules = [];
+                foreach ($modulesequence as $modid) {
+                    $modules[] = $DB->get_record('course_modules', ['id' => $modid]);
+                }
+            }
 
             foreach ($modules as $module)
             {
