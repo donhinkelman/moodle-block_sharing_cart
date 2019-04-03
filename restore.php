@@ -32,12 +32,9 @@ $directory = required_param('directory', PARAM_BOOL);
 $id = null;
 $path = null;
 
-if($directory)
-{
+if($directory) {
     $path = required_param('path', PARAM_TEXT);
-}
-else
-{
+} else {
     $id = required_param('id', PARAM_INT);
 }
 $courseid = required_param('course', PARAM_INT);
@@ -56,27 +53,22 @@ require_login($courseid);
 try {
 	$controller = new sharing_cart\controller();
 
-	if($directory)
-    {
+	if ($directory) {
         $form = new \sharing_cart\section_title_form($directory, $path, $courseid, $sectionnumber, array());
-        if($form->is_cancelled())
-        {
+        if ($form->is_cancelled()) {
             redirect($returnurl);
             exit;
         }
 
         $use_sc_section = optional_param('sharing_cart_section', -1, PARAM_INT);
 
-        if($path[0] == '/')
-        {
+        if ($path[0] == '/') {
             $path = substr($path, 1);
         }
 
-        if($use_sc_section < 0)
-        {
+        if ($use_sc_section < 0) {
             $sections = $controller->get_path_sections($path, $courseid, $sectionnumber);
-            if(count($sections) > 0)
-            {
+            if (count($sections) > 0) {
                 $dest_section = $DB->get_record('course_sections', array('course' => $courseid, 'section' => $sectionnumber));
 
                 $PAGE->set_pagelayout('standard');
@@ -101,13 +93,10 @@ try {
             $use_sc_section = 0;
         }
 
-        if($use_sc_section > -1)
-        {
+        if ($use_sc_section > -1) {
             $controller->restore_directory($path, $courseid, $sectionnumber, $use_sc_section);
         }
-    }
-    else
-    {
+    } else {
         $controller->restore($id, $courseid, $sectionnumber);
     }
 

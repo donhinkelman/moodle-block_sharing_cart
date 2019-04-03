@@ -269,8 +269,7 @@ class controller
 
         $itemids = array();
 
-        try
-        {
+        try {
             // Save section data
             $section = $DB->get_record('course_sections', array('id' => $sectionid));
             $sharing_cart_section = new \stdClass();
@@ -282,17 +281,14 @@ class controller
             $sc_section_id = $sc_section_id ? $sc_section_id : 0;
 
             // Save section files
-            if($sc_section_id > 0)
-            {
+            if ($sc_section_id > 0) {
                 $course_context = \context_course::instance($course);
                 $user_context = \context_user::instance($USER->id);
                 $fs = get_file_storage();
 
                 $files = $fs->get_area_files($course_context->id, 'course', 'section', $sectionid);
-                foreach($files as $file)
-                {
-                    if($file->get_filename() != '.')
-                    {
+                foreach ($files as $file) {
+                    if ($file->get_filename() != '.') {
                         $filerecord = array(
                             'contextid' => $user_context->id,
                             'component' => 'user',
@@ -320,19 +316,14 @@ class controller
                 }
             }
 
-            foreach ($modules as $module)
-            {
-                if(isset($module->deletioninprogress) && $module->deletioninprogress == 1)
-                {
+            foreach ($modules as $module) {
+                if (isset($module->deletioninprogress) && $module->deletioninprogress == 1) {
                     continue;
                 }
 
-                if ($userdata && $this->is_userdata_copyable($module->id))
-                {
+                if ($userdata && $this->is_userdata_copyable($module->id)) {
                     array_push($itemids, $this->backup($module->id, true, $course, $sc_section_id));
-                }
-                else
-                {
+                } else {
                     array_push($itemids, $this->backup($module->id, false, $course, $sc_section_id));
                 }
             }
@@ -340,12 +331,10 @@ class controller
             // Check empty folder name
             $foldername = str_replace("/", "-", $sectionname);
 
-            if ($DB->record_exists("block_sharing_cart", array("tree" => $foldername)))
-            {
+            if ($DB->record_exists("block_sharing_cart", array("tree" => $foldername))) {
                 $i = 0;
 
-                do
-                {
+                do {
                     $i++;
                 } while ($DB->record_exists("block_sharing_cart", array("tree" => $foldername . " ({$i})")));
 
@@ -353,17 +342,12 @@ class controller
             }
 
             // Move backup files to folder
-            foreach ($itemids as $itemid)
-            {
+            foreach ($itemids as $itemid) {
                 $this->movedir($itemid, $foldername);
             }
-        }
-        catch (\moodle_exception $ex)
-        {
-            if($ex->errorcode == "storedfilenotcreated")
-            {
-                foreach ($itemids as $itemid)
-                {
+        } catch (\moodle_exception $ex) {
+            if ($ex->errorcode == "storedfilenotcreated") {
+                foreach ($itemids as $itemid) {
                     $this->delete($itemid);
                 }
             }
