@@ -1137,6 +1137,11 @@ require(['jquery'], function ($)
                 });
             }
 
+            if ($('body[id$=flexsections]').length)
+            {
+                return false;
+            }
+
             $("li.section").each(function()
             {
                 var sectionID = $(this).find("div.content h3.sectionname span.inplaceeditable").attr("data-itemid");
