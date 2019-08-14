@@ -633,7 +633,7 @@ require(['jquery'], function ($)
                     {
                         var $section = $(sectionDOM);
                         var section = $section.attr('id').match(/(\d+)$/)[1];
-                        $section.find('ul.section').append(create_target(id, section));
+                        $section.find('ul.section').first().append(create_target(id, section));
                     }, this);
                 }
             }
