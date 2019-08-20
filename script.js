@@ -1137,7 +1137,7 @@ require(['jquery'], function ($)
                 });
             }
 
-            if ($('body[id$=flexsections]').length)
+            if ($('body[id$=flexsections|grid]').length)
             {
                 return false;
             }
