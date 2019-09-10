@@ -182,6 +182,7 @@ require(['jquery'], function ($)
          *  @param {String} name  The command name, predefined in icon
          *  @param {String} [pix] The icon pix name to override
          */
+        /*
         function create_special_activity_command(name, pix)
         {
             return $('<a href="javascript:void(0)"/>')
@@ -194,6 +195,7 @@ require(['jquery'], function ($)
                         .attr('src', M.util.image_url(pix || icon[name].pix))
                 );
         }
+        */
 
         /**
          * Create a spinner
@@ -286,13 +288,20 @@ require(['jquery'], function ($)
         /**
          *  Backup an activities in a section
          *
-         *  @param {int} sectionID
+         *  @param {int} sectionId
+         *  @param {int} sectionNumber
+         *  @param {int} courseId
          *  @param {Boolean} userdata
          */
-        function backup_section(sectionID, userdata)
+        function backup_section(sectionId, sectionNumber, courseId, userdata)
         {
-            var $commands = $('span.inplaceeditable[data-itemtype=sectionname][data-itemid=' + sectionID + ']');
+            var $commands = $('span.inplaceeditable[data-itemtype=sectionname][data-itemid=' + sectionId + ']');
             var sectionName = $commands.closest("li.section.main").attr('aria-label');
+
+            if (sectionName == null){
+                sectionName = String($('#region-main .section_action_menu[data-sectionid=\'' + sectionId + '\']')
+                    .parent().parent().find('h3.sectionname').text());
+            }
 
             var $spinner = add_spinner($commands);
 
@@ -301,7 +310,9 @@ require(['jquery'], function ($)
             $.post(get_action_url("rest"),
                 {
                     "action": "backup_section",
-                    "sectionid": sectionID,
+                    "sectionid": sectionId,
+                    "sectionnumber": sectionNumber,
+                    "courseid": courseId,
                     "sectionname": sectionName,
                     "userdata": userdata,
                     "sesskey": M.cfg.sesskey,
@@ -915,16 +926,21 @@ require(['jquery'], function ($)
 
         /**
          * On backup the whole section as a folder
-         * @param {int} sectionID
+         *
+         * @param {int} sectionId
+         * @param {int} sectionNumber
+         * @param {int} courseId
          */
-        $.on_section_backup = function (sectionID)
+        $.on_section_backup = function (sectionId, sectionNumber, courseId)
         {
             (function (on_success)
             {
                 $.post(get_action_url('rest'),
                     {
                         "action": "is_userdata_copyable_section",
-                        "sectionid": sectionID
+                        "sectionid": sectionId,
+                        "sectionnumber": sectionNumber,
+                        "courseid": courseId,
                     },
                     function(response)
                     {
@@ -943,14 +959,14 @@ require(['jquery'], function ($)
                     {
                         if(confirm(str('confirm_backup_section')))
                         {
-                            backup_section(sectionID, true);
+                            backup_section(sectionId, sectionNumber, courseId, true);
                         }
                     }
                     else
                     {
                         if(confirm(str('confirm_backup_section')))
                         {
-                            backup_section(sectionID, false);
+                            backup_section(sectionId, sectionNumber, courseId, false);
                         }
                     }
                 }
@@ -958,7 +974,7 @@ require(['jquery'], function ($)
                 {
                     if(confirm(str('confirm_backup_section')))
                     {
-                        backup_section(sectionID, false);
+                        backup_section(sectionId, sectionNumber, courseId, false);
                     }
                 }
             });
@@ -1065,142 +1081,73 @@ require(['jquery'], function ($)
 
         $.init_activity_commands = function()
         {
-            function add_backup_comand($activity)
-            {
-                var $menu = $activity.find("ul[role='menu']");
+            /**
+             * Create the backup icon
+             *
+             * @returns $backupIcon
+             */
+            function create_backup_icon() {
 
-                if($menu.length)
-                {
-                    var li = $menu.find('li').first().clone();
-                    var $backup = li.find('a').attr('title', str('backup')).attr('href', 'javascript:void(0)');
-                    var img = li.find('img');
+                var $backupIcon = $('<a href="javascript:void(0)" class="add-to-sharing-cart" />')
+                    .append($('<i class="fa fa-shopping-basket icon"></i>'))
+                    .attr('title', str('backup'));
 
-                    if (img.length) {
-                        li.find('img').attr('alt', str('backup')).attr('title', str('backup')).attr('src', M.util.image_url(icon['backup'].pix));
-                    } else {
-                        li.find('i').attr('class', 'icon fa fa-upload').attr('title', str('backup')).attr('aria-label', str('backup'));
-                    }
+                return $backupIcon;
+            }
 
-                    li.find('span').html(str('backup'));
-                    li.find('a').attr('data-action', 'backup');
-                    $menu.append(li);
-                    // if($menu.find('i.fa').length)
-                    // {
-                    //     $backup.find("img").replaceWith($("<i class='fa fa-cloud-download icon'>"));
-                    // }
-                }
-                else
-                {
-                    var $backup = create_command("backup");
-                    $menu = $activity.find('div[role="menu"]');
-                    if($menu.length)
-                    {
-                        $backup = create_special_activity_command("backup");
-                        $menu.append($backup.attr("role", "menuitem"));
-                        if($menu.css("display") === "none")
-                        {
-                            $backup.append($("<span class='menu-action-text'/>").append($backup.attr('title')));
-                        }
-                        // if($menu.find("i.fa"))
-                        // {
-                        //     $backup.find("img").replaceWith($("<i class='fa fa-cloud-download icon'/>"));
-                        // }
-                    }
-                    else
-                    {
-                        $activity.find(".commands").append($backup);
-                    }
-                }
+            /**
+             * Add backup control with a click event to an activity
+             *
+             * @param $activity
+             */
+            function add_activity_backup_control($activity) {
 
-                $backup.click(function(e)
-                {
+                var $backupIcon = create_backup_icon();
+
+                $backupIcon.click(function(e) {
                     $.on_backup(e);
                 });
+
+                var $actionMenuItem = $activity.find('.action-menu.section-cm-edit-actions').parent('.actions');
+
+                $actionMenuItem.append($backupIcon);
             }
 
-            if(course.is_frontpage)
-            {
-                $(".sitetopic li.activity").each(function()
-                {
-                    add_backup_comand($(this));
+            /**
+             * Add backup control with a click event to a section
+             *
+             * @param $section
+             */
+            function add_section_backup_control($section) {
+
+                var sectionId = $section.find('.section_action_menu').data('sectionid');
+                var sectionNumber = parseInt(String($section.attr('id')).match(/\d+/)[0]);
+
+                // A bit unsafe to extract the course ID from the body but it's the best option we got at the moment
+                var courseId = parseInt(String($('body').attr('class')).match(/course-([0-9]*)( |$)/)[1]);
+
+                var $backupIcon = create_backup_icon();
+
+                $backupIcon.click(function () {
+                    $.on_section_backup(sectionId, sectionNumber, courseId);
                 });
-                $(".block_site_main_menu .content > ul > li").each(function()
-                {
-                    add_backup_comand($(this));
-                });
-            }
-            else
-            {
-                $(".course-content li.activity").each(function()
-                {
-                    add_backup_comand($(this));
+
+                var $sectionTitle = $section.find('h3.sectionname');
+                $sectionTitle.append($backupIcon);
+
+                var $activities = $section.find('li.activity');
+                $($activities).each(function() {
+                    add_activity_backup_control($(this));
                 });
             }
 
-            if ($('body[id$=flexsections|grid]').length)
-            {
+            // Flexible course formats are not supported. Therefore we do not add the "Copy to sharing cart" icon
+            if ($('body[id$=flexsections]').length) {
                 return false;
             }
 
-            $("li.section").each(function()
-            {
-                var sectionID = $(this).find("div.content h3.sectionname span.inplaceeditable").attr("data-itemid");
-
-                var $menu = $(this).find("ul[role='menu']").first();
-
-                if($menu.length)
-                {
-                    var li = $menu.find('li').first().clone();
-                    var img = li.find('img');
-
-                    if (img.length) {
-                        img.attr('alt', str('backup')).attr('title', str('backup')).attr('src', M.util.image_url(icon['backup'].pix, null));
-                    } else {
-                        li.find('i').attr('class', 'icon fa fa-upload').attr('title', str('backup')).attr('aria-label', str('backup'));
-                    }
-
-                    li.find('span').html(str('backup'));
-                    li.find('a').attr('href', 'javascript:void(0)');
-
-                    $menu.append(li);
-
-                    li.find('a').click(function()
-                    {
-                        $.on_section_backup(sectionID);
-                    });
-                }
-                else
-                {
-                    $menu = $(this).find("div[role='menu']").first();
-
-                    var $backup = null;
-
-                    if($menu.length)
-                    {
-                        $backup = create_special_activity_command("backup");
-
-                        $menu.append($backup.attr("role", "menuitem"));
-
-                        if($menu.css("display") === "none")
-                        {
-                            $backup.append($("<span class='menu-action-text'/>").append($backup.attr('title')));
-                        }
-                        // if($menu.find("i.fa"))
-                        // {
-                            // $backup.find("img").replaceWith($("<i class='fa fa-cloud-download icon'/>"));
-                        // }
-                    }
-                    else
-                    {
-                        $backup = create_command("backup");
-                        $activity.find(".commands").append($backup);
-                    }
-
-                    $backup.click(function ()
-                    {
-                        $.on_section_backup(sectionID);
-                    });
-                }
+            $("body.editing .course-content li.section").each(function() {
+                add_section_backup_control($(this));
             });
         };
 
