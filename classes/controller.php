@@ -28,6 +28,7 @@ use block_lp\output\summary;
 require_once __DIR__.'/storage.php';
 require_once __DIR__.'/record.php';
 require_once __DIR__.'/scoped.php';
+require_once __DIR__.'/helpers/section.php';
 require_once __DIR__.'/../../../course/lib.php';
 
 /**

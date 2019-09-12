@@ -26,9 +26,11 @@ require_once '../../config.php';
 
 require_once __DIR__.'/classes/controller.php';
 
+use sharing_cart\helpers;
+
 try {
 	$controller = new sharing_cart\controller();
-	
+
 	switch (required_param('action', PARAM_TEXT)) {
         case 'render_tree':
             $PAGE->set_context(\context_user::instance($USER->id));
@@ -39,7 +41,13 @@ try {
             echo $controller->is_userdata_copyable($cmid);
             exit;
         case 'is_userdata_copyable_section':
-            $sectionid = required_param('sectionid', PARAM_INT);
+			$sectionid = optional_param('sectionid', null, PARAM_INT);
+			if (empty($sectionid)) {
+				$sectionnumber = required_param('sectionnumber', PARAM_INT);
+				$courseid = required_param('courseid', PARAM_INT);
+				$section = helpers\section::get($courseid, $sectionnumber);
+				$sectionid = $section->id;
+			}
             echo $controller->is_userdata_copyable_section($sectionid);
             exit;
         case 'backup':
@@ -49,8 +57,15 @@ try {
             $controller->backup($cmid, $userdata, $course);
             exit;
         case 'backup_section':
-            $sectionid = required_param('sectionid', PARAM_INT);
-            $sectionname = required_param('sectionname', PARAM_TEXT);
+			$sectionid = optional_param('sectionid', null, PARAM_INT);
+			$sectionname = optional_param('sectionname', null, PARAM_TEXT);
+			if (empty($sectionid) || empty($sectionname)) {
+				$sectionnumber = required_param('sectionnumber', PARAM_INT);
+				$courseid = required_param('courseid', PARAM_INT);
+				$section = helpers\section::get($courseid, $sectionnumber);
+				$sectionid = $section->id;
+				$sectionname = $section->name;
+			}
             $userdata = required_param('userdata', PARAM_BOOL);
             $course = required_param('course', PARAM_INT);
             $controller->backup_section($sectionid, $sectionname, $userdata, $course);
