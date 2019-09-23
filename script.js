@@ -385,7 +385,7 @@ require(['jquery'], function ($)
                     {
                         open($dir, true);
                     }
-                    $dir.find('> div').css('cursor', 'pointer').click(function(e)
+                    $dir.find('> div').css('cursor', 'pointer').on('click', function(e)
                     {
                         toggle(e);
                     });
@@ -482,7 +482,9 @@ require(['jquery'], function ($)
 
                     var $target = $('<li class="activity"/>')
                         .append($($indent[0].cloneNode(false)).append($anchor));
-                    $anchor.click(function(e) { move(e) });
+                    $anchor.on('click', function(e) {
+                        move(e);
+                    });
 
                     return $target;
                 }
@@ -494,7 +496,7 @@ require(['jquery'], function ($)
                     if (to === id)
                     {
                         $cancel = create_command('cancel', 't/left');
-                        $cancel.click(function()
+                        $cancel.on('click', function()
                         {
                             move_targets.hide();
                         });
@@ -608,7 +610,8 @@ require(['jquery'], function ($)
                 }
 
                 var $cancel = create_command('cancel');
-                $cancel.click(this.hide);
+
+                $cancel.on('click', this.hide);
 
                 $clipboard = $('<div class="clipboard"/>');
                 $clipboard.append(str('clipboard') + ": ").append($view).append($cancel);
@@ -811,7 +814,7 @@ require(['jquery'], function ($)
 
                 var $edit = create_command('edit');
 
-                $edit.click(function (e)
+                $edit.on('click', function()
                 {
                     var $input = $('<input type="text" name="to"/>').val(current_path);
                     $select.remove();
@@ -823,7 +826,7 @@ require(['jquery'], function ($)
             }
 
             var $cancel = create_command('cancel');
-            $cancel.click(function ()
+            $cancel.on('click', function()
             {
                 $form.remove();
                 $commands.find('a').show();
@@ -1047,7 +1050,7 @@ require(['jquery'], function ($)
                 $.each(actions, function (index, action)
                 {
                     var $command = create_command(action);
-                    $command.click(function(e)
+                    $command.on('click', function(e)
                     {
                         $['on_' + action](e);
                     });
@@ -1104,7 +1107,7 @@ require(['jquery'], function ($)
 
                 var $backupIcon = create_backup_icon();
 
-                $backupIcon.click(function(e) {
+                $backupIcon.on('click', function(e) {
                     $.on_backup(e);
                 });
 
@@ -1128,7 +1131,7 @@ require(['jquery'], function ($)
 
                 var $backupIcon = create_backup_icon();
 
-                $backupIcon.click(function () {
+                $backupIcon.on('click', function() {
                     $.on_section_backup(sectionId, sectionNumber, courseId);
                 });
 
