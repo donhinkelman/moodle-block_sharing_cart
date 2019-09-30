@@ -100,6 +100,13 @@ Requirements
 New Versions:  Moodle 3.3 or later
 Older Versions: Moodle 2.3.1 or later, with AJAX enabled
 
+Supports
+------------
+Supported course formats
+* format_topics
+* format_grid
+* format_pxgrid
+* format_pxflexsections (from v. 2019092601)
 
 License
 -------

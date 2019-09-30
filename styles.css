@@ -30,7 +30,9 @@
 .course-content .action-menu-item .icon {
     margin-right: 0;
 }
-.format-grid #section-0 .sectionname .fa {
+.format-grid #section-0 .sectionname .fa,
+.format-pxflexsections .sectionname .fa
+{
     padding-left: 5px;
 }
 .add-to-sharing-cart {
@@ -38,6 +40,9 @@
 }
 .add-to-sharing-cart:hover {
     opacity: 1;
+}
+.format-pxflexsections .actions .add-to-sharing-cart {
+    margin-top: 3px;
 }
 .modal-bg
 {
