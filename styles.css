@@ -27,6 +27,11 @@
 .course-content h3.sectionname .inplaceeditable-text .icon {
     margin-right: 0;
 }
+.editing.format-topics .course-content h3.sectionname span,
+.editing.format-weeks .course-content h3.sectionname span {
+    width: auto;
+    float: left;
+}
 .course-content .action-menu-item .icon {
     margin-right: 0;
 }
