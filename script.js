@@ -1142,14 +1142,14 @@ require(['jquery'], function ($)
                     $.on_section_backup(sectionId, sectionNumber, courseId);
                 });
 
-                var $sectionTitle = $section.find('h3.sectionname').first();
+                var $sectionTitle = $section.find('h3.sectionname').first().find('a').last();
 
                 // Add the backup icon after the cog wheel if this is a Flexible course format
                 if (isFlexibleCourseFormat && sectionNumber === 0) {
                     $sectionTitle = $section.find('> .controls');
                     $sectionTitle.prepend($backupIcon);
                 } else {
-                    $sectionTitle.append($backupIcon);
+                    $backupIcon.insertAfter($sectionTitle);
                 }
 
                 var activitySelector = 'li.activity';

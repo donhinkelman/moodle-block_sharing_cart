@@ -27,18 +27,18 @@
 .course-content h3.sectionname .inplaceeditable-text .icon {
     margin-right: 0;
 }
-.editing.format-topics .course-content h3.sectionname span,
-.editing.format-weeks .course-content h3.sectionname span {
-    width: auto;
-    float: left;
-}
 .course-content .action-menu-item .icon {
     margin-right: 0;
 }
 .format-grid #section-0 .sectionname .fa,
-.format-pxflexsections .sectionname .fa
-{
+.format-pxflexsections .sectionname .fa {
     padding-left: 5px;
+}
+.editing.format-topics .course-content h3.sectionname .add-to-sharing-cart,
+.editing.format-weeks .course-content h3.sectionname .add-to-sharing-cart,
+.editing.format-grid .course-content h3.sectionname .add-to-sharing-cart,
+.editing.format-pxgrid .course-content h3.sectionname .add-to-sharing-cart {
+    padding-top: 15px;
 }
 .add-to-sharing-cart {
     opacity: 0.3;
