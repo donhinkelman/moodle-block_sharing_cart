@@ -106,7 +106,7 @@ Supported course formats
 * format_topics
 * format_grid
 * format_pxgrid
-* format_pxflexsections (from v. 2019100200)
+* format_pxflexsections (from v. 2019102102)
 
 License
 -------
