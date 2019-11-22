@@ -1125,6 +1125,13 @@ require(['jquery'], function ($)
 
                 var sectionId = $section.find('.section_action_menu').data('sectionid');
                 var sectionNumber = parseInt(String($section.attr('id')).match(/\d+/)[0]);
+                var isFlexibleCourseFormat = $('body[id$=flexsections]').length;
+
+                // Extract the section ID from the section if this is a Flexible
+                // course format (since this format doesn't have an action menu)
+                if (isFlexibleCourseFormat && sectionId == null) {
+                    sectionId = $section.data('section-id');
+                }
 
                 // A bit unsafe to extract the course ID from the body but it's the best option we got at the moment
                 var courseId = parseInt(String($('body').attr('class')).match(/course-([0-9]*)( |$)/)[1]);
@@ -1135,18 +1142,27 @@ require(['jquery'], function ($)
                     $.on_section_backup(sectionId, sectionNumber, courseId);
                 });
 
-                var $sectionTitle = $section.find('h3.sectionname');
-                $sectionTitle.append($backupIcon);
+                var $sectionTitle = $section.find('h3.sectionname').first().find('a').last();
 
-                var $activities = $section.find('li.activity');
+                // Add the backup icon after the cog wheel if this is a Flexible course format
+                if (isFlexibleCourseFormat && sectionNumber === 0) {
+                    $sectionTitle = $section.find('> .controls');
+                    $sectionTitle.prepend($backupIcon);
+                } else {
+                    $backupIcon.insertAfter($sectionTitle);
+                }
+
+                var activitySelector = 'li.activity';
+
+                if (isFlexibleCourseFormat) {
+                    activitySelector = 'li.activity.activity-section-' + sectionId;
+                }
+
+                var $activities = $section.find(activitySelector);
+
                 $($activities).each(function() {
                     add_activity_backup_control($(this));
                 });
-            }
-
-            // Flexible course formats are not supported. Therefore we do not add the "Copy to sharing cart" icon
-            if ($('body[id$=flexsections]').length) {
-                return false;
             }
 
             $("body.editing .course-content li.section").each(function() {
