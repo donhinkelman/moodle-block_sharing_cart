@@ -24,6 +24,7 @@ require(['jquery'], function ($)
 {
     $(document).ready(function()
     {
+
         /** @var {Object}  The icon configurations */
         var icon = {
             // actions
@@ -1084,6 +1085,25 @@ require(['jquery'], function ($)
 
         $.init_activity_commands = function()
         {
+            // PTODO: http://dst36.local:8080/lib/ajax/service.php?sesskey=Ap2u2y7yLS&info=core_course_edit_module
+            $(document).ajaxComplete(function(event, xhr, settings) {
+                var url = settings.url;
+                var lastslashindex = url.lastIndexOf('=');
+                var result = url.substring(lastslashindex  + 1);
+
+                if(result == 'core_course_edit_module'){;
+                    // var section = $(this).find("body.editing .course-content li.section");
+                    //                     // var data = JSON.parse(settings.data);
+                    //                     // var activity_id = data[0]['args']['id'];
+                    //                     //
+                    //                     // var activity = section.find("#module-"+activity_id);
+                    //                     // console.log(activity);
+                    //                     //
+                    //                     // add_activity_backup_control(activity);
+
+                    location.reload();
+                }
+            });
             /**
              * Create the backup icon
              *
