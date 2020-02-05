@@ -23,6 +23,8 @@
  */
 namespace sharing_cart;
 
+defined('MOODLE_INTERNAL') || die();
+
 use block_lp\output\summary;
 
 require_once __DIR__.'/storage.php';
