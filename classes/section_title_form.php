@@ -1,6 +1,8 @@
 <?php
 namespace sharing_cart;
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once(__DIR__ . '/../../../lib/formslib.php');
 
 class section_title_form extends \moodleform
