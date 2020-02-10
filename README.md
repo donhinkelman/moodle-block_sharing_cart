@@ -11,6 +11,8 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
+* 3.6, release 2    2020.02.10
+  * Fixed https://github.com/donhinkelman/moodle-block_sharing_cart/issues/12
 * 3.6, release 1    2019.01.20
   * No code changes, fixed text in Readme and version.php
   * Tested OK in Moodle 3.6
