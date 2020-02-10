@@ -14,6 +14,6 @@ class module{
 		global $CFG;
 
 		list($course, $cm) = get_course_and_cm_from_cmid($cmid, '', $course);
-		return is_dir($CFG->dirroot.'/mod/'.$cm->modname.'/backup');
+		return is_dir($CFG->dirroot.'/mod/'.$cm->modname.'/backup/moodle2');
 	}
 }

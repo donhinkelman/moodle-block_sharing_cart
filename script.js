@@ -1113,13 +1113,11 @@ require(['jquery','core/str'], function ($, Str)
                 )
                 .then(function(no_backup_support_string) {
 
-                    $.post('/blocks/sharing_cart/ajax/service.php', {
+                    $.post('/blocks/sharing_cart/rest.php', {
                         sesskey: M.cfg.sesskey,
                         action: 'ensure_backup_present',
-                        params: {
-                            cmid: cmid,
-                            courseid: course.id
-                        }
+                        cmid: cmid,
+                        courseid: course.id
                     }, function(response){
 
                         var $backupIcon = create_backup_icon();

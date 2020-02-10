@@ -762,4 +762,20 @@ class controller
 		}
 		return '';
 	}
+
+	/**
+	 * @param $cmid
+	 * @param $courseid
+	 * @return array
+	 * @throws \moodle_exception
+	 */
+	public function ensure_backup_in_module($cmid, $courseid){
+		return json_encode(array(
+			'http_response' => 200,
+			'message' => '',
+			'data' => array(
+				'has_backup_routine' => module::has_backup($cmid, $courseid)
+			),
+		));
+	}
 }
