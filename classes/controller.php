@@ -26,6 +26,8 @@ namespace sharing_cart;
 defined('MOODLE_INTERNAL') || die();
 
 use block_lp\output\summary;
+use block_sharing_cart\exceptions\no_backup_support_exception;
+use block_sharing_cart\module;
 
 require_once __DIR__.'/storage.php';
 require_once __DIR__.'/record.php';
@@ -169,6 +171,10 @@ class controller
 	public function backup($cmid, $userdata, $course, $section = 0)
 	{
 		global $CFG, $DB, $USER;
+
+		if(module::has_backup($cmid, $course) === false){
+			throw new no_backup_support_exception('No backup in module', 'Module not implementing: https://docs.moodle.org/dev/Backup_API');
+		}
 		
 		require_once __DIR__.'/../../../backup/util/includes/backup_includes.php';
 		
@@ -182,7 +188,7 @@ class controller
 			\require_capability('moodle/restore:userinfo', $context);
 		}
 		self::validate_sesskey();
-		
+
 		// generate a filename from the module info
 		$modtext = $cm->modname == 'label' ? self::get_cm_intro($cm) : $cm->name;
 		$cleanname = \clean_filename(strip_tags($modtext));
@@ -319,8 +325,9 @@ class controller
                 }
             }
 
+	        // Fixed ISSUE-12 - https://github.com/donhinkelman/moodle-block_sharing_cart/issues/12
             foreach ($modules as $module) {
-                if (isset($module->deletioninprogress) && $module->deletioninprogress == 1) {
+                if (isset($module->deletioninprogress) && $module->deletioninprogress == 1 || module::has_backup($module->id) === false) {
                     continue;
                 }
 
@@ -754,5 +761,21 @@ class controller
 			}
 		}
 		return '';
+	}
+
+	/**
+	 * @param $cmid
+	 * @param $courseid
+	 * @return array
+	 * @throws \moodle_exception
+	 */
+	public function ensure_backup_in_module($cmid, $courseid){
+		return json_encode(array(
+			'http_response' => 200,
+			'message' => '',
+			'data' => array(
+				'has_backup_routine' => module::has_backup($cmid, $courseid)
+			),
+		));
 	}
 }
