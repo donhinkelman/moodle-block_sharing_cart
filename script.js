@@ -944,8 +944,6 @@ require(['jquery'], function($) {
         };
 
         $.init_activity_commands = function() {
-            // PTODO: Når man bruger andre settings er det ikke sikkert sharing cart ikonet bliver tilføjet, eksempelvis ved duplicate gør den ikke.
-
             /**
              * Extract html object from area where moodle ajax was called.
              *
@@ -953,23 +951,24 @@ require(['jquery'], function($) {
              */
             $(document).one('click', '.mod-indent-outer', function(){
                 $(document).ajaxComplete(function(event, xhr, settings) {
-                    console.log('ajax kald');
 
                     var url = settings.url;
                     var lastslashindex = url.lastIndexOf('=');
                     var result = url.substring(lastslashindex + 1);
 
                     if (result === 'core_course_edit_module') {
-                        console.log('inside');
+
+                        var data = JSON.parse(settings.data);
 
                         setTimeout(function() {
-
-                            var data = JSON.parse(settings.data);
                             var activity_id = data[0].args.id;
-
                             var activity = $('#module-' + activity_id);
                             add_activity_backup_control(activity);
 
+                            if (data[0].args.action === 'duplicate'){
+                                var duplicated = activity.next();
+                                add_activity_backup_control(duplicated);
+                            }
                         }, 1);
                     }
                 });
