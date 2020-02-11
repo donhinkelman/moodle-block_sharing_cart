@@ -23,6 +23,8 @@
  */
 namespace sharing_cart;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  *  Scoped closure
  */

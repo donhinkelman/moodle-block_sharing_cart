@@ -8,6 +8,8 @@
 
 namespace sharing_cart\helpers;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Class section
  *
