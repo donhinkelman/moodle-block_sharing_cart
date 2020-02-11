@@ -945,61 +945,35 @@ require(['jquery'], function($) {
 
         $.init_activity_commands = function() {
             // PTODO: Når man bruger andre settings er det ikke sikkert sharing cart ikonet bliver tilføjet, eksempelvis ved duplicate gør den ikke.
-            var icon_link_start;
-
-            /**
-             * Store icon class on click
-             */
-            // $(document).on('click', '*[class^=editing_groups]', function() {
-            //     var module_id = $(this).closest('li').attr('id');
-            //     icon_link_start = icon_editing_group(module_id);
-            //     console.log('::Getting icon start - ONCLICK');
-            //     console.log(icon_link_start);
-            // });
 
             /**
              * Extract html object from area where moodle ajax was called.
              *
              * Call add_activity_backup_control to re append sharing cart icon.
              */
-            $(document).ajaxComplete(function(event, xhr, settings) {
+            $(document).one('click', '.mod-indent-outer', function(){
+                $(document).ajaxComplete(function(event, xhr, settings) {
+                    console.log('ajax kald');
 
-                var url = settings.url;
-                var lastslashindex = url.lastIndexOf('=');
-                var result = url.substring(lastslashindex + 1);
+                    var url = settings.url;
+                    var lastslashindex = url.lastIndexOf('=');
+                    var result = url.substring(lastslashindex + 1);
 
-                if (result === 'core_course_edit_module') {
+                    if (result === 'core_course_edit_module') {
+                        console.log('inside');
 
-                    setTimeout(function() {
+                        setTimeout(function() {
 
-                        var i = 0;
-                        var data = JSON.parse(settings.data);
-                        var activity_id = data[0].args.id;
+                            var data = JSON.parse(settings.data);
+                            var activity_id = data[0].args.id;
 
-                        var activity = $('#module-' + activity_id);
+                            var activity = $('#module-' + activity_id);
+                            add_activity_backup_control(activity);
 
-                        // var check_html_loaded = setInterval(function() {
-                            var icon_link_end = icon_editing_group('module-' + activity_id);
-                            if (icon_link_start !== icon_link_end || i === 50) {
-                                add_activity_backup_control(activity);
-                                // clearInterval(check_html_loaded);
-                            } else {
-                                i++;
-                            }
-                        // }, 1);
-
-                    }, 1);
-                }
-            });
-
-            /**
-             * Get group setting icon, to check if it has changed.
-             */
-            function icon_editing_group(module_id) {
-                return $("#" + module_id + " .action-menu.section-cm-edit-actions .action-menu-item i.icon.fa").attr('class');
-
-                return test;
-            }
+                        }, 1);
+                    }
+                });
+            })
 
             /**
              * Create the backup icon
