@@ -89,3 +89,4 @@ $string['conflict_description_note'] = '*Section summary formats (font color, im
 $string['conflict_no_overwrite'] = 'Keep the current section title <strong>"{$a}"</strong>';
 $string['conflict_overwrite_title'] = 'Change section title to <strong>"{$a}"</strong>';
 $string['conflict_submit'] = 'Continue';
+$string['no_backup_support'] = 'No backup support for this module';
