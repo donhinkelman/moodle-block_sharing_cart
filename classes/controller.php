@@ -42,10 +42,10 @@ class controller
 {
 	/** @const int  The maximum length of a backup file name */
 	const MAX_FILENAME = 20;
-	
+
 	/**
 	 *  Constructor
-	 *  
+	 *
 	 *  @throws \require_login_exception
 	 */
 	public function __construct()
@@ -56,7 +56,7 @@ class controller
 
 	/**
 	 *  Render an item tree
-	 *  
+	 *
 	 *  @global \moodle_database $DB
 	 *  @global object $USER
 	 *  @param int $userid = $USER->id
@@ -67,7 +67,7 @@ class controller
 		global $DB, $USER;
 
 		require_once __DIR__.'/renderer.php';
-		
+
 		// build an item tree from flat records
         $records = $DB->get_records('block_sharing_cart', array('userid' => $USER->id));
         foreach($records as $record)
@@ -87,7 +87,7 @@ class controller
 			} while ($dir !== '');
 			$node_ptr[] = $record;
 		}
-		
+
 		// sort tree nodes and leaves
 		$sort_node = function (array &$node) use (&$sort_node)
 		{
@@ -112,13 +112,13 @@ class controller
 			}
 		};
 		$sort_node($tree);
-		
+
 		return renderer::render_tree($tree);
 	}
-	
+
 	/**
 	 *  Get whether a module is userdata copyable and the logged-in user has enough capabilities
-	 *  
+	 *
 	 *  @param int $cmid
 	 *  @return boolean
 	 */
@@ -154,10 +154,10 @@ class controller
 
         return false;
     }
-	
+
 	/**
 	 *  Backup a module into Sharing Cart
-	 *  
+	 *
 	 *  @global object $CFG
 	 *  @global \moodle_database $DB
 	 *  @global object $USER
@@ -175,9 +175,9 @@ class controller
 		if(module::has_backup($cmid, $course) === false){
 			throw new no_backup_support_exception('No backup in module', 'Module not implementing: https://docs.moodle.org/dev/Backup_API');
 		}
-		
+
 		require_once __DIR__.'/../../../backup/util/includes/backup_includes.php';
-		
+
 		// validate parameters and capabilities
 		$cm = \get_coursemodule_from_id(null, $cmid, 0, false, MUST_EXIST);
 		$context = \context_module::instance($cm->id);
@@ -195,7 +195,7 @@ class controller
 		if ($this->get_string_length($cleanname) > self::MAX_FILENAME)
 			$cleanname = $this->get_sub_string($cleanname, 0, self::MAX_FILENAME) . '_';
 		$filename = sprintf('%s-%s.mbz', $cleanname, date('Ymd-His'));
-		
+
 		// backup the module into the predefined area
 		//    - user/backup ... if userdata not included
 		//    - backup/activity ... if userdata included
@@ -234,11 +234,11 @@ class controller
 				$plan->get_setting($name)->set_value($value);
 		}
 		$plan->get_setting('filename')->set_value($filename);
-		
+
 		set_time_limit(0);
 		$controller->set_status(\backup::STATUS_AWAITING);
 		$controller->execute_plan();
-		
+
 		// move the backup file to user/backup area if it is not in there
 		$results = $controller->get_results();
 		$file = $results['backup_destination'];
@@ -249,9 +249,9 @@ class controller
 			$storage->copy_from($file);
 			$file->delete();
 		}
-		
+
 		$controller->destroy();
-		
+
 		// insert an item record
 		$record = new record(array(
 			'modname'  => $cm->modname,
@@ -382,7 +382,7 @@ class controller
 		}
 		return $textlength;
 	}
-	
+
 	/**
 	 * Multibyte safe get_sub_string() function, uses mbstring or iconv for UTF-8, falls back to typo3.
 	 *
@@ -401,10 +401,10 @@ class controller
 		}
 		return $result;
 	}
-	
+
 	/**
 	 *  Restore an item into a course section
-	 *  
+	 *
 	 *  @global object $CFG
 	 *  @global \moodle_database $DB
 	 *  @global object $USER
@@ -416,10 +416,10 @@ class controller
 	public function restore($id, $courseid, $sectionnumber)
 	{
 		global $CFG, $DB, $USER;
-		
+
 		require_once __DIR__.'/../../../backup/util/includes/restore_includes.php';
 		require_once __DIR__.'/../backup/util/helper/restore_fix_missings_helper.php';
-		
+
 		// cleanup temporary files when we exit this scope
 		$tempfiles = array();
 		$scope = new scoped(function () use (&$tempfiles)
@@ -427,7 +427,7 @@ class controller
 			foreach ($tempfiles as $tempfile)
 				\fulldelete($tempfile);
 		});
-		
+
 		// validate parameters and capabilities
 		$record = record::from_id($id);
 		if ($record->userid != $USER->id)
@@ -439,22 +439,22 @@ class controller
 			\context_course::instance($course->id)
 			);
 		self::validate_sesskey();
-		
+
 		// prepare the temporary directory and generate a temporary name
 		$tempdir = self::get_tempdir();
 		$tempname = \restore_controller::get_tempdir_name($course->id, $USER->id);
-		
+
 		// copy the backup archive into the temporary directory
 		$storage = new storage();
 		$file = $storage->get($record->filename);
 		$file->copy_content_to("$tempdir/$tempname.mbz");
 		$tempfiles[] = "$tempdir/$tempname.mbz";
-		
+
 		// extract the archive in the temporary directory
 		$packer = \get_file_packer('application/vnd.moodle.backup');
 		$packer->extract_to_pathname("$tempdir/$tempname.mbz", "$tempdir/$tempname");
 		$tempfiles[] = "$tempdir/$tempname";
-		
+
 		// restore a module from the extracted files
 		$controller = new \restore_controller($tempname, $course->id,
 			\backup::INTERACTIVE_NO, \backup::MODE_GENERAL, $USER->id,
@@ -468,7 +468,7 @@ class controller
 		}
 		$controller->set_status(\backup::STATUS_AWAITING);
 		$controller->execute_plan();
-		
+
 		// move the restored module to desired section
 		foreach ($controller->get_plan()->get_tasks() as $task) {
 			if ($task instanceof \restore_activity_task) {
@@ -478,7 +478,7 @@ class controller
 			}
 		}
 		\rebuild_course_cache($course->id);
-		
+
 		$controller->destroy();
 	}
 
@@ -538,10 +538,10 @@ class controller
             }
         }
     }
-	
+
 	/**
 	 *  Move a shared item into a directory
-	 *  
+	 *
 	 *  @global object $USER
 	 *  @param int $id
 	 *  @param string $path
@@ -554,7 +554,7 @@ class controller
 		if ($record->userid != $USER->id)
 			throw new exception('forbidden');
 		self::validate_sesskey();
-		
+
 		$components = array_filter(explode('/', $path), 'strlen');
 		$path = implode('/', $components);
 		if (strcmp($record->tree, $path) != 0) {
@@ -563,10 +563,10 @@ class controller
 			$record->update();
 		}
 	}
-	
+
 	/**
 	 *  Move a shared item to a position of another item
-	 *  
+	 *
 	 *  @global \moodle_database $DB
 	 *  @global object $USER
 	 *  @param int $id  The record ID to move
@@ -580,25 +580,25 @@ class controller
 		if ($record->userid != $USER->id)
 			throw new exception('forbidden');
 		self::validate_sesskey();
-		
+
 		// get the weight of desired position
 		$record->weight = $to != 0
 			? record::from_id($to)->weight
 			: record::WEIGHT_BOTTOM;
-		
+
 		// shift existing items under the desired position
 		$DB->execute(
 			'UPDATE {' . record::TABLE . '} SET weight = weight + 1
 			 WHERE userid = ? AND tree = ? AND weight >= ?',
 			array($USER->id, $record->tree, $record->weight)
 			);
-		
+
 		$record->update();
 	}
-	
+
 	/**
 	 *  Delete a shared item by record ID
-	 *  
+	 *
 	 *  @global object $USER
 	 *  @param int $id
 	 *  @throws \moodle_exception
@@ -611,10 +611,10 @@ class controller
 		if ($record->userid != $USER->id)
 			throw new exception('forbidden');
 		self::validate_sesskey();
-		
+
 		$storage = new storage();
 		$storage->delete($record->filename);
-		
+
 		$record->delete();
 	}
 
@@ -631,7 +631,7 @@ class controller
             $path = substr($path, 1);
         }
 
-        $idObjects = $DB->get_records('block_sharing_cart', array('tree' => $path), '', 'id');
+        $idObjects = $DB->get_records('block_sharing_cart', array('tree' => $path, 'userid' => $USER->id), '', 'id');
 
         foreach($idObjects as $idObject)
         {
@@ -685,10 +685,10 @@ class controller
         $sections = $DB->get_records_list('block_sharing_cart_sections', 'id', $section_ids);
         return $sections;
     }
-	
+
 	/**
 	 *  Get the path to the temporary directory for backup
-	 *  
+	 *
 	 *  @global object $CFG
 	 *  @return string
 	 *  @throws exception
@@ -701,10 +701,10 @@ class controller
 			throw new exception('unexpectederror');
 		return $tempdir;
 	}
-	
+
 	/**
 	 *  Check if the given session key is valid
-	 *  
+	 *
 	 *  @param string $sesskey = \required_param('sesskey', PARAM_RAW)
 	 *  @throws exception
 	 */
@@ -718,10 +718,10 @@ class controller
 		}
 		throw new exception('invalidoperation');
 	}
-	
+
 	/**
 	 *  Get the intro HTML of the course module
-	 *  
+	 *
 	 *  @global \moodle_database $DB
 	 *  @param object $cm
 	 *  @return string
@@ -740,10 +740,10 @@ class controller
 		}
 		return $cm->extra;
 	}
-	
+
 	/**
 	 *  Get the icon for the course module
-	 *  
+	 *
 	 *  @global object $CFG
 	 *  @param object $cm
 	 *  @return string
