@@ -10,7 +10,6 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 * Moodle 1.9 => "MOODLE_19_STABLE" branch
 
 Change Log
-----------
 * 3.6, release 3    2020.02.12
     * Bugfix: When removing dir, that shared a name with another user. The sql would not check for userid.
 * 3.6, release 2    2020.02.11
