@@ -26,16 +26,41 @@ require(['jquery'], function($) {
         /** @var {Object}  The icon configurations */
         var icon = {
             // actions
-            'backup': {css: 'editing_backup', pix: 'i/backup'},
-            'movedir': {css: 'editing_right', pix: 't/right'},
-            'move': {css: 'editing_move_', pix: 't/move'},
-            'edit': {css: 'editing_update', pix: 't/edit'},
-            'cancel': {css: 'editing_cancel', pix: 't/delete'},
-            'delete': {css: 'editing_update', pix: 't/delete'},
-            'restore': {css: 'editing_restore', pix: 'i/restore'},
+            'backup': {
+                css: 'editing_backup',
+                iconClass: 'i/backup',
+                },
+            'movedir': {
+                css: 'editing_right',
+                iconClass: 'fa fa-arrow-right',
+                },
+            'move': {
+                css: 'editing_move_',
+                iconClass: 'fa fa-arrows-v',
+                },
+            'edit': {
+                css: 'editing_update',
+                iconClass: 't/edit',
+                },
+            'cancel': {
+                css: 'editing_cancel',
+                iconClass: 't/delete',
+                },
+            'delete': {
+                css: 'editing_update',
+                iconClass: 'fa fa-trash',
+                },
+            'restore': {
+                css: 'editing_restore',
+                iconClass: 'fa fa-clone',
+                },
             // directories
-            'dir-open': {pix: 'f/folder-open'},
-            'dir-closed': {pix: 'f/folder'}
+            'dir-open': {
+                iconClass: 'fa fa-folder-open'
+            },
+            'dir-closed': {
+                iconClass: 'fa fa-folder'
+            },
         };
 
         /** @var {Node}  The Sharing Cart block container node */
@@ -321,8 +346,8 @@ require(['jquery'], function($) {
             }
 
             function open($dir, visible) {
-                var pix = icon[visible ? 'dir-open' : 'dir-closed'].pix;
-                $dir.find('> div img').first().attr('src', M.util.image_url(pix));
+                var pix = icon[visible ? 'dir-open' : 'dir-closed'].iconClass;
+                $dir.find('> div img').attr('class', pix);
                 $dir.find('> ul.list')[visible ? 'show' : 'hide']();
             }
 
