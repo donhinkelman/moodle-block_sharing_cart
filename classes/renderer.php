@@ -168,26 +168,22 @@ class renderer
 
 		if ($item->modname === 'label')
 			return '';
-		//$src = '<img class="activityicon iconsmall iconcustom" src="' . s($OUTPUT->image_url('icon', $item->modname)) . '" alt="" />';
-		$src = '<i class="fa fa-arrow-right"></i>';
+		$src = '<img class="activityicon iconsmall iconcustom" src="' . s($OUTPUT->image_url('icon', $item->modname)) . '" alt="" />';
 		if (!empty($item->modicon)) {
 			// @see /lib/modinfolib.php#get_icon_url()
 			if (strncmp($item->modicon, 'mod/', 4) == 0) {
 				list ($modname, $iconname) = explode('/', substr($item->modicon, 4), 2);
-				//$src = $OUTPUT->image_icon($iconname, $modname);
-                $src = '<i></i>';
+				$src = $OUTPUT->image_icon($iconname, $modname);
             } else {
-				//$src = $OUTPUT->image_icon($item->modicon, 'modicon');
-                $src = '<i></i>';
+				$src = $OUTPUT->image_icon($item->modicon, 'modicon');
 			}
 		}
 		return $src;
-//		return '<img class="activityicon iconsmall iconcustom" src="' . s($src) . '" alt="" />';
 	}
 
 	public static function render_label($modtext)
 	{
-//		preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $modtext, $result);
+//		preg_match('/<1img(.*)src(.*)=(.*)"(.*)"/U', $modtext, $result);
 //		$img_src = array_pop($result);
 //
 //		if (!empty($img_src)) {

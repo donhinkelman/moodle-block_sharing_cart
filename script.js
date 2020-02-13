@@ -28,7 +28,7 @@ require(['jquery'], function($) {
             // actions
             'backup': {
                 css: 'editing_backup',
-                iconClass: 'i/backup',
+                iconClass: 'fa fa-frown-o',
                 },
             'movedir': {
                 css: 'editing_right',
@@ -40,11 +40,11 @@ require(['jquery'], function($) {
                 },
             'edit': {
                 css: 'editing_update',
-                iconClass: 't/edit',
+                iconClass: 'fa fa-pencil',
                 },
             'cancel': {
                 css: 'editing_cancel',
-                iconClass: 't/delete',
+                iconClass: 'fa fa-ban',
                 },
             'delete': {
                 css: 'editing_update',
@@ -170,18 +170,18 @@ require(['jquery'], function($) {
          *  @param {String} name  The command name, predefined in icon
          *  @param {String} [pix] The icon pix name to override
          */
-        function create_command(name, pix) {
-            var imageelement = $('<img class="iconsmall "/>')
+        function create_command(name) {
+            var iconElement = $('<i/>')
                 .attr('alt', str(name))
-                .attr('src', M.util.image_url(pix || icon[name].pix));
-            if (verify_layout()) {
-                imageelement.addClass('iconcustom');
-            }
+                .attr('class', icon[name].iconClass);
+            // if (verify_layout()) {
+            //     iconElement.addClass('iconcustom');
+            // }
 
             return $('<a href="javascript:void(0)"/>')
                 .addClass(icon[name].css)
                 .attr('title', str(name))
-                .append(imageelement);
+                .append(iconElement);
         }
 
         /**
@@ -346,8 +346,8 @@ require(['jquery'], function($) {
             }
 
             function open($dir, visible) {
-                var pix = icon[visible ? 'dir-open' : 'dir-closed'].iconClass;
-                $dir.find('> div img').attr('class', pix);
+                var iconElement = icon[visible ? 'dir-open' : 'dir-closed'].iconClass;
+                $dir.find('> div i.icon').attr('class', iconElement);
                 $dir.find('> ul.list')[visible ? 'show' : 'hide']();
             }
 
@@ -558,7 +558,7 @@ require(['jquery'], function($) {
             };
 
             /**
-             *  Show restore targets for a given item
+             *
              *
              *  @param {int} id  The item ID
              */
@@ -570,9 +570,9 @@ require(['jquery'], function($) {
                 if (this.is_directory) {
                     $view.html(id).css('display', 'inline');
                     $view.prepend(
-                        $("<img/>").addClass("icon")
+                        $("<i/>").addClass("icon")
                             .attr("alt", id)
-                            .attr("src", M.util.image_url(icon['dir-closed'].pix, null))
+                            // .attr("src", M.util.image_url(icon['dir-closed'].pix, null))
                     );
                 } else {
                     var $item = $block.find('#block_sharing_cart-item-' + id);

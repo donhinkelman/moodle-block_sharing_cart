@@ -1,3 +1,71 @@
-img.iconcustom {margin: 0; padding: 0.3em; width: 20px; height: 20px;}
-.header-commands {margin-top: 5px;}
-.header-commands img {margin-left: 0 !important;}
+/*div.card-text ul.tree li {
+    padding: 5px;
+}*/
+
+div.card-text ul.tree li:hover {
+    background-color: rgba(0,0,0,.05);
+}
+div.card-text ul.tree li.directory > div{
+    margin-top: 5px;
+    padding: 5px;
+}
+
+div.card-text ul.tree li.activity{
+    padding: 5px;
+}
+
+div.card-text ul.tree li.activity > div{
+    padding: 0;
+}
+
+ul.tree li > div{
+    display: flex;
+}
+
+ul.tree li > div .instancename{
+    display: flex;
+}
+
+ul.tree li > div form{
+    display: flex;
+}
+
+ul.tree li img.activityicon {
+    height: 16px;
+    width: 16px;
+    margin: auto 5px auto 0;
+}
+span.commands{
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+span.commands form {
+     display: flex;
+     margin-bottom: 0;
+ }
+
+span.commands form select{
+    height: auto;
+}
+
+span.commands i.fa {
+    margin: 0;
+    padding: 0.3em;
+    width: 20px;
+    height: 20px;
+    color: #373a3c;
+}
+
+span.commands i.fa:hover {
+    cursor: pointer;
+}
+
+/* IKKE VORES - RYD OP */
+.header-commands {
+    margin-top: 5px;
+}
+.header-commands img {
+    margin-left: 0 !important;
+}
