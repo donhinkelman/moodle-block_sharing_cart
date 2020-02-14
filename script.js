@@ -693,6 +693,7 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
          *  @param {DOMEventFacade} e
          */
         $.on_movedir = function(e) {
+            console.log('test');
             var $commands = $(e.target).closest('.commands');
 
             var $current_dir = $commands.closest('li.directory');
@@ -705,7 +706,7 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
                 dirs.push($(this).attr('directory-path'));
             });
 
-            var $form = $('<form/>').css('display', 'inline');
+            var $form = $('<form/>');
             $form.attr('action', 'javascript:void(0)');
 
             function submit() {
@@ -729,11 +730,11 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
             $form.submit(submit);
 
             if (dirs.length === 0) {
-                $form.append($('<input type="text" name="to"/>').val(current_path));
+                $form.append($('<input class="form-control" type="text" name="to"/>').val(current_path)).focus();
             } else {
                 dirs.unshift('/');
 
-                var $select = $('<select name="to"/>');
+                var $select = $('<select class="custom-select" name="to"/>');
                 for (var i = 0; i < dirs.length; i++) {
                     $select.append($('<option/>').val(dirs[i]).append(dirs[i]));
                 }
@@ -784,7 +785,6 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
          *  @param {DOMEventFacade} e
          */
         $.on_delete = function(e) {
-            return;
             var $item = $(e.target).closest('li');
             var liText = $item[0].innerText;
             var isDirectory = false;

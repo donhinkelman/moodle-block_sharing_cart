@@ -1,6 +1,6 @@
 /**
  *  Sharing Cart
- *  
+ *
  *  @author  VERSION2, Inc.
  *  @version $Id: module.js 938 2013-03-27 07:06:39Z malu $
  */
@@ -47,7 +47,7 @@ YUI.add('block_sharing_cart', function (Y)
 
         /**
          *  Returns a localized string
-         *  
+         *
          *  @param {String} identifier
          *  @return {String}
          */
@@ -59,7 +59,7 @@ YUI.add('block_sharing_cart', function (Y)
 
         /**
          *  Shows an error message with given Ajax error
-         *  
+         *
          *  @param {Object} response  The Ajax response
          */
         function show_error(response)
@@ -83,7 +83,7 @@ YUI.add('block_sharing_cart', function (Y)
 
         /**
          *  Get an action URL
-         *  
+         *
          *  @param {String} name   The action name
          *  @param {Object} [args] The action parameters
          *  @return {String}
@@ -99,10 +99,10 @@ YUI.add('block_sharing_cart', function (Y)
             }
             return url;
         }
-        
+
         /**
          *  Check special layout (theme boost)
-         *  
+         *
          *  @return {Boolean}
          */
         function verify_layout()
@@ -113,7 +113,7 @@ YUI.add('block_sharing_cart', function (Y)
 
         /**
          *  Create a command icon
-         *  
+         *
          *  @param {String} name  The command name, predefined in icon
          *  @param {String} [pix] The icon pix name to override
          */
@@ -155,7 +155,7 @@ YUI.add('block_sharing_cart', function (Y)
 
         /**
          *  Backup an activity
-         *  
+         *
          *  @param {Integer} cmid
          *  @param {Boolean} userdata
          */
@@ -182,7 +182,7 @@ YUI.add('block_sharing_cart', function (Y)
         var move_targets = new function ()
         {
             var $cancel = null, targets = [];
-            
+
             /**
              *  Hide move targets
              */
@@ -200,18 +200,18 @@ YUI.add('block_sharing_cart', function (Y)
             }
             /**
              *  Show move targets for a given item
-             *  
+             *
              *  @param {Integer} id  The item ID
              */
             this.show = function (id)
             {
                 this.hide();
-                
+
                 function move(e)
                 {
                     var m = e.target.ancestor('a').get('className').match(/move-(\d+)-to-(\d+)/);
                     var id = m[1], to = m[2];
-                    
+
                     Y.io(get_action_url('rest'), {
                         method: 'POST',
                         data: { 'action': 'move', 'id': id, 'to': to, 'sesskey': M.cfg.sesskey },
@@ -221,14 +221,14 @@ YUI.add('block_sharing_cart', function (Y)
                         }
                     });
                 }
-                
+
                 var $current = $block.one('#block_sharing_cart-item-' + id);
                 var $indent = $current.one('div');
                 var $next = $current.next();
                 var $list = $current.ancestor('ul');
-                
+
                 var next_id = $next ? $next.get('id').match(/item-(\d+)$/)[1] : 0;
-                
+
                 function create_target(id, to)
                 {
                     var $anchor = Y.Node.create('<a href="javascript:void(0)"/>')
@@ -274,7 +274,7 @@ YUI.add('block_sharing_cart', function (Y)
         var restore_targets = new function ()
         {
             var $clipboard = null, targets = [];
-            
+
             function create_target(id, section)
             {
                 var href = get_action_url('restore', {
@@ -294,7 +294,7 @@ YUI.add('block_sharing_cart', function (Y)
                 targets.push($target);
                 return $target;
             }
-            
+
             /**
              *  Hide restore targets
              */
@@ -309,15 +309,15 @@ YUI.add('block_sharing_cart', function (Y)
             }
             /**
              *  Show restore targets for a given item
-             *  
+             *
              *  @param {Integer} id  The item ID
              */
             this.show = function (id)
             {
                 this.hide();
-                
+
                 var $item = $block.one('#block_sharing_cart-item-' + id);
-                
+
                 $clipboard = Y.Node.create('<div class="clipboard"/>');
                 var $cancel = create_command('cancel');
                 var $view = $item.one('div').cloneNode(true).setStyle('display', 'inline');
@@ -325,7 +325,7 @@ YUI.add('block_sharing_cart', function (Y)
                 $view.one('.commands').remove();
                 $cancel.on('click', this.hide, this);
                 $clipboard.append(str('clipboard') + ':').append($view).append($cancel);
-                
+
                 if (course.is_frontpage) {
                     var $sitetopic = Y.Node.one('.sitetopic');
                     var $mainmenu = Y.Node.one('.block_site_main_menu');
@@ -356,9 +356,9 @@ YUI.add('block_sharing_cart', function (Y)
         var directories = new function ()
         {
             var KEY = 'block_sharing_cart-dirs';
-            
+
             var opens = (Y.Cookie.get(KEY) + '').split(',').map(function (v) { return parseInt(v); });
-            
+
             function save()
             {
                 var expires = new Date();
@@ -376,12 +376,12 @@ YUI.add('block_sharing_cart', function (Y)
                 var $dir = e.target.ancestor('li.directory');
                 var i = $dir.get('id').match(/(\d+)$/)[1];
                 var v = $dir.one('> ul.list').getStyle('display') == 'none';
-                
+
                 open($dir, v);
                 opens[i] = v ? 1 : 0;
                 save();
             }
-            
+
             /**
              *  Initialize directory states
              */
@@ -416,13 +416,13 @@ YUI.add('block_sharing_cart', function (Y)
         this.init = function ()
         {
             M.str.block_sharing_cart['pluginname'] = this.get_plugin_name();
-            
+
             // arrange header icons (bulkdelete, help)
             this.init_block_header();
             this.init_item_tree();
             this.init_activity_commands();
         }
-        
+
 		/**
          *  Initialize the Sharing Cart block header
          */
@@ -432,7 +432,7 @@ YUI.add('block_sharing_cart', function (Y)
             this.init_bulk_delete(isspeciallayout);
             this.init_help_icon(isspeciallayout);
         }
-        
+
 		/**
          *  Initialize the delete bulk
          */
@@ -450,7 +450,7 @@ YUI.add('block_sharing_cart', function (Y)
                 }
             }
         }
-        
+
         /**
          *  Initialize the help icon
          */
@@ -465,7 +465,7 @@ YUI.add('block_sharing_cart', function (Y)
                 $block.one('.header .commands').append(helpicon);
             }
         }
-        
+
         /**
          *  Get plugin name
          */
@@ -487,7 +487,7 @@ YUI.add('block_sharing_cart', function (Y)
 
         /**
          *  On backup command clicked
-         *  
+         *
          *  @param {DOMEventFacade} e
          */
         this.on_backup = function (e)
@@ -503,7 +503,7 @@ YUI.add('block_sharing_cart', function (Y)
                     return dataowner.match(/(\d+)$/)[1];
                 return $commands.one('a.editing_delete').get('href').match(/delete=(\d+)/)[1];
             })(e.target);
-            
+
             (function (on_success)
             {
                 Y.io(get_action_url('rest'), {
@@ -559,24 +559,24 @@ YUI.add('block_sharing_cart', function (Y)
 
         /**
          *  On movedir command clicked
-         *  
+         *
          *  @param {DOMEventFacade} e
          */
         this.on_movedir = function (e)
         {
             var $commands = e.target.ancestor('.commands');
-            
+
             var $current_dir = $commands.ancestor('li.directory');
             var current_path = $current_dir ? $current_dir.one('div').get('title') : '/';
-            
+
             var id = e.target.ancestor('li.activity').get('id').match(/(\d+)$/)[1];
-            
+
             var dirs = [];
             $block.all('li.directory').each(function ()
             {
                 dirs.push(this.one('div').get('title'));
             });
-            
+
             var $form = Y.Node.create('<form/>').setStyle('display', 'inline');
             $form.set('action', 'javascript:void(0)');
             function submit(e)
@@ -606,7 +606,7 @@ YUI.add('block_sharing_cart', function (Y)
                 }
                 $select.on('change', submit);
                 $form.append($select);
-                
+
                 var $edit = create_command('edit');
                 $edit.on('click', function (e)
                 {
@@ -624,7 +624,7 @@ YUI.add('block_sharing_cart', function (Y)
                 $commands.all('a').show();
             });
             $form.append($cancel);
-            
+
             //$commands.all('a').hide();
             $commands.all('a').each(function () { this.hide(); });
             $commands.append($form);
@@ -632,32 +632,32 @@ YUI.add('block_sharing_cart', function (Y)
 
         /**
          *  On move command clicked
-         *  
+         *
          *  @param {DOMEventFacade} e
          */
         this.on_move = function (e)
         {
             var $item = e.target.ancestor('li.activity');
             var id = $item.get('id').match(/(\d+)$/)[1];
-            
+
             move_targets.show(id);
         }
 
         /**
          *  On delete command clicked
-         *  
+         *
          *  @param {DOMEventFacade} e
          */
         this.on_delete = function (e)
         {
             if (!confirm(str('confirm_delete')))
                 return;
-            
+
             var $item = e.target.ancestor('li.activity');
             var id = $item.get('id').match(/(\d+)$/)[1];
-            
+
             var $spinner = M.util.add_spinner(Y, e.target.ancestor('.commands'));
-            
+
             Y.io(get_action_url('rest'), {
                 method: 'POST',
                 data: { 'action': 'delete', 'id': id, 'sesskey': M.cfg.sesskey },
@@ -673,14 +673,14 @@ YUI.add('block_sharing_cart', function (Y)
 
         /**
          *  On restore command clicked
-         *  
+         *
          *  @param {DOMEventFacade} e
          */
         this.on_restore = function (e)
         {
             var $item = e.target.ancestor('li.activity');
             var id = $item.get('id').match(/(\d+)$/)[1];
-            
+
             restore_targets.show(id);
         }
 
@@ -692,7 +692,7 @@ YUI.add('block_sharing_cart', function (Y)
             var actions = [ 'movedir', 'move', 'delete' ];
             if (course)
                 actions.push('restore');
-            
+
             // initialize items
             $block.all('li.activity').each(function ($item)
             {
@@ -704,7 +704,7 @@ YUI.add('block_sharing_cart', function (Y)
                     $commands.append($command);
                 }, this);
             }, this);
-            
+
             // initialize directories
             directories.init();
         }
@@ -750,10 +750,10 @@ YUI.add('block_sharing_cart', function (Y)
                 Y.Node.all('.course-content li.activity').each(add_backup_command, this);
             }
         }
-        
+
         /**
          *  Create a command icon for moodle 3.2
-         *  
+         *
          *  @param {String} name  The command name, predefined in icon
          *  @param {String} [pix] The icon pix name to override
          */
@@ -773,7 +773,7 @@ YUI.add('block_sharing_cart', function (Y)
 
     /**
      *  Yes/No/Cancel confirmation dialogue
-     *  
+     *
      *  @see /enrol/yui/notification/notification.js
      */
     var YESNOCANCEL = function (config)
