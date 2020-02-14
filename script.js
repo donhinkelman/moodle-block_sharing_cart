@@ -56,10 +56,10 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
                 },
             // Directories
             'dir-open': {
-                iconClass: 'fa fa-folder-open'
+                iconClass: 'fa fa-folder-open-o'
             },
             'dir-closed': {
-                iconClass: 'fa fa-folder'
+                iconClass: 'fa fa-folder-o'
             },
         };
 
@@ -347,7 +347,7 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
 
             function open($dir, visible) {
                 var iconElement = icon[visible ? 'dir-open' : 'dir-closed'].iconClass;
-                $dir.find('> div i.icon').attr('class', iconElement);
+                $dir.find('> div i.icon').attr('class', 'icon ' + iconElement);
                 $dir.find('> ul.list')[visible ? 'show' : 'hide']();
             }
 
@@ -374,7 +374,7 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
                     } else if (opens[i]) {
                         open($dir, true);
                     }
-                    $dir.find('> div').css('cursor', 'pointer').on('click', function(e) {
+                    $dir.find('> div div.toggle-wrapper').css('cursor', 'pointer').on('click', function(e) {
                         toggle(e);
                     });
                     i++;
@@ -784,18 +784,21 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
          *  @param {DOMEventFacade} e
          */
         $.on_delete = function(e) {
+            return;
             var $item = $(e.target).closest('li');
             var liText = $item[0].innerText;
             var isDirectory = false;
             var modalBody;
 
+            console.log($item);
+            console.log($item[0].innerHTML);
+
             var ul = $('<ul></ul>');
 
             if ($item.hasClass("directory")) {
                 isDirectory = true;
-                console.log($item[0].outerHTML);
                 $item.find('li').each(function(i, elm){
-                    // window.console.log($(elm).text());
+                    window.console.log($(elm));
                     var item = $('<li></li>').append($(elm).text());
                     ul.append(item);
                 });
@@ -828,6 +831,7 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
             });
 
             // Remove this to continue with delete action.
+            return;
 
             // Var $item = $(e.target).closest('li');
             var data = {};

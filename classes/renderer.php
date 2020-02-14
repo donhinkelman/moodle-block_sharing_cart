@@ -96,14 +96,16 @@ class renderer
         {
             $coursename = ' [' . get_string("variouscourse", "block_sharing_cart") . ']';
         }
-
+//      ' . $OUTPUT->image_icon('f/folder', 'folder') . '
 		$components = explode('/', trim($path, '/'));
 		$depth = count($components) - 1;
 		return '
 		<li class="directory" directory-path="' . s($path) . '">
 			<div class="sc-indent-' . $depth . '" title="' . s($path) . $coursename . '">
-				 ' . $OUTPUT->image_icon('f/folder', 'folder') . '
-				<span class="instancename">' . format_string(end($components)) . '</span>
+			    <div class="toggle-wrapper">
+                    <i class="icon fa fa-folder-o" alt=""></i>
+                    <span class="instancename">' . format_string(end($components)) . '</span>			    
+                </div>
                 <span class="commands"></span>
 			</div>
 			<ul class="list" style="display:none;">';

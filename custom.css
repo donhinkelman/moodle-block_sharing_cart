@@ -17,6 +17,9 @@ div.card-text ul.tree li.activity{
 div.card-text ul.tree li.activity > div{
     padding: 0;
 }
+ul.tree li.directory i.icon{
+    margin-top: 2px;
+}
 
 ul.tree li > div{
     display: flex;
@@ -99,6 +102,10 @@ div.card-text ul.list li.move-to {
     text-align: center;
     margin: 5px;
     color: #9b9d9e;
+}
+
+.toggle-wrapper {
+    width: 100%;
 }
 
 /* IKKE VORES - RYD OP */
