@@ -44,6 +44,7 @@ $string['sharing_cart:addinstance'] = '新しい共有カートブロックを�
 $string['backup'] = '共有カートへコピー';
 $string['restore'] = 'コースへコピー';
 $string['movedir'] = 'フォルダ移動';
+$string['click_to_move'] = 'Click to move here (Translation missing)';
 $string['copyhere'] = 'ここにコピー';
 $string['notarget'] = 'ターゲットが見つかりません';
 $string['clipboard'] = 'この共有アイテムをコピーする';

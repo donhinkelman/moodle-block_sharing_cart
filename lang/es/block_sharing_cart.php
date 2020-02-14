@@ -45,6 +45,7 @@ $string['sharing_cart:addinstance'] = 'Añadir un nuevo bloque bolsa de recursos
 $string['backup'] = 'Copiar a la bolsa de recursos';
 $string['restore'] = 'Copiar al curso';
 $string['movedir'] = 'Mover al curso';
+$string['click_to_move'] = 'Click to move here (Translation missing)';
 $string['copyhere'] = 'Copiar aquí';
 $string['notarget'] = 'Destino no encontrado';
 $string['clipboard'] = 'Copiar este item compartido';

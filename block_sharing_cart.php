@@ -59,7 +59,7 @@ class block_sharing_cart extends block_base
 
 	/**
 	 *  Get the block content
-	 *  
+	 *
 	 *  @global object $CFG
 	 *  @global object $USER
 	 *  @return object|string
@@ -67,20 +67,20 @@ class block_sharing_cart extends block_base
 	public function get_content()
 	{
 		global $CFG, $USER;
-		
+
 		if ($this->content !== null)
 			return $this->content;
-		
+
 		if (!$this->page->user_is_editing())
 			return $this->content = '';
-		
+
 		$context = context_course::instance($this->page->course->id);
 		if (!has_capability('moodle/backup:backupactivity', $context))
 			return $this->content = '';
-		
+
 		$controller = new sharing_cart\controller();
 		$html = $controller->render_tree($USER->id);
-		
+
         /* Place the <noscript> tag to give out an error message if JavaScript is not enabled in the browser.
          * Adding bootstrap classes to show colored info in bootstrap based themes. */
         $noscript = html_writer::tag('noscript',
@@ -89,7 +89,7 @@ class block_sharing_cart extends block_base
         $html = $noscript . $html;
 
         $html .= '<div class="modal-bg" style="display: none;" id="sharing-cart-spinner-modal"><div class="spinner-container"><div style="margin-top: 10px;">' . get_string('inprogess_pleasewait', 'block_sharing_cart') . '</div></div></div>';
-		
+
 		$this->page->requires->css('/blocks/sharing_cart/styles.css');
 		if ($this->is_special_version()) {
 			$this->page->requires->css('/blocks/sharing_cart/custom.css');
@@ -104,10 +104,10 @@ class block_sharing_cart extends block_base
 			);
 		$this->page->requires->strings_for_js(
 			array('copyhere', 'notarget', 'backup', 'restore', 'movedir', 'clipboard',
-					'confirm_backup', 'confirm_backup_section', 'confirm_userdata', 'confirm_userdata_section', 'confirm_delete'),
+					'confirm_backup', 'confirm_backup_section', 'confirm_userdata', 'confirm_userdata_section', 'confirm_delete', 'clicktomove'),
 			__CLASS__
 			);
-		
+
 		$footer = '<div style="display:none;">'
 				. '<div class="header-commands">' . $this->get_header() . '</div>'
 				. '</div>';
@@ -116,7 +116,7 @@ class block_sharing_cart extends block_base
 
 	/**
 	 *  Get the block header
-	 *  
+	 *
 	 *  @global core_renderer $OUTPUT
 	 *  @return string
 	 */
@@ -127,30 +127,30 @@ class block_sharing_cart extends block_base
 		$alt = get_string('bulkdelete', __CLASS__);
 		$src = $OUTPUT->image_url('bulkdelete', __CLASS__);
 		$url = new moodle_url('/blocks/sharing_cart/bulkdelete.php', array('course' => $this->page->course->id));
-		
+
 		return $this->get_bulk_delete($src, $alt, $url) . $this->get_help_icon();
 	}
-	
+
 	/**
 	 *  Get bulk delete
-	 *  
+	 *
 	 *  @param string $src
 	 *  @param string $alt
 	 *  @param moodle_url $url
 	 *  @return string
 	 */
 	private function get_bulk_delete($src, $alt, $url)
-	{	
+	{
 		$bulkdelete = '<a class="editing_bulkdelete" title="' . s($alt) . '" href="' . s($url) . '">'
 		        . '<img src="' . s($src) . '" alt="' . s($alt) . '" />'
 		                . '</a>';
-		
+
 		return $bulkdelete;
 	}
-	
+
 	/**
 	 *  Get help icon
-	 *  
+	 *
 	 *  @return string
 	 */
 	private function get_help_icon()
@@ -160,10 +160,10 @@ class block_sharing_cart extends block_base
 		$helpicon = str_replace('class="', 'class="help-icon ', $helpicon);
 		return $helpicon;
 	}
-	
+
 	/**
 	 *  Check Moodle 3.2 or later
-	 * 
+	 *
 	 *  @return boolean
 	 */
 	private function is_special_version()
@@ -173,14 +173,14 @@ class block_sharing_cart extends block_base
 
 	/**
 	 *  Get the block content for no-AJAX
-	 *  
+	 *
 	 *  @global core_renderer $OUTPUT
 	 *  @return string
 	 */
 	private function get_content_noajax()
 	{
 		global $OUTPUT;
-		
+
 		$html = '<div class="error">' . get_string('requireajax', __CLASS__) . '</div>';
 		if (has_capability('moodle/site:config', context_system::instance())) {
 			$url = new moodle_url('/admin/settings.php?section=ajax');

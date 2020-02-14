@@ -3,7 +3,7 @@
 }*/
 
 div.card-text ul.tree li:hover {
-    background-color: rgba(0,0,0,.05);
+    background-color: rgba(0,0,0,.03);
 }
 div.card-text ul.tree li.directory > div{
     margin-top: 5px;
@@ -24,6 +24,11 @@ ul.tree li > div{
 
 ul.tree li > div .instancename{
     display: flex;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    display: inline-block;
+    padding-right: 5px;
 }
 
 ul.tree li > div form{
@@ -33,7 +38,7 @@ ul.tree li > div form{
 ul.tree li img.activityicon {
     height: 16px;
     width: 16px;
-    margin: auto 5px auto 0;
+    margin: 2px 5px auto 0;
 }
 span.commands{
     margin-left: auto;
@@ -60,6 +65,41 @@ span.commands i.fa {
 
 span.commands i.fa:hover {
     cursor: pointer;
+}
+
+.label {
+    font-weight: 400;
+}
+
+.label div span img {
+    max-width: 200;
+    width: auto;
+    max-height: 100px;
+    height: auto;
+}
+
+ul.list li.move-to {
+    border: #c9cacb 2px dashed;
+    padding: 0;
+    margin: 5px;
+}
+
+.move-to a {
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+    padding: 5px;
+}
+
+.move-to a:hover {
+    text-decoration: none;
+}
+
+.move-to p {
+    height: 100%;
+    text-align: center;
+    margin: 5px;
+    color: #9b9d9e;
 }
 
 /* IKKE VORES - RYD OP */

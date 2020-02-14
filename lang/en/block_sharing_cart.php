@@ -45,6 +45,7 @@ $string['sharing_cart:addinstance'] = 'Add a new Sharing Cart block';
 $string['backup'] = 'Copy to Sharing Cart';
 $string['restore'] = 'Copy to course';
 $string['movedir'] = 'Move into folder';
+$string['clicktomove'] = 'Click to move here';
 $string['copyhere'] = 'Copy here';
 $string['notarget'] = 'Target not found';
 $string['clipboard'] = 'Copying this shared item';

@@ -34,7 +34,7 @@ class renderer
 {
 	/**
 	 *  Render an item tree
-	 *  
+	 *
 	 *  @param array & $tree
 	 *  @return string
 	 */
@@ -47,7 +47,7 @@ class renderer
 
 	/**
 	 *  Render a node of item tree
-	 *  
+	 *
 	 *  @param array & $node
 	 *  @param string  $path
 	 *  @return string
@@ -70,7 +70,7 @@ class renderer
 	}
 	/**
 	 *  Render a directory open
-	 *  
+	 *
 	 *  @global \core_renderer $OUTPUT
 	 *  @param string $path
      *  @param $leaf
@@ -110,7 +110,7 @@ class renderer
 	}
 	/**
 	 *  Render an item
-	 *  
+	 *
 	 *  @param string $path
 	 *  @param record $item
 	 *  @return string
@@ -129,11 +129,6 @@ class renderer
 
         $title = html_to_text($item->modtext) . $coursename;
 
-        if ($item->modname == 'label')
-        {
-            $item->modtext = self::render_label($item->modtext);
-        }
-
 		return '
 				<li class="activity ' . $class . '" id="block_sharing_cart-item-' . $item->id . '">
 					<div class="sc-indent-' . $depth . '" title="' . $title . '">
@@ -145,7 +140,7 @@ class renderer
 	}
 	/**
 	 *  Render a directory close
-	 *  
+	 *
 	 *  @return string
 	 */
 	private static function render_dir_close()
@@ -157,7 +152,7 @@ class renderer
 
 	/**
 	 *  Render a module icon
-	 *  
+	 *
 	 *  @global \core_renderer $OUTPUT
 	 *  @param object $item
 	 *  @return string
@@ -166,8 +161,6 @@ class renderer
 	{
 		global $OUTPUT;
 
-		if ($item->modname === 'label')
-			return '';
 		$src = '<img class="activityicon iconsmall iconcustom" src="' . s($OUTPUT->image_url('icon', $item->modname)) . '" alt="" />';
 		if (!empty($item->modicon)) {
 			// @see /lib/modinfolib.php#get_icon_url()

@@ -20,7 +20,7 @@
  *  @copyright  2017 (C) VERSION2, INC.
  *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require(['jquery'], function($) {
+require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
     $(document).ready(function() {
 
         /** @var {Object}  The icon configurations */
@@ -459,13 +459,12 @@ require(['jquery'], function($) {
                         .addClass('move-' + id + '-to-' + to)
                         .attr('title', str('movehere'))
                         .append(
-                            $('<img class="move_target"/>')
+                            $('<p>' + str('clicktomove') + '</p>')
                                 .attr('alt', str('movehere'))
-                                .attr('src', M.util.image_url('dropzone_arrow', 'block_sharing_cart'))
                         );
 
-                    var $target = $('<li class="activity"/>')
-                        .append($($indent[0].cloneNode(false)).append($anchor));
+                    var $target = $('<li class="activity move-to"/>')
+                        .append($anchor);
                     $anchor.on('click', function(e) {
                         move(e);
                     });
@@ -785,9 +784,24 @@ require(['jquery'], function($) {
          *  @param {DOMEventFacade} e
          */
         $.on_delete = function(e) {
-            if (!confirm(str('confirm_delete'))) {
-                return;
-            }
+            var $item = $(e.target).closest('li');
+
+            // PTODO: Update to moodle modal.
+            var trigger = $('#create-modal');
+            ModalFactory.create({
+                type: ModalFactory.types.SAVE_CANCEL,
+                title: str('confirm_delete'),
+                // Get label / Activity name to show in body.
+                body: '123',
+            }, trigger).done(function(modal) {
+                // Figure out what is returned on cancel and continue buttons.
+                // How to change text on buttons?
+                console.log(modal);
+                modal.show();
+            });
+
+            // Remove this to continue with delete action.
+            return;
 
             var $item = $(e.target).closest('li');
             var data = {};
