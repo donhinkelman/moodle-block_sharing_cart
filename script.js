@@ -25,7 +25,7 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
 
         /** @var {Object}  The icon configurations */
         var icon = {
-            // actions
+            // Actions
             'backup': {
                 css: 'editing_backup',
                 iconClass: 'fa fa-frown-o',
@@ -54,7 +54,7 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
                 css: 'editing_restore',
                 iconClass: 'fa fa-clone',
                 },
-            // directories
+            // Directories
             'dir-open': {
                 iconClass: 'fa fa-folder-open'
             },
@@ -80,7 +80,7 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
             var body = $('body');
             this.id = body.attr('class').match(/course-(\d+)/)[1];
             this.is_frontpage = body.hasClass('pagelayout-frontpage');
-        };
+        }();
 
         /**
          *  Returns a localized string
@@ -174,7 +174,7 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
             var iconElement = $('<i/>')
                 .attr('alt', str(name))
                 .attr('class', icon[name].iconClass);
-            // if (verify_layout()) {
+            // If (verify_layout()) {
             //     iconElement.addClass('iconcustom');
             // }
 
@@ -327,7 +327,7 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
         }
 
 
-        ///////// CLASSES /////////
+        // /////// CLASSES /////////
 
         /**
          *  @class Directory states manager
@@ -388,7 +388,7 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
                 this.init();
                 save();
             };
-        };
+        }();
 
         /**
          *  @class Targets for moving an item directory
@@ -499,7 +499,7 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
                     targets.push($target);
                 }
             };
-        };
+        }();
 
         /**
          *  @class Targets for restoring an item
@@ -596,7 +596,7 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
                         $mainmenu.find('.content').before($clipboard);
                     }
 
-                    // mainmenu = section #0, sitetopic = section #1
+                    // Mainmenu = section #0, sitetopic = section #1
                     if ($mainmenu) {
                         $mainmenu.find('.footer').before(create_target(id, 0));
                     }
@@ -613,9 +613,9 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
                     }, this);
                 }
             };
-        };
+        }();
 
-        ///////// INITIALIZATION /////////
+        // /////// INITIALIZATION /////////
 
         $.get_plugin_name = function() {
             var $blockheader = $block.find("h2");
@@ -785,28 +785,54 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
          */
         $.on_delete = function(e) {
             var $item = $(e.target).closest('li');
+            var liText = $item[0].innerText;
+            var isDirectory = false;
+            var modalBody;
+
+            var ul = $('<ul></ul>');
+
+            if ($item.hasClass("directory")) {
+                isDirectory = true;
+                console.log($item[0].outerHTML);
+                $item.find('li').each(function(i, elm){
+                    // window.console.log($(elm).text());
+                    var item = $('<li></li>').append($(elm).text());
+                    ul.append(item);
+                });
+
+                modalBody = ($item[0].toString());
+                // for (var property in liClass) {
+                //     var string = liClass[property];
+                //     var filter = string.substring(0 , 8);
+                //     if (filter === 'modtype_') {
+                //         break;
+                //     }
+                // }
+            } else {
+                modalBody += '<li class="delete-item">' + liText + '</li>';
+            }
+
+            modalBody = ul[0].outerHTML;
 
             // PTODO: Update to moodle modal.
             var trigger = $('#create-modal');
             ModalFactory.create({
                 type: ModalFactory.types.SAVE_CANCEL,
                 title: str('confirm_delete'),
-                // Get label / Activity name to show in body.
-                body: '123',
+                // Get activity name to show in body.
+                body: modalBody,
             }, trigger).done(function(modal) {
                 // Figure out what is returned on cancel and continue buttons.
                 // How to change text on buttons?
-                console.log(modal);
                 modal.show();
             });
 
             // Remove this to continue with delete action.
-            return;
 
-            var $item = $(e.target).closest('li');
+            // Var $item = $(e.target).closest('li');
             var data = {};
 
-            if ($item.hasClass("directory")) {
+            if (isDirectory === true) {
                 data = {
                     "action": "delete_directory",
                     "path": $item.attr("directory-path"),
@@ -928,7 +954,7 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
 
             if (isspeciallayout) {
                 helpicon.attr('data-placement', 'left').find('.help-icon')
-                    .prepend($('<span/>').append(M.str.block_sharing_cart['pluginname']).addClass('sc-space-5'));
+                    .prepend($('<span/>').append(M.str.block_sharing_cart.pluginname).addClass('sc-space-5'));
                 $block.find('.header-commands').parent().css('display', 'block');
             } else {
                 $block.find('.header .commands').append(helpicon);
@@ -988,7 +1014,7 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
              *
              * Call add_activity_backup_control to re append sharing cart icon.
              */
-            $(document).one('click', '.mod-indent-outer', function(){
+            $(document).one('click', '.mod-indent-outer', function() {
                 $(document).ajaxComplete(function(event, xhr, settings) {
 
                     var url = settings.url;
@@ -1004,14 +1030,14 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
                             var activity = $('#module-' + activity_id);
                             add_activity_backup_control(activity);
 
-                            if (data[0].args.action === 'duplicate'){
+                            if (data[0].args.action === 'duplicate') {
                                 var duplicated = activity.next();
                                 add_activity_backup_control(duplicated);
                             }
                         }, 1);
                     }
                 });
-            })
+            });
 
             /**
              * Create the backup icon
@@ -1103,9 +1129,9 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
          * Initialize the Sharing Cart block
          */
         $.init = function() {
-            M.str.block_sharing_cart['pluginname'] = this.get_plugin_name();
+            M.str.block_sharing_cart.pluginname = this.get_plugin_name();
 
-            // arrange header icons (bulkdelete, help)
+            // Arrange header icons (bulkdelete, help)
             $.init_block_header();
             $.init_item_tree();
             $.init_activity_commands();

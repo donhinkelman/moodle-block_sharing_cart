@@ -72,18 +72,17 @@ span.commands i.fa:hover {
 }
 
 .label div span img {
-    max-width: 200;
+    max-width: 200px;
     width: auto;
     max-height: 100px;
     height: auto;
 }
 
-ul.list li.move-to {
+div.card-text ul.list li.move-to {
     border: #c9cacb 2px dashed;
     padding: 0;
     margin: 5px;
 }
-
 .move-to a {
     display: inline-block;
     height: 100%;
