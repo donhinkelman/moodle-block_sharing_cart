@@ -20,7 +20,7 @@
  *  @copyright  2017 (C) VERSION2, INC.
  *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
+require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalFactory, ModalEvents) {
     $(document).ready(function() {
 
         /** @var {Object}  The icon configurations */
@@ -817,46 +817,42 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
             }, trigger).done(function(modal) {
                 // Figure out what is returned on cancel and continue buttons.
                 // How to change text on buttons
-                console.log(modal);
+                modal.getRoot().on(ModalEvents.save, function(){// Var $item = $(e.target).closest('li');
+                    var data = {};
+
+                    if (isDirectory === true) {
+                        data = {
+                            "action": "delete_directory",
+                            "path": $item.attr("directory-path"),
+                            "sesskey": M.cfg.sesskey
+                        };
+                    } else if ($item.hasClass("activity")) {
+                        data = {
+                            "action": "delete",
+                            "id": $item.attr('id').match(/(\d+)$/)[1],
+                            "sesskey": M.cfg.sesskey
+                        };
+                    }
+
+                    var $spinner = add_spinner($(e.target).closest('.commands'));
+
+                    $spinner.show();
+
+                    $.post(get_action_url("rest"), data,
+                        function() {
+                            reload_tree();
+                        })
+                        .fail(function(response) {
+                            show_error(response);
+                        })
+                        .always(function() {
+                            $spinner.hide();
+                        });
+
+                    e.stopPropagation();
+                });
                 modal.show();
             });
-
-            // Remove this to continue with delete action.
-            return;
-
-            // Var $item = $(e.target).closest('li');
-            var data = {};
-
-            if (isDirectory === true) {
-                data = {
-                    "action": "delete_directory",
-                    "path": $item.attr("directory-path"),
-                    "sesskey": M.cfg.sesskey
-                };
-            } else if ($item.hasClass("activity")) {
-                data = {
-                    "action": "delete",
-                    "id": $item.attr('id').match(/(\d+)$/)[1],
-                    "sesskey": M.cfg.sesskey
-                };
-            }
-
-            var $spinner = add_spinner($(e.target).closest('.commands'));
-
-            $spinner.show();
-
-            $.post(get_action_url("rest"), data,
-                function() {
-                    reload_tree();
-                })
-                .fail(function(response) {
-                    show_error(response);
-                })
-                .always(function() {
-                    $spinner.hide();
-                });
-
-            e.stopPropagation();
         };
 
         /**
