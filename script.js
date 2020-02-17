@@ -693,7 +693,6 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
          *  @param {DOMEventFacade} e
          */
         $.on_movedir = function(e) {
-            console.log('test');
             var $commands = $(e.target).closest('.commands');
 
             var $current_dir = $commands.closest('li.directory');
@@ -730,7 +729,8 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
             $form.submit(submit);
 
             if (dirs.length === 0) {
-                $form.append($('<input class="form-control" type="text" name="to"/>').val(current_path)).focus();
+                $form.append($('<input class="form-control" type="text" name="to"/>').val(current_path));
+                console.log($form);
             } else {
                 dirs.unshift('/');
 
