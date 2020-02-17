@@ -796,43 +796,28 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
             var isDirectory = false;
             var modalBody;
 
-            console.log($item);
-            console.log($item[0].innerHTML);
-
-            var ul = $('<ul></ul>');
-
             if ($item.hasClass("directory")) {
                 isDirectory = true;
-                $item.find('li').each(function(i, elm) {
-                    window.console.log($(elm));
-                    var item = $('<li></li>').append($(elm).text());
-                    ul.append(item);
-                });
-
-                modalBody = ($item[0].toString());
-                // For (var property in liClass) {
-                //     var string = liClass[property];
-                //     var filter = string.substring(0 , 8);
-                //     if (filter === 'modtype_') {
-                //         break;
-                //     }
-                // }
+                modalBody = '<p class="delete-item">'+ str('folder_string') + liText + str('delete_folder') + '</p>';
+                // $item.find('li').each(function(i, elm) {
+                //     window.console.log($(elm));
+                //     var item = $('<li></li>').append($(elm).text());
+                //     ul.append(item);
+                // });
             } else {
-                modalBody += '<li class="delete-item">' + liText + '</li>';
+                modalBody = '<p class="delete-item">'+ str('activity_string') + liText + '</p>';
             }
-
-            modalBody = ul[0].outerHTML;
 
             // PTODO: Update to moodle modal.
             var trigger = $('#create-modal');
             ModalFactory.create({
                 type: ModalFactory.types.SAVE_CANCEL,
                 title: str('confirm_delete'),
-                // Get activity name to show in body.
                 body: modalBody,
             }, trigger).done(function(modal) {
                 // Figure out what is returned on cancel and continue buttons.
-                // How to change text on buttons?
+                // How to change text on buttons
+                console.log(modal);
                 modal.show();
             });
 

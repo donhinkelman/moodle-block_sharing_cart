@@ -90,3 +90,7 @@ $string['conflict_description_note'] = '*Section summary formats (font color, im
 $string['conflict_no_overwrite'] = 'Keep the current section title <strong>"{$a}"</strong>';
 $string['conflict_overwrite_title'] = 'Change section title to <strong>"{$a}"</strong>';
 $string['conflict_submit'] = 'Continue';
+
+$string['folder_string'] = 'Folder:';
+$string['activity_string'] = 'Activity:';
+$string['delete_folder'] = ' (and all it\'s content)';
