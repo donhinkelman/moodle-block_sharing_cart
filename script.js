@@ -729,8 +729,14 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
             $form.submit(submit);
 
             if (dirs.length === 0) {
-                $form.append($('<input class="form-control" type="text" name="to"/>').val(current_path));
-                console.log($form);
+                // PTODO: Det virker som om at append input sker hurtigere end noget af koden er læst.
+                // Hvis vi consol.logger inden append($input), er det allerede appended.
+                var $input = $('<input class="form-control" type="text" name="to"/>').val(current_path);
+                setTimeout(function() {
+                    $input.focus();
+                }, 1);
+                // $input.focus();
+                $form.append($input);
             } else {
                 dirs.unshift('/');
 
@@ -797,14 +803,14 @@ require(['jquery', 'core/modal_factory'], function($, ModalFactory) {
 
             if ($item.hasClass("directory")) {
                 isDirectory = true;
-                $item.find('li').each(function(i, elm){
+                $item.find('li').each(function(i, elm) {
                     window.console.log($(elm));
                     var item = $('<li></li>').append($(elm).text());
                     ul.append(item);
                 });
 
                 modalBody = ($item[0].toString());
-                // for (var property in liClass) {
+                // For (var property in liClass) {
                 //     var string = liClass[property];
                 //     var filter = string.substring(0 , 8);
                 //     if (filter === 'modtype_') {

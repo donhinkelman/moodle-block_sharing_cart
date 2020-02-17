@@ -83,6 +83,10 @@ span.commands a {
     margin: auto;
 }
 
+span.commands form input:focus {
+    box-shadow: none;
+}
+
 .label {
     font-weight: 400;
 }
