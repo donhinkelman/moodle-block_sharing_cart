@@ -93,4 +93,4 @@ $string['conflict_submit'] = 'Continue';
 
 $string['folder_string'] = 'Folder:';
 $string['activity_string'] = 'Activity:';
-$string['delete_folder'] = ' (and all it\'s content)';
+$string['delete_folder'] = ' and all it\'s content';

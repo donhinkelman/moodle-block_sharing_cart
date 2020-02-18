@@ -89,3 +89,7 @@ $string['conflict_description_note'] = '*Los formatos de la descripción del tí
 $string['conflict_no_overwrite'] = 'Mantener utilizando <strong>"{$a}"</strong>';
 $string['conflict_overwrite_title'] = 'Cambiar el título a <strong>"{$a}"</strong>';
 $string['conflict_submit'] = 'Continuar';
+
+$string['folder_string'] = 'Folder: (Missing translation)';
+$string['activity_string'] = 'Activity: (Missing translation)';
+$string['delete_folder'] = ' and all it\'s content (Missing translation)';

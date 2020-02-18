@@ -23,6 +23,70 @@
 require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalFactory, ModalEvents) {
     $(document).ready(function() {
 
+        /**
+         *
+         * @param obj
+         */
+        function confirm_modal(obj) {
+
+            if(obj.checkbox) {
+                obj.body += '<input type="checkbox" class="modalcheckbox" checked>';
+            }
+
+            // PTODO: Update to moodle modal.
+            var trigger = $('#create-modal');
+            ModalFactory.create({
+                type: ModalFactory.types.SAVE_CANCEL,
+                title: obj.title,
+                body: obj.body,
+            }, trigger).done(function(modal) {
+
+                // Figure out what is returned on cancel and continue buttons.
+                // How to change text on buttons
+                modal.getRoot().on(ModalEvents.save, function(e){
+
+                    var response = {
+                        'checkbox': $(e.target).find('.modalcheckbox').is(':checked'),
+                    }
+
+                    obj.next(response);
+                });
+                modal.show();
+            });
+        }
+
+        function on_backup_modal(post_data, title_str, body_str, isSection = false) {
+            (function(on_success) {
+                $.post(get_action_url('rest'), post_data,
+                    function(response) {
+                        on_success(response);
+                    }, "text")
+                    .fail(function(response) {
+                        show_error(response);
+                    });
+            })(function(response) {
+                var copyable = response === '1';
+                var checkbox = false;
+
+                if (copyable) {
+                    checkbox = true;
+                }
+
+                confirm_modal({
+                        'title': title_str,
+                        'body': body_str,
+                        'checkbox': checkbox,
+                        'next': function(data) {
+                            if (isSection === true) {
+                                backup_section(post_data.sectionid, post_data.sectionnumber, post_data.courseid, data.checkbox);
+                            } else {
+                                backup(post_data.cmid, data.checkbox);
+                            }
+                        }
+                });
+            });
+        }
+
         /** @var {Object}  The icon configurations */
         var icon = {
             // Actions
@@ -647,44 +711,28 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                 return $commands.find('a.editing_delete').attr('href').match(/delete=(\d+)/)[1];
             })($(e.target));
 
-            (function(on_success) {
-                $.post(get_action_url('rest'),
-                    {
-                        "action": "is_userdata_copyable",
-                        "cmid": cmid
-                    },
-                    function(response) {
-                        on_success(response);
-                    }, "text")
-                    .fail(function(response) {
-                        show_error(response);
-                    });
-            })(function(response) {
-                function embed_cmid(cmid) {
-                    return '<!-- #cmid=' + cmid + ' -->';
-                }
+            // PTODO: Prøver her at finde ud af om jeg kan fange aktivitets navnet.
+            // var activity_name = (function($backup) {
+            //     var $activityinstance = $backup.closest('div.activityinstance');
+            //     console.log($backup);
+            //     if ($activity.length) {
+            //         return $activity.attr('id').match(/(\d+)$/)[1];
+            //     }
+            //     var $commands = $backup.closest('.commands');
+            //     var dataowner = $commands.attr('data-owner');
+            //     if (dataowner.length) {
+            //         return dataowner.match(/(\d+)$/)[1];
+            //     }
+            //     return $commands.find('a.editing_delete').attr('href').match(/delete=(\d+)/)[1];
+            // })($(e.target));
 
-                function parse_cmid(question) {
-                    return /#cmid=(\d+)/.exec(question)[1];
-                }
+            var data =
+                {
+                    "action": "is_userdata_copyable",
+                    "cmid": cmid
+                };
 
-                var copyable = response === '1';
-                if (copyable) {
-                    if (confirm(str('confirm_userdata'))) {
-                        if (confirm(str('confirm_backup'))) {
-                            backup(cmid, true);
-                        }
-                    } else {
-                        if (confirm(str('confirm_backup'))) {
-                            backup(cmid, false);
-                        }
-                    }
-                } else {
-                    if (confirm(str('confirm_backup'))) {
-                        backup(cmid, false);
-                    }
-                }
-            });
+            on_backup_modal(data, 'Backup Activity?', str('confirm_backup'));
         };
 
         /**
@@ -793,31 +841,28 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
         $.on_delete = function(e) {
             var $item = $(e.target).closest('li');
             var liText = $item[0].innerText;
+
             var isDirectory = false;
             var modalBody;
+            var item;
+            var description_text = '';
 
             if ($item.hasClass("directory")) {
                 isDirectory = true;
-                modalBody = '<p class="delete-item">'+ str('folder_string') + liText + str('delete_folder') + '</p>';
-                // $item.find('li').each(function(i, elm) {
-                //     window.console.log($(elm));
-                //     var item = $('<li></li>').append($(elm).text());
-                //     ul.append(item);
-                // });
+                item = str('folder_string');
+                description_text = str('delete_folder');
             } else {
-                modalBody = '<p class="delete-item">'+ str('activity_string') + liText + '</p>';
+                item = str('activity_string');
             }
 
-            // PTODO: Update to moodle modal.
-            var trigger = $('#create-modal');
-            ModalFactory.create({
-                type: ModalFactory.types.SAVE_CANCEL,
-                title: str('confirm_delete'),
-                body: modalBody,
-            }, trigger).done(function(modal) {
-                // Figure out what is returned on cancel and continue buttons.
-                // How to change text on buttons
-                modal.getRoot().on(ModalEvents.save, function(){// Var $item = $(e.target).closest('li');
+            modalBody = '<p class="delete-item">'+ item + ' ' + liText + description_text + '</p>';
+
+            confirm_modal({
+                'title': str('confirm_delete'),
+                'body': modalBody,
+                'checkbox': false,
+                'next': function(){
+
                     var data = {};
 
                     if (isDirectory === true) {
@@ -850,8 +895,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                         });
 
                     e.stopPropagation();
-                });
-                modal.show();
+                }
             });
         };
 
@@ -883,38 +927,16 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
          * @param {int} courseId
          */
         $.on_section_backup = function(sectionId, sectionNumber, courseId) {
-            (function(on_success) {
-                $.post(get_action_url('rest'),
-                    {
-                        "action": "is_userdata_copyable_section",
-                        "sectionid": sectionId,
-                        "sectionnumber": sectionNumber,
-                        "courseid": courseId,
-                    },
-                    function(response) {
-                        on_success(response);
-                    }, "text")
-                    .fail(function(response) {
-                        show_error(response);
-                    });
-            })(function(response) {
-                var copyable = response === '1';
-                if (copyable) {
-                    if (confirm(str('confirm_userdata_section'))) {
-                        if (confirm(str('confirm_backup_section'))) {
-                            backup_section(sectionId, sectionNumber, courseId, true);
-                        }
-                    } else {
-                        if (confirm(str('confirm_backup_section'))) {
-                            backup_section(sectionId, sectionNumber, courseId, false);
-                        }
-                    }
-                } else {
-                    if (confirm(str('confirm_backup_section'))) {
-                        backup_section(sectionId, sectionNumber, courseId, false);
-                    }
-                }
-            });
+
+            var data =
+                {
+                    "action": "is_userdata_copyable_section",
+                    "sectionid": sectionId,
+                    "sectionnumber": sectionNumber,
+                    "courseid": courseId,
+                };
+
+            on_backup_modal(data, 'Overskrift', str('confirm_backup_section'), true);
         };
 
         /**

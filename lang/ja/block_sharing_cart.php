@@ -89,3 +89,7 @@ $string['conflict_description_note'] = '※トピックの説明のフォーマ�
 $string['conflict_no_overwrite'] = 'トピック名を変更しない。<strong>「{$a}」</strong>のままにする。';
 $string['conflict_overwrite_title'] = 'タイトルを<strong>「{$a}」</strong>に変更する。';
 $string['conflict_submit'] = '続く';
+
+$string['folder_string'] = 'Folder: (Missing translation)';
+$string['activity_string'] = 'Activity: (Missing translation)';
+$string['delete_folder'] = ' and all it\'s content (Missing translation)';
