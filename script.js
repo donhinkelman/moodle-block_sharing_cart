@@ -29,8 +29,11 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
          */
         function confirm_modal(obj) {
 
-            if(obj.checkbox) {
-                obj.body += '<input type="checkbox" class="modalcheckbox" checked>';
+            if (obj.checkbox) {
+                obj.body += '<div class="modal-checbox-wrapper">' +
+                        '<input type="checkbox" class="modal-checkbox" checked>' +
+                        '<p>' + str('modal_checkbox') + '</p>' +
+                    '</div>';
             }
 
             // PTODO: Update to moodle modal.
@@ -43,11 +46,11 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
 
                 // Figure out what is returned on cancel and continue buttons.
                 // How to change text on buttons
-                modal.getRoot().on(ModalEvents.save, function(e){
+                modal.getRoot().on(ModalEvents.save, function(e) {
 
                     var response = {
                         'checkbox': $(e.target).find('.modalcheckbox').is(':checked'),
-                    }
+                    };
 
                     obj.next(response);
                 });
@@ -55,7 +58,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
             });
         }
 
-        function on_backup_modal(post_data, title_str, body_str, isSection = false) {
+        function on_backup_modal(post_data, title_str, body_str, isSection) {
             (function(on_success) {
                 $.post(get_action_url('rest'), post_data,
                     function(response) {
@@ -71,6 +74,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                 if (copyable) {
                     checkbox = true;
                 }
+
 
                 confirm_modal({
                         'title': title_str,
@@ -697,7 +701,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
             return "";
         };
 
-        $.on_backup = function(e) {
+         $.on_backup = function(e) {
             var cmid = (function($backup) {
                 var $activity = $backup.closest('li.activity');
                 if ($activity.length) {
@@ -732,7 +736,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                     "cmid": cmid
                 };
 
-            on_backup_modal(data, 'Backup Activity?', str('confirm_backup'));
+            on_backup_modal(data, 'Backup Activity?', str('confirm_backup'), false);
         };
 
         /**
@@ -855,13 +859,13 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                 item = str('activity_string');
             }
 
-            modalBody = '<p class="delete-item">'+ item + ' ' + liText + description_text + '</p>';
+            modalBody = '<p class="delete-item">' + item + ' ' + liText + description_text + '</p>';
 
             confirm_modal({
                 'title': str('confirm_delete'),
                 'body': modalBody,
                 'checkbox': false,
-                'next': function(){
+                'next': function() {
 
                     var data = {};
 

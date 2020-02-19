@@ -28,6 +28,7 @@ require_once __DIR__.'/classes/storage.php';
 require_once __DIR__.'/classes/record.php';
 require_once __DIR__.'/classes/renderer.php';
 
+
 if (false) {
     $DB     = new mysqli_native_moodle_database;
     $CFG    = new stdClass;
@@ -35,6 +36,8 @@ if (false) {
     $PAGE   = new moodle_page;
     $OUTPUT = new core_renderer;
 }
+
+$PAGE->requires->css('/blocks/sharing_cart/custom.css');
 
 $courseid = required_param('course', PARAM_INT);
 $returnurl = new moodle_url('/course/view.php', array('id' => $courseid));
@@ -125,6 +128,7 @@ echo $OUTPUT->header();
 			function check_all(check)
 			{
 				var checks = get_checks();
+				console.log(checks);
 				for (var i = 0; i < checks.length; i++) {
 					checks[i].checked = check.checked;
 				}
@@ -164,31 +168,27 @@ echo $OUTPUT->header();
 		
 		$i = 0;
 		echo '
-		<ul style="list-style-type:none; float:left;">';
+		<ul class="bulk-delete-list">';
 		foreach ($items as $id => $item) {
 			echo '
-			<li style="list-style-type:none; clear:left;">
-				<input type="checkbox" name="delete['.$id.']" checked="checked" onclick="check();"
-				 style="float:left; height:16px;" id="delete_'.$id.'" />
-				<div style="float:left;">', sharing_cart\renderer::render_modicon($item), '</div>
-				<div style="float:left;">
-					<label for="delete_'.$id.'">', format_string($item->modtext), '</label>
-				</div>
+			<li class="bulk-delete-item">
+				<input type="checkbox" name="delete['.$id.']" checked="checked" onclick="check();" id="delete_'.$id.'" />
+				', sharing_cart\renderer::render_modicon($item), '
+                <label for="delete_'.$id.'">', format_string($item->modtext),'</label>
 			</li>';
 			if (++$i % 10 == 0) {
 				echo '
 		</ul>
-		<ul style="list-style-type:none; float:left;">';
+		<ul class="bulk-delete-list">';
 			}
 		}
 		echo '
 		</ul>';
 		
 		echo '
-		<div style="clear:both;"><!-- clear floating --></div>
 		<div>
-			<input type="button" onclick="history.back();" value="', s(get_string('cancel')), '" />
-			<input type="submit" name="delete_checked" value="', s(get_string('deleteselected')), '" />
+			<input class="btn btn-primary" type="submit" name="delete_checked" value="', s(get_string('deleteselected')), '" />
+			<input class="btn" type="button" onclick="history.back();" value="', s(get_string('cancel')), '" />
 		</div>
 		</form>';
 	}
