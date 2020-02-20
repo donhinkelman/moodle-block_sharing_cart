@@ -701,7 +701,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
             return "";
         };
 
-         $.on_backup = function(e) {
+         $.on_backup = function(e, activityName) {
             var cmid = (function($backup) {
                 var $activity = $backup.closest('li.activity');
                 if ($activity.length) {
@@ -715,28 +715,13 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                 return $commands.find('a.editing_delete').attr('href').match(/delete=(\d+)/)[1];
             })($(e.target));
 
-            // PTODO: Prøver her at finde ud af om jeg kan fange aktivitets navnet.
-            // var activity_name = (function($backup) {
-            //     var $activityinstance = $backup.closest('div.activityinstance');
-            //     console.log($backup);
-            //     if ($activity.length) {
-            //         return $activity.attr('id').match(/(\d+)$/)[1];
-            //     }
-            //     var $commands = $backup.closest('.commands');
-            //     var dataowner = $commands.attr('data-owner');
-            //     if (dataowner.length) {
-            //         return dataowner.match(/(\d+)$/)[1];
-            //     }
-            //     return $commands.find('a.editing_delete').attr('href').match(/delete=(\d+)/)[1];
-            // })($(e.target));
-
             var data =
                 {
                     "action": "is_userdata_copyable",
                     "cmid": cmid
                 };
 
-            on_backup_modal(data, 'Backup Activity?', str('confirm_backup'), false);
+            on_backup_modal(data, activityName, str('confirm_backup'), false);
         };
 
         /**
