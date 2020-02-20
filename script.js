@@ -1074,18 +1074,33 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
              * @param $activity
              */
             function add_activity_backup_control($activity) {
+                var activityName = 'Activity';
 
                 console.log($activity);
 
-                var activityName = $('.activity#'+$activity[0].id).find('.mod-indent-outer .activityinstance');
+                var activityClass = $activity[0].className;
+                console.log(activityClass);
+                console.log(typeof activityClass);
 
-                console.log($activity[0].id);
-                console.log(activityName);
+                // var regexPattern = /(?<=(^_)*modtype_)(\w*)/;
+                var regexPattern = new RegExp('(?<=(^_)*modtype_)(\\w*)', 'g')
+                console.log(regexPattern);
+
+                var modtype = activityClass.match(regexPattern);
+                console.log(modtype);
+
+                console.log(modtype[0]);
+
+                console.log('---------------');
+
+                if (modtype[0] !== 'label'){
+                    activityName = $('.activity#'+$activity[0].id).find('.mod-indent-outer .activityinstance');
+                }
 
                 var $backupIcon = create_backup_icon();
 
                 $backupIcon.on('click', function(e) {
-                    $.on_backup(e);
+                    $.on_backup(e, activityName);
                 });
 
                 var $actionMenuItem = $activity.find('.action-menu.section-cm-edit-actions').parent('.actions');
