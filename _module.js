@@ -442,7 +442,8 @@ YUI.add('block_sharing_cart', function (Y)
             if (typeof bulkdelete != 'undefined' && bulkdelete != null) {
                 if (isspeciallayout) {
                     bulkdelete = bulkdelete.setAttribute('role', 'menuitem').addClass('dropdown-item menu-action');
-                    bulkdelete.one('img').addClass('icon');
+                    // the line below may be unnecessary
+                    // bulkdelete.one('i').addClass('icon');
                     bulkdelete.append(Y.Node.create('<span class="menu-action-text"/>').addClass('sc-space-5').append(bulkdelete.get('title')));
                     $block.one('.menubar .dropdown .dropdown-menu').append(bulkdelete);
                 } else {

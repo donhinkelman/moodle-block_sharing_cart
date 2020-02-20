@@ -109,6 +109,7 @@ class block_sharing_cart extends block_base
 			);
 
 		$footer = '<div style="display:none;">'
+                // Hvad gør linjen nedenunder ud over at sætte spørgsmålsikonet ind
 				. '<div class="header-commands">' . $this->get_header() . '</div>'
 				. '</div>';
 		return $this->content = (object)array('text' => $html, 'footer' => $footer);
@@ -142,7 +143,7 @@ class block_sharing_cart extends block_base
 	private function get_bulk_delete($src, $alt, $url)
 	{
 		$bulkdelete = '<a class="editing_bulkdelete" title="' . s($alt) . '" href="' . s($url) . '">'
-		        . '<img src="' . s($src) . '" alt="' . s($alt) . '" />'
+		        . '<i class="bulk-icon icon fa fa-times-circle" alt="' . s($alt) . '" /></i>'
 		                . '</a>';
 
 		return $bulkdelete;

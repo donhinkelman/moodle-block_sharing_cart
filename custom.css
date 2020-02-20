@@ -150,11 +150,16 @@ div.card-text ul.list li.move-to {
 .bulk-delete-list {
     list-style: none;
 }
+.bulk-delete-select-all {
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 10px;
+}
 
 .bulk-delete-item {
     display: flex;
     border-top: 1px solid rgba(0, 0, 0, 0.125);
-    padding: 5px;
+    padding: 5px 10px;
 }
 
 .bulk-delete-item:last-of-type {
@@ -166,7 +171,7 @@ div.card-text ul.list li.move-to {
 }
 
 .bulk-delete-item input {
-    margin: auto 5px auto 0;
+    margin: auto 10px auto 0;
 }
 
 .bulk-delete-item label {
@@ -174,10 +179,11 @@ div.card-text ul.list li.move-to {
 }
 
 .bulk-delete-item img {
-    height: 19px;
-    width: 19px;
+    height: 15px;
+    width: 15px;
     margin: auto 0;
 }
+
 /* BULK VIEW END */
 
 /* IKKE VORES - RYD OP */

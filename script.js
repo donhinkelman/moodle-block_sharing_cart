@@ -947,13 +947,10 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
          *  Initialize the delete bulk
          */
         $.init_bulk_delete = function(isspeciallayout) {
-            var bulkdelete = $block.find('.header-commands .editing_bulkdelete');
-
+            var bulkdelete = $block.find('.editing_bulkdelete');
             if (bulkdelete.length) {
                 if (isspeciallayout) {
                     bulkdelete.attr('role', 'menuitem').addClass('dropdown-item menu-action');
-                    bulkdelete.find('img').addClass('icon');
-
                     bulkdelete.append($("<span class='menu-action-text'/>").append(bulkdelete.attr('title')));
 
                     $block.find('.menubar .dropdown .dropdown-menu').append(bulkdelete);

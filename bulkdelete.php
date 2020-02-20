@@ -160,7 +160,7 @@ echo $OUTPUT->header();
 		<div style="display:none;">
 			' . html_writer::input_hidden_params($PAGE->url) . '
 		</div>
-		<div><label style="cursor:default;">
+		<div class="bulk-delete-select-all"><label style="cursor:default;">
 			<input type="checkbox" checked="checked" onclick="check_all(this);"
 			 style="height:16px; vertical-align:middle;" />
 			<span>', get_string('selectall'), '</span>
