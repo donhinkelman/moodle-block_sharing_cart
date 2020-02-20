@@ -31,8 +31,8 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
 
             if (obj.checkbox) {
                 obj.body += '<div class="modal-checbox-wrapper">' +
-                        '<input type="checkbox" class="modal-checkbox" checked>' +
-                        '<p>' + str('modal_checkbox') + '</p>' +
+                        '<input type="checkbox" id="modal-checkbox" class="modal-checkbox" checked>' +
+                        '<label for="modal-checkbox">' + str('modal_checkbox') + '</label>' +
                     '</div>';
             }
 
@@ -929,8 +929,9 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
          * @param {int} sectionId
          * @param {int} sectionNumber
          * @param {int} courseId
+         * @param {string} sectionName
          */
-        $.on_section_backup = function(sectionId, sectionNumber, courseId) {
+        $.on_section_backup = function(sectionId, sectionNumber, courseId, sectionName) {
 
             var data =
                 {
@@ -940,7 +941,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                     "courseid": courseId,
                 };
 
-            on_backup_modal(data, 'Overskrift', str('confirm_backup_section'), true);
+            on_backup_modal(data ,sectionName, str('confirm_backup_section'), true);
         };
 
         /**
@@ -1074,6 +1075,13 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
              */
             function add_activity_backup_control($activity) {
 
+                console.log($activity);
+
+                var activityName = $('.activity#'+$activity[0].id).find('.mod-indent-outer .activityinstance');
+
+                console.log($activity[0].id);
+                console.log(activityName);
+
                 var $backupIcon = create_backup_icon();
 
                 $backupIcon.on('click', function(e) {
@@ -1094,6 +1102,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
 
                 var sectionId = $section.find('.section_action_menu').data('sectionid');
                 var sectionNumber = parseInt(String($section.attr('id')).match(/\d+/)[0]);
+                var sectionName = $section.attr('aria-label');
                 var isFlexibleCourseFormat = $('body[id$=flexsections]').length;
 
                 // Extract the section ID from the section if this is a Flexible
@@ -1108,7 +1117,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                 var $backupIcon = create_backup_icon();
 
                 $backupIcon.on('click', function() {
-                    $.on_section_backup(sectionId, sectionNumber, courseId);
+                    $.on_section_backup(sectionId, sectionNumber, courseId, sectionName);
                 });
 
                 var $sectionTitle = $section.find('h3.sectionname').first().find('a').last();
