@@ -58,6 +58,13 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
             });
         }
 
+        /**
+         *
+         * @param post_data
+         * @param title_str
+         * @param body_str
+         * @param isSection
+         */
         function on_backup_modal(post_data, title_str, body_str, isSection) {
             (function(on_success) {
                 $.post(get_action_url('rest'), post_data,
@@ -1059,27 +1066,21 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
              * @param $activity
              */
             function add_activity_backup_control($activity) {
-                var activityName = 'Activity';
-
-                console.log($activity);
 
                 var activityClass = $activity[0].className;
-                console.log(activityClass);
-                console.log(typeof activityClass);
 
-                // var regexPattern = /(?<=(^_)*modtype_)(\w*)/;
-                var regexPattern = new RegExp('(?<=(^_)*modtype_)(\\w*)', 'g')
-                console.log(regexPattern);
+                // Regex to select the word after modtype_
+                var regexPattern = new RegExp('(?<=(^_)*modtype_)(\\w*)', 'g');
 
                 var modtype = activityClass.match(regexPattern);
-                console.log(modtype);
 
-                console.log(modtype[0]);
+                // Default activity name.
+                var activityName = str('backup_activty_default_header');
 
-                console.log('---------------');
-
+                // PTODO: Check all activities to see which works, and which doesnt.
+                // Due to some activities using different html layout, we exclude those as we find them.
                 if (modtype[0] !== 'label'){
-                    activityName = $('.activity#'+$activity[0].id).find('.mod-indent-outer .activityinstance');
+                    activityName = $('.activity#'+$activity[0].id).find('.mod-indent-outer .activityinstance span.instancename').html();
                 }
 
                 var $backupIcon = create_backup_icon();
@@ -1160,8 +1161,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
             $.init_activity_commands();
         };
 
-        var WAITICON = {'pix': 'i/loading', 'component': 'moodle'};
-        var $spinner = $('<img/>').attr('src', M.util.image_url(WAITICON.pix, WAITICON.component)).addClass('spinner');
+        var $spinner = $('<i/>').addClass('spinner fa fa-3x fa-circle-o-notch fa-spin');
         $('div#sharing-cart-spinner-modal div.spinner-container').prepend($spinner);
 
         $.init();

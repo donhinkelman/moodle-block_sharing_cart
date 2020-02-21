@@ -94,3 +94,4 @@ $string['folder_string'] = 'Folder: (Missing translation)';
 $string['activity_string'] = 'Activity: (Missing translation)';
 $string['delete_folder'] = ' and all it\'s content (Missing translation)';
 $string['modal_checkbox'] = 'copy userdata (Missing translation)';
+$string['backup_activty_default_header'] = 'Activity (Missing translation)';

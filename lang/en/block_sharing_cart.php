@@ -95,3 +95,4 @@ $string['folder_string'] = 'Folder:';
 $string['activity_string'] = 'Activity:';
 $string['delete_folder'] = ' and all it\'s content';
 $string['modal_checkbox'] = 'copy userdata';
+$string['backup_activty_default_header'] = 'Activity';
