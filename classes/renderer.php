@@ -68,6 +68,7 @@ class renderer
 		}
 		return $html;
 	}
+
 	/**
 	 *  Render a directory open
 	 *
@@ -83,6 +84,9 @@ class renderer
 		$coursename = '';
 
 		$coursefullnames = array();
+		if (empty($leaf)) {
+		    return;
+        }
         foreach($leaf[''] as $item)
         {
             array_push($coursefullnames, $item->coursefullname);

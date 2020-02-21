@@ -11,8 +11,21 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
+* 3.6, release 4    2020.02.21
+    * Updated UI to match moodles better.
+        - Pix images changed to font-awesome icons.
+        - Background color to hightlight folder structure in the tree.
+        - Aligned command icons to hug the right side.
+        - Label images has max height and width.
+        - Dropzones when moving activities/folders, shown with icon and border.
+        - Inputfields updated and has been styles so the icons can fit the same line.
+        - When creating new folder, the cursor will autofocus the input field.
+        - Added modals instead of alerts.
+        - Updated bulkdelete page (Missing modal for confirm.).
+* 3.6, release 3    2020.02.12
+    * Bugfix: When removing dir, that shared a name with another user. The sql would not check for userid.
 * 3.6, release 2    2020.02.11
-    * Made a check on groupchange and duplicate, so we can readd/add sharing cart icon.
+    * Made a check on groupchange and duplicate, so we can re-add/add sharing cart icon.
 * 3.6, release 1    2019.01.20
     * No code changes, fixed text in Readme and version.php
     * Tested OK in Moodle 3.6

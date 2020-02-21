@@ -316,7 +316,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                     show_error(response);
                 })
                 .always(function(response) {
-                    $spinner.show();
+                    $spinner.hide();
                 });
         }
 
@@ -882,7 +882,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                             show_error(response);
                         })
                         .always(function() {
-                            $spinner.show();
+                            $spinner.hide();
                         });
 
                     e.stopPropagation();
@@ -1155,7 +1155,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
             $.init_item_tree();
             $.init_activity_commands();
         };
-        
+
         var $spinner = $('<i/>').addClass('spinner fa fa-3x fa-circle-o-notch fa-spin');
         $('div#sharing-cart-spinner-modal div.spinner-container').prepend($spinner);
 
