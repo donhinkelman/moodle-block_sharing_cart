@@ -48,30 +48,30 @@ $delete_param = function_exists('optional_param_array')
 	? optional_param_array('delete', null, PARAM_RAW)
 	: optional_param('delete', null, PARAM_RAW);
 if (is_array($delete_param)) try {
-	
+
 	confirm_sesskey();
 	set_time_limit(0);
-	
+
 	$delete_ids = array_map('intval', array_keys($delete_param));
-	
+
 	list ($sql, $params) = $DB->get_in_or_equal($delete_ids);
 	$records = $DB->get_records_select(sharing_cart\record::TABLE, "userid = $USER->id AND id $sql", $params);
 	if (!$records)
 		throw new sharing_cart\exception('recordnotfound');
-	
+
 	$storage = new sharing_cart\storage();
-	
+
 	$deleted_ids = array();
 	foreach ($records as $record) {
 		$storage->delete($record->filename);
 		$deleted_ids[] = $record->id;
 	}
-	
+
 	list ($sql, $params) = $DB->get_in_or_equal($deleted_ids);
 	$DB->delete_records_select(sharing_cart\record::TABLE, "id $sql", $params);
-	
+
 	sharing_cart\record::renumber($USER->id);
-	
+
 	redirect($returnurl);
 } catch (sharing_cart\exception $ex) {
 	print_error($ex->errorcode, $ex->module, $returnurl, $ex->a);
@@ -101,7 +101,7 @@ $PAGE->navbar->add(get_string('pluginname', 'block_sharing_cart'))->add($title, 
 echo $OUTPUT->header();
 {
 	echo $OUTPUT->heading($title);
-	
+
 	echo '
 	<div style="width:100%; text-align:center;">';
 	if (empty($items)) {
@@ -128,7 +128,6 @@ echo $OUTPUT->header();
 			function check_all(check)
 			{
 				var checks = get_checks();
-				console.log(checks);
 				for (var i = 0; i < checks.length; i++) {
 					checks[i].checked = check.checked;
 				}
@@ -165,7 +164,7 @@ echo $OUTPUT->header();
 			 style="height:16px; vertical-align:middle;" />
 			<span>', get_string('selectall'), '</span>
 		</label></div>';
-		
+
 		$i = 0;
 		echo '
 		<ul class="bulk-delete-list">';
@@ -184,7 +183,7 @@ echo $OUTPUT->header();
 		}
 		echo '
 		</ul>';
-		
+
 		echo '
 		<div>
 			<input class="btn btn-primary" type="submit" name="delete_checked" value="', s(get_string('deleteselected')), '" />
