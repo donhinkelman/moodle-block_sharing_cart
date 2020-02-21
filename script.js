@@ -20,6 +20,7 @@
  *  @copyright  2017 (C) VERSION2, INC.
  *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalFactory, ModalEvents) {
     $(document).ready(function() {
 
@@ -1057,10 +1058,39 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
 
             /**
              * Add backup control with a click event to an activity
+             * Added fix for copying an activity without backup routine
              *
              * @param $activity
              */
             function add_activity_backup_control($activity) {
+                var cmid = $activity.attr('id').match(/(\d+)$/)[1];
+
+                Str.get_string(
+                    'no_backup_support',
+                    'block_sharing_cart'
+                )
+                .then(function(no_backup_support_string) {
+
+                    $.post('/blocks/sharing_cart/rest.php', {
+                        sesskey: M.cfg.sesskey,
+                        action: 'ensure_backup_present',
+                        cmid: cmid,
+                        courseid: course.id
+                    }, function(response){
+
+                        var $backupIcon = create_backup_icon();
+                        var $actionMenuItem = $activity.find('.action-menu.section-cm-edit-actions').parent('.actions');
+
+                        if(response.data.has_backup_routine === true){
+                            $backupIcon.on('click', function(e) {
+                                $.on_backup(e);
+                            });
+                        }
+                        else{
+                            $backupIcon.removeClass('add-to-sharing-cart').css({'color': 'lightgray'});
+                            $backupIcon.addClass('no-backup-support');
+                            $backupIcon.attr('title', no_backup_support_string);
+                        }
 
                 var activityClass = $activity[0].className;
 
@@ -1082,11 +1112,9 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
 
                 $backupIcon.on('click', function(e) {
                     $.on_backup(e, activityName);
+                        $actionMenuItem.append($backupIcon);
+                    }, 'json');
                 });
-
-                var $actionMenuItem = $activity.find('.action-menu.section-cm-edit-actions').parent('.actions');
-
-                $actionMenuItem.append($backupIcon);
             }
 
             /**

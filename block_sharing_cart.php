@@ -26,6 +26,18 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once __DIR__.'/classes/controller.php';
 
+/**
+ * PTODO / TODO: See list below
+ * - Namespaces are wrong (sharing_cart => block_sharing_cart) for autoload
+ * - JS must be AMD modules
+ * - Remove require statements and use autoload
+ * - Create new branches and implement mustache / renderers (some already exists)
+ * - Fix version variable in contructor
+ * - Move all exceptions to classes/exceptions and create descriptive classes
+ * - Implement Core/Str to load language strings
+ *
+ * Class block_sharing_cart
+ */
 class block_sharing_cart extends block_base
 {
 	public function init()

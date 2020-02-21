@@ -25,6 +25,7 @@ Change Log
 * 3.6, release 3    2020.02.12
     * Bugfix: When removing dir, that shared a name with another user. The sql would not check for userid.
 * 3.6, release 2    2020.02.11
+    * Fixed https://github.com/donhinkelman/moodle-block_sharing_cart/issues/12
     * Made a check on groupchange and duplicate, so we can re-add/add sharing cart icon.
 * 3.6, release 1    2019.01.20
     * No code changes, fixed text in Readme and version.php

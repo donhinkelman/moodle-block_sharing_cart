@@ -88,6 +88,12 @@ try {
             $path = required_param('path', PARAM_TEXT);
             $controller->delete_directory($path);
             exit;
+		case 'ensure_backup_present':
+			require_sesskey();
+			$cmid = required_param('cmid', PARAM_INT);
+			$courseid = required_param('courseid', PARAM_INT);
+			echo $controller->ensure_backup_in_module($cmid, $courseid);
+			exit;
 	}
 	throw new sharing_cart\exception('invalidoperation');
 	
