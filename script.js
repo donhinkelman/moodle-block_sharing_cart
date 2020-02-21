@@ -280,18 +280,14 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
          * @returns {*|jQuery}
          */
         function add_spinner($node) {
-            var WAITICON = {'pix': "i/loading_small", 'component': 'moodle'};
-
             if ($node.find(".spinner").length) {
                 return $node.find(".spinner");
             }
-
-            var spinner = $("<img/>").attr("src", M.util.image_url(WAITICON.pix, WAITICON.component))
-                .addClass("spinner iconsmall")
-                .hide();
-
-            $node.append(spinner);
-            return spinner;
+            var $spinner = $('<i/>').addClass('spinner fa fa-circle-o-notch fa-spin')
+                .addClass(" iconsmall")
+                // .show();
+            $node.append($spinner);
+            return $spinner;
         }
 
         /**
@@ -301,7 +297,6 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
             var $spinner = add_spinner($block.find('.commands'));
 
             $spinner.show();
-
             $.post(get_action_url("rest"),
                 {
                     "action": "render_tree"
@@ -314,7 +309,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                     show_error(response);
                 })
                 .always(function(response) {
-                    $spinner.hide();
+                    $spinner.show();
                 });
         }
 
@@ -880,7 +875,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                             show_error(response);
                         })
                         .always(function() {
-                            $spinner.hide();
+                            $spinner.show();
                         });
 
                     e.stopPropagation();
@@ -926,7 +921,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                     "courseid": courseId,
                 };
 
-            on_backup_modal(data ,sectionName, str('confirm_backup_section'), true);
+            on_backup_modal(data, sectionName, str('confirm_backup_section'), true);
         };
 
         /**
@@ -1067,8 +1062,8 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                 console.log(activityClass);
                 console.log(typeof activityClass);
 
-                // var regexPattern = /(?<=(^_)*modtype_)(\w*)/;
-                var regexPattern = new RegExp('(?<=(^_)*modtype_)(\\w*)', 'g')
+                // Var regexPattern = /(?<=(^_)*modtype_)(\w*)/;
+                var regexPattern = new RegExp('(?<=(^_)*modtype_)(\\w*)', 'g');
                 console.log(regexPattern);
 
                 var modtype = activityClass.match(regexPattern);
@@ -1078,8 +1073,8 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
 
                 console.log('---------------');
 
-                if (modtype[0] !== 'label'){
-                    activityName = $('.activity#'+$activity[0].id).find('.mod-indent-outer .activityinstance');
+                if (modtype[0] !== 'label') {
+                    activityName = $('.activity#' + $activity[0].id).find('.mod-indent-outer .activityinstance');
                 }
 
                 var $backupIcon = create_backup_icon();
@@ -1160,8 +1155,9 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
             $.init_activity_commands();
         };
 
-        var WAITICON = {'pix': 'i/loading', 'component': 'moodle'};
-        var $spinner = $('<img/>').attr('src', M.util.image_url(WAITICON.pix, WAITICON.component)).addClass('spinner');
+        // var WAITICON = {'pix': 'i/loading', 'component': 'moodle'};
+        // var $spinner = $('<img/>').attr('src', M.util.image_url(WAITICON.pix, WAITICON.component)).addClass('spinner');
+        var $spinner = $('<i/>').addClass('spinner fa fa-3x fa-circle-o-notch fa-spin');
         $('div#sharing-cart-spinner-modal div.spinner-container').prepend($spinner);
 
         $.init();
