@@ -144,7 +144,19 @@ div.card-text ul.list li.move-to {
     justify-content: flex-end;
     margin-top: 14px;
     padding-top: 10px;
-    border-top: 1px solid rgba(0,0,0,.125);
+    border-top: 1px solid rgba(0, 0, 0, .125);
+}
+
+.block_spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, .5);
 }
 /* SHARING CART TREE END */
 

@@ -67,7 +67,6 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
          * @param isSection
          */
         function on_backup_modal(post_data, title_str, body_str, isSection) {
-            console.log(post_data);
             (function(on_success) {
                 $.post(get_action_url('rest'), post_data,
                     function(response) {
@@ -289,13 +288,13 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
          * @returns {*|jQuery}
          */
         function add_spinner($node) {
-            if ($node.find(".spinner").length) {
-                return $node.find(".spinner");
+            if (typeof $node !== 'undefined'){
+                // Add loading to node outside of the block.
+                console.log('Node is here.');
+                console.log($node);
             }
-            var $spinner = $('<i/>').addClass('spinner fa fa-circle-o-notch fa-spin')
-                .addClass(" iconsmall")
-                // .show();
-            $node.append($spinner);
+            var $spinner = ($('<div class="block_spinner"><i class="fa fa-circle-o-notch fa-spin fa-2x"></i></div>'));
+            $('section.block_sharing_cart').append($spinner);
             return $spinner;
         }
 
@@ -303,9 +302,8 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
          *  Reload the Sharing Cart item tree
          */
         function reload_tree() {
-            var $spinner = add_spinner($block.find('.commands'));
+            // var $spinner = add_spinner($block.find('.commands'));
 
-            $spinner.show();
             $.post(get_action_url("rest"),
                 {
                     "action": "render_tree"
@@ -318,7 +316,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                     show_error(response);
                 })
                 .always(function(response) {
-                    $spinner.hide();
+                    // $spinner.hide();
                 });
         }
 
@@ -334,7 +332,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                 $commands = $('[data-owner="#module-' + cmid + '"]');
             }
 
-            $spinner_modal.show();
+            var $spinner = add_spinner($commands);
 
             $.post(get_action_url("rest"),
                 {
@@ -351,7 +349,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                     show_error(response);
                 })
                 .always(function(response) {
-                    $spinner_modal.hide();
+                    $spinner.hide();
                 });
         }
 
@@ -374,8 +372,6 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
 
             var $spinner = add_spinner($commands);
 
-            $spinner_modal.show();
-
             $.post(get_action_url("rest"),
                 {
                     "action": "backup_section",
@@ -394,7 +390,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                     show_error(response);
                 })
                 .always(function(response) {
-                    $spinner_modal.hide();
+                    $spinner.hide();
                 });
         }
 
@@ -872,9 +868,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                         };
                     }
 
-                    var $spinner = add_spinner($(e.target).closest('.commands'));
-
-                    $spinner.show();
+                    var $spinner = add_spinner();
 
                     $.post(get_action_url("rest"), data,
                         function() {
@@ -1161,6 +1155,8 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
             $.init_activity_commands();
         };
 
+        // var htmltest = '<div style="position: absolute; width: 100%; height: 100%; background-color: hotpink;">nuttest</div>';
+        // $('section.block_sharing_cart').append(htmltest);
         var $spinner = $('<i/>').addClass('spinner fa fa-3x fa-circle-o-notch fa-spin');
         $('div#sharing-cart-spinner-modal div.spinner-container').prepend($spinner);
 

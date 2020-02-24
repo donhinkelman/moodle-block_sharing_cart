@@ -102,8 +102,6 @@ class block_sharing_cart extends block_base
             );
         $html = $noscript . $html;
 
-        $html .= '<div class="modal-bg" style="display: none;" id="sharing-cart-spinner-modal"><div class="spinner-container"><div style="margin-top: 10px;">' . get_string('inprogess_pleasewait', 'block_sharing_cart') . '</div></div></div>';
-
 		$this->page->requires->css('/blocks/sharing_cart/styles.css');
 		if ($this->is_special_version()) {
 			$this->page->requires->css('/blocks/sharing_cart/custom.css');
