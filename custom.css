@@ -129,6 +129,23 @@ div.card-text ul.list li.move-to {
 .toggle-wrapper {
     width: 100%;
 }
+
+.footer {
+    margin-top: 10px;
+}
+
+.footer form {
+    display: flex;
+    justify-content: space-between;
+}
+
+.footer .header-commands {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0,0,0,.125);
+}
 /* SHARING CART TREE END */
 
 /* MODAL START */
@@ -183,13 +200,9 @@ div.card-text ul.list li.move-to {
     width: 15px;
     margin: auto 0;
 }
-
 /* BULK VIEW END */
 
 /* IKKE VORES - RYD OP */
-.header-commands {
-    margin-top: 5px;
-}
 .header-commands img {
     margin-left: 0 !important;
 }
