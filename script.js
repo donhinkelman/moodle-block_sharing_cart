@@ -67,6 +67,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
          * @param isSection
          */
         function on_backup_modal(post_data, title_str, body_str, isSection) {
+            console.log(post_data);
             (function(on_success) {
                 $.post(get_action_url('rest'), post_data,
                     function(response) {
@@ -1105,7 +1106,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
 
                 // Extract the section ID from the section if this is a Flexible
                 // course format (since this format doesn't have an action menu)
-                if (isFlexibleCourseFormat && sectionId == null) {
+                if (isFlexibleCourseFormat && sectionId == null) {on_section_backup
                     sectionId = $section.data('section-id');
                 }
 
@@ -1146,6 +1147,8 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
             });
         };
 
+        $('')
+
         /**
          * Initialize the Sharing Cart block
          */
@@ -1162,5 +1165,16 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
         $('div#sharing-cart-spinner-modal div.spinner-container').prepend($spinner);
 
         $.init();
+    });
+
+    $('.copy_section').on('click', function(){
+
+        var $section_selected = ($('.section-dropdown option:selected'));
+        var sectionId = $section_selected.data('section-id');
+        var sectionNumber = $section_selected.data('section-number');
+        var courseId = $section_selected.data('course-id');
+        var sectionName = $section_selected.data('section-name');
+
+        $.on_section_backup(sectionId, sectionNumber, courseId, sectionName);
     });
 });

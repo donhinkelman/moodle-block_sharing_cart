@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once __DIR__.'/classes/controller.php';
+require_once __DIR__.'/classes/helpers/sections.php';
 
 /**
  * PTODO / TODO: See list below
@@ -78,7 +79,7 @@ class block_sharing_cart extends block_base
 	 */
 	public function get_content()
 	{
-		global $CFG, $USER;
+		global $CFG, $USER, $COURSE;
 
 		if ($this->content !== null)
 			return $this->content;
@@ -92,6 +93,7 @@ class block_sharing_cart extends block_base
 
 		$controller = new sharing_cart\controller();
 		$html = $controller->render_tree($USER->id);
+		$sections = (new sharing_cart\helpers\sections)->get($COURSE->id);
 
         /* Place the <noscript> tag to give out an error message if JavaScript is not enabled in the browser.
          * Adding bootstrap classes to show colored info in bootstrap based themes. */
@@ -120,9 +122,33 @@ class block_sharing_cart extends block_base
 			__CLASS__
 			);
 
-		$footer = '<div style="display:none;">'
+		$sections_dropdown = '';
+        foreach ($sections as $section) {
+            $sectionname = $section->name;
+            if(!$section->name) {
+                $sectionname = get_string('sectionname', "format_$COURSE->format") . ' ' . $section->section;
+            }
+
+            $sections_dropdown .= "
+                <option class='' data-section-id='$section->id' data-section-number='$section->section' data-course-id='$section->course' data-section-name='$sectionname'>
+                    $sectionname
+                </option>
+            ";
+        }
+
+		$footer = "
+		    <form>
+		        <select class='custom-select section-dropdown'>
+		            $sections_dropdown
+		        </select>
+		        <a href='javascript:void(0)' class='copy_section' title='get_string('sectionname', \"format_$COURSE->format\") . ' ' . $section->section)'>
+		            <i class=\"fa fa-files-o\" aria-hidden=\"true\"></i>
+		        </a>
+            </form>
+		";
+		$footer .= '<div style="display:none;">'
                 // Hvad gør linjen nedenunder ud over at sætte spørgsmålsikonet ind
-				. '<div class="header-commands">' . $this->get_header() . '</div>'
+		        . '<div class="header-commands">' . $this->get_header() . '</div>'
 				. '</div>';
 		return $this->content = (object)array('text' => $html, 'footer' => $footer);
 	}
