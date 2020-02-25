@@ -44,6 +44,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                 title: obj.title,
                 body: obj.body,
             }, trigger).done(function(modal) {
+                modal.setSaveButtonText(obj.save_button);
 
                 // Figure out what is returned on cancel and continue buttons.
                 // How to change text on buttons
@@ -83,10 +84,10 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                     checkbox = true;
                 }
 
-
                 confirm_modal({
                         'title': title_str,
                         'body': body_str,
+                        'save_button': str('modal_confirm_backup'),
                         'checkbox': checkbox,
                         'next': function(data) {
                             if (isSection === true) {
@@ -849,6 +850,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
             confirm_modal({
                 'title': str('confirm_delete'),
                 'body': modalBody,
+                'save_button': str('modal_confirm_delete'),
                 'checkbox': false,
                 'next': function() {
 

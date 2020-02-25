@@ -116,7 +116,11 @@ class block_sharing_cart extends block_base
 			);
 		$this->page->requires->strings_for_js(
 			array('copyhere', 'notarget', 'backup', 'restore', 'movedir', 'clipboard',
-					'confirm_backup', 'confirm_backup_section', 'confirm_userdata', 'confirm_userdata_section', 'confirm_delete', 'clicktomove', 'folder_string', 'activity_string', 'delete_folder', 'modal_checkbox', 'backup_activty_default_header'),
+					'confirm_backup', 'confirm_backup_section', 'confirm_userdata',
+                    'confirm_userdata_section', 'confirm_delete', 'clicktomove', 'folder_string',
+                    'activity_string', 'delete_folder', 'modal_checkbox', 'backup_activty_default_header',
+                    'modal_confirm_backup', 'modal_confirm_delete'
+            ),
 			__CLASS__
 			);
 

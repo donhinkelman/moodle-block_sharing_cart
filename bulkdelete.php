@@ -38,6 +38,7 @@ if (false) {
 }
 
 $PAGE->requires->css('/blocks/sharing_cart/custom.css');
+$PAGE->requires->js('/blocks/sharing_cart/script.js');
 
 $courseid = required_param('course', PARAM_INT);
 $returnurl = new moodle_url('/course/view.php', array('id' => $courseid));
@@ -113,6 +114,19 @@ echo $OUTPUT->header();
 		echo '
 		<script type="text/javascript">
 		//<![CDATA[
+//            confirm_modal({
+//                    \'title\': title_str,
+//                    \'body\': body_str,
+//                    \'save_button\': str(\'modal_confirm_backup\'),
+//                    \'checkbox\': checkbox,
+//                    \'next\': function(data) {
+//                        if (isSection === true) {
+//                            backup_section(post_data.sectionid, post_data.sectionnumber, post_data.courseid, data.checkbox);
+//                        } else {
+//                            backup(post_data.cmid, data.checkbox);
+//                        }
+//                    }
+//            });
 			function get_checks()
 			{
 				var els = document.forms["form"].elements;
