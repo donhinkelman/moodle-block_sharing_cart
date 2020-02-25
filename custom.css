@@ -175,6 +175,15 @@ div.card-text ul.list li.move-to {
 }
 /* MODAL END */
 
+/* ACTIVITIES & SECTION STYLING START */
+.node_spinner {
+    height: 100%;
+    margin: auto;
+    font-size: 16px;
+}
+
+/* ACTIVITIES & SECTION STYLING END */
+
 /* BULK VIEW START */
 .bulk-delete-list {
     list-style: none;

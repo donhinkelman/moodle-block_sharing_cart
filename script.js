@@ -142,15 +142,6 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
         /** @var {Node}  The Sharing Cart block container node */
         var $block = $('.block_sharing_cart');
 
-        var $spinner_modal = {
-            show: function() {
-                $('#sharing-cart-spinner-modal').show();
-            },
-            hide: function() {
-                $('#sharing-cart-spinner-modal').hide();
-            }
-        };
-
         /** @var {Object}  The current course */
         var course = new function() {
             var body = $('body');
@@ -287,37 +278,33 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
          * @param $node
          * @returns {*|jQuery}
          */
-        function add_spinner($node) {
-            if (typeof $node !== 'undefined'){
-                // Add loading to node outside of the block.
-                console.log('Node is here.');
-                console.log($node);
-            }
+        function add_spinner() {
             var $spinner = ($('<div class="block_spinner"><i class="fa fa-circle-o-notch fa-spin fa-2x"></i></div>'));
             $('section.block_sharing_cart').append($spinner);
             return $spinner;
+        }
+
+        function add_node_spinner ($node) {
+            var $node_spinner = ($('<i class="fa fa-circle-o-notch fa-spin node_spinner"></i>'));
+            $node.append($node_spinner);
+            return $node_spinner;
         }
 
         /**
          *  Reload the Sharing Cart item tree
          */
         function reload_tree() {
-            // var $spinner = add_spinner($block.find('.commands'));
-
             $.post(get_action_url("rest"),
-                {
-                    "action": "render_tree"
-                },
-                function(response) {
-                    $block.find(".tree").replaceWith($(response));
-                    $.init_item_tree();
-                }, "text")
-                .fail(function(response) {
-                    show_error(response);
-                })
-                .always(function(response) {
-                    // $spinner.hide();
-                });
+            {
+                "action": "render_tree"
+            },
+            function(response) {
+                $block.find(".tree").replaceWith($(response));
+                $.init_item_tree();
+            }, "text")
+            .fail(function(response) {
+                show_error(response);
+            });
         }
 
         /**
@@ -327,12 +314,13 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
          *  @param {Boolean} userdata
          */
         function backup(cmid, userdata) {
-            var $commands = $('#module-' + cmid + ' .commands');
+            var $commands = $('#module-' + cmid + ' .actions');
             if (!$commands.length) {
                 $commands = $('[data-owner="#module-' + cmid + '"]');
             }
 
-            var $spinner = add_spinner($commands);
+            var $spinner = add_spinner();
+            var $node_spinner = add_node_spinner($commands);
 
             $.post(get_action_url("rest"),
                 {
@@ -349,6 +337,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                     show_error(response);
                 })
                 .always(function(response) {
+                    $node_spinner.hide();
                     $spinner.hide();
                 });
         }
@@ -370,7 +359,9 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                     .parent().parent().find('h3.sectionname').text());
             }
 
-            var $spinner = add_spinner($commands);
+            var $spinner = add_spinner();
+            var $node_spinner = add_node_spinner($commands);
+
 
             $.post(get_action_url("rest"),
                 {
@@ -391,6 +382,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                 })
                 .always(function(response) {
                     $spinner.hide();
+                    $node_spinner.hide();
                 });
         }
 
@@ -497,6 +489,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                     var id = m[1],
                         to = m[2];
 
+                    var $spinner = add_spinner();
                     $.post(get_action_url("rest"),
                         {
                             "action": "move",
@@ -509,6 +502,9 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                         })
                         .fail(function(response) {
                             show_error(response);
+                        })
+                        .always(function() {
+                            $spinner.hide();
                         });
                 }
 
@@ -747,6 +743,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
 
             function submit() {
                 var to = $form.find('[name="to"]').val();
+                var $spinner = add_spinner();
                 $.post(get_action_url('rest'),
                     {
                         "action": "movedir",
@@ -760,6 +757,9 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                     })
                     .fail(function(response) {
                         show_error(response);
+                    })
+                    .always(function() {
+                        $spinner.hide();
                     });
             }
 
@@ -1071,8 +1071,8 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
 
                 // PTODO: Check all activities to see which works, and which doesnt.
                 // Due to some activities using different html layout, we exclude those as we find them.
-                if (modtype[0] !== 'label'){
-                    activityName = $('.activity#'+$activity[0].id).find('.mod-indent-outer .activityinstance span.instancename').html();
+                if (modtype[0] !== 'label') {
+                    activityName = $('.activity#' + $activity[0].id).find('.mod-indent-outer .activityinstance span.instancename').html();
                 }
 
                 var $backupIcon = create_backup_icon();
@@ -1100,7 +1100,8 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
 
                 // Extract the section ID from the section if this is a Flexible
                 // course format (since this format doesn't have an action menu)
-                if (isFlexibleCourseFormat && sectionId == null) {on_section_backup
+                if (isFlexibleCourseFormat && sectionId == null) {
+on_section_backup;
                     sectionId = $section.data('section-id');
                 }
 
@@ -1141,7 +1142,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
             });
         };
 
-        $('')
+        $('');
 
         /**
          * Initialize the Sharing Cart block
@@ -1154,16 +1155,13 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
             $.init_item_tree();
             $.init_activity_commands();
         };
-
-        // var htmltest = '<div style="position: absolute; width: 100%; height: 100%; background-color: hotpink;">nuttest</div>';
-        // $('section.block_sharing_cart').append(htmltest);
         var $spinner = $('<i/>').addClass('spinner fa fa-3x fa-circle-o-notch fa-spin');
         $('div#sharing-cart-spinner-modal div.spinner-container').prepend($spinner);
 
         $.init();
     });
 
-    $('.copy_section').on('click', function(){
+    $('.copy_section').on('click', function() {
 
         var $section_selected = ($('.section-dropdown option:selected'));
         var sectionId = $section_selected.data('section-id');
