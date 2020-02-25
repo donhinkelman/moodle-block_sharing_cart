@@ -38,7 +38,7 @@ if (false) {
 }
 
 $PAGE->requires->css('/blocks/sharing_cart/custom.css');
-$PAGE->requires->js('/blocks/sharing_cart/script.js');
+$PAGE->requires->js_call_amd('block_sharing_cart/bulkdelete', 'init');
 
 $courseid = required_param('course', PARAM_INT);
 $returnurl = new moodle_url('/course/view.php', array('id' => $courseid));
@@ -48,6 +48,7 @@ require_login($courseid);
 $delete_param = function_exists('optional_param_array')
 	? optional_param_array('delete', null, PARAM_RAW)
 	: optional_param('delete', null, PARAM_RAW);
+
 if (is_array($delete_param)) try {
 
 	confirm_sesskey();
@@ -112,70 +113,15 @@ echo $OUTPUT->header();
 		</div>';
 	} else {
 		echo '
-		<script type="text/javascript">
-		//<![CDATA[
-//            confirm_modal({
-//                    \'title\': title_str,
-//                    \'body\': body_str,
-//                    \'save_button\': str(\'modal_confirm_backup\'),
-//                    \'checkbox\': checkbox,
-//                    \'next\': function(data) {
-//                        if (isSection === true) {
-//                            backup_section(post_data.sectionid, post_data.sectionnumber, post_data.courseid, data.checkbox);
-//                        } else {
-//                            backup(post_data.cmid, data.checkbox);
-//                        }
-//                    }
-//            });
-			function get_checks()
-			{
-				var els = document.forms["form"].elements;
-				var ret = new Array();
-				for (var i = 0; i < els.length; i++) {
-					var el = els[i];
-					if (el.type == "checkbox" && el.name.match(/^delete\b/)) {
-						ret.push(el);
-					}
-				}
-				return ret;
-			}
-			function check_all(check)
-			{
-				var checks = get_checks();
-				for (var i = 0; i < checks.length; i++) {
-					checks[i].checked = check.checked;
-				}
-				document.forms["form"].elements["delete_checked"].disabled = !check.checked;
-			}
-			function confirm_delete_selected()
-			{
-				return confirm("', s(
-					get_string('confirm_delete_selected', 'block_sharing_cart')
-				), '");
-			}
-			function check()
-			{
-				var delete_checked = document.forms["form"].elements["delete_checked"];
-				var checks = get_checks();
-				for (var i = 0; i < checks.length; i++) {
-					if (checks[i].checked) {
-						delete_checked.disabled = false;
-						return;
-					}
-				}
-				delete_checked.disabled = true;
-			}
-		//]]>
-		</script>
 		<form action="', $PAGE->url->out_omit_querystring(), '"
-		 method="post" id="form" onsubmit="return confirm_delete_selected();">
+		 method="post" id="form">
 		<input type="hidden" name="sesskey" value="', s(sesskey()), '" />
 		<div style="display:none;">
 			' . html_writer::input_hidden_params($PAGE->url) . '
 		</div>
-		<div class="bulk-delete-select-all"><label style="cursor:default;">
-			<input type="checkbox" checked="checked" onclick="check_all(this);"
-			 style="height:16px; vertical-align:middle;" />
+		<div class="bulk-delete-select-all">
+		<label style="cursor:default;">
+			<input type="checkbox" checked="checked" style="height:16px; vertical-align:middle;" />
 			<span>', get_string('selectall'), '</span>
 		</label></div>';
 
@@ -185,7 +131,7 @@ echo $OUTPUT->header();
 		foreach ($items as $id => $item) {
 			echo '
 			<li class="bulk-delete-item">
-				<input type="checkbox" name="delete['.$id.']" checked="checked" onclick="check();" id="delete_'.$id.'" />
+				<input type="checkbox" name="delete['.$id.']" checked="checked" id="delete_'.$id.'" />
 				', sharing_cart\renderer::render_modicon($item), '
                 <label for="delete_'.$id.'">', format_string($item->modtext),'</label>
 			</li>';
@@ -200,7 +146,7 @@ echo $OUTPUT->header();
 
 		echo '
 		<div>
-			<input class="btn btn-primary" type="submit" name="delete_checked" value="', s(get_string('deleteselected')), '" />
+			<input class="btn btn-primary form_submit" type="button" name="delete_checked" value="', s(get_string('deleteselected')), '" />
 			<input class="btn" type="button" onclick="history.back();" value="', s(get_string('cancel')), '" />
 		</div>
 		</form>';

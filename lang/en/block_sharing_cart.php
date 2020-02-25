@@ -97,5 +97,6 @@ $string['delete_folder'] = ' and all it\'s content';
 $string['modal_checkbox'] = 'copy userdata';
 $string['modal_confirm_backup'] = 'Backup';
 $string['modal_confirm_delete'] = 'Delete';
+//$string['modal_confirm_bulkdelete'] = 'Sure you want to deleted selected?'; // Not used yet.
 $string['backup_activty_default_header'] = 'Activity';
 $string['no_backup_support'] = 'No backup support for this module';
