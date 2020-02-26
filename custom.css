@@ -4,7 +4,6 @@ div.card-text ul.tree li:hover {
     background-color: rgba(0, 0, 0, .03);
 }
 div.card-text ul.tree li.directory > div {
-    margin-top: 5px;
     padding: 5px;
 }
 
@@ -32,12 +31,7 @@ ul.tree li > div .instancename .no-overflow {
     overflow: hidden;
     display: inline-block;
     padding-right: 5px;
-    margin: auto 0;
-}
-
-
-ul.tree li.directory i.icon {
-    margin-top: 2px;
+    margin: 2px 0 auto 0;
 }
 
 ul.tree li img.activityicon {
@@ -73,7 +67,7 @@ span.commands form input:focus {
 
 span.commands i.fa {
     margin: 0;
-    padding: 0.3em;
+    padding: 0 0.3em;
     width: 20px;
     height: 20px;
     color: #373a3c;
@@ -128,6 +122,11 @@ div.card-text ul.list li.move-to {
 
 .toggle-wrapper {
     width: 100%;
+    display: flex;
+}
+
+.toggle-wrapper i.fa {
+    margin: auto 5px auto 0;
 }
 
 .footer {
@@ -145,6 +144,11 @@ div.card-text ul.list li.move-to {
     margin-top: 14px;
     padding-top: 10px;
     border-top: 1px solid rgba(0, 0, 0, .125);
+}
+
+.footer form select {
+    width: 100%;
+    margin-right: 10px;
 }
 
 .block_spinner {

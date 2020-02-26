@@ -285,7 +285,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
             return $spinner;
         }
 
-        function add_node_spinner ($node) {
+        function add_node_spinner($node) {
             var $node_spinner = ($('<i class="fa fa-circle-o-notch fa-spin node_spinner"></i>'));
             $node.append($node_spinner);
             return $node_spinner;
