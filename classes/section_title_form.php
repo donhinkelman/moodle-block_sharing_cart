@@ -1,5 +1,5 @@
 <?php
-namespace sharing_cart;
+namespace block_sharing_cart;
 
 defined('MOODLE_INTERNAL') || die();
 

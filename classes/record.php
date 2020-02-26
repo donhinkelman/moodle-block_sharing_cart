@@ -21,11 +21,11 @@
  *  @copyright  2017 (C) VERSION2, INC.
  *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace sharing_cart;
+namespace block_sharing_cart;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once __DIR__.'/exception.php';
+use block_sharing_cart\exception as sharing_cart_exception;
 
 /**
  *  Sharing Cart record manager
@@ -33,9 +33,9 @@ require_once __DIR__.'/exception.php';
 class record
 {
 	const TABLE = 'block_sharing_cart';
-	
+
 	const WEIGHT_BOTTOM = 9999;
-	
+
 	public $id       = null;
 	public $userid   = null;
 	public $modname  = null;
@@ -45,27 +45,27 @@ class record
 	public $filename = null;
 	public $tree     = '';
 	public $weight   = 0;
-	public $course = 0;
+	public $course   = 0;
 	public $coursefullname = '';
-	
+
 	/**
 	 *  Constructor
-	 *  
+	 *
 	 *  @param mixed $record = empty
 	 */
 	public function __construct($record = array())
 	{
 		foreach ((array)$record as $field => $value)
 			$this->{$field} = $value;
-		
+
 		// default values
 		$this->userid or $this->userid = $GLOBALS['USER']->id;
 		$this->ctime or $this->ctime = time();
 	}
-	
+
 	/**
 	 *  Create record instance from record ID
-	 *  
+	 *
 	 *  @param int $id
 	 *  @return record
 	 *  @throws exception
@@ -74,10 +74,10 @@ class record
 	{
 		$record = $GLOBALS['DB']->get_record(self::TABLE, array('id' => $id));
 		if (!$record)
-			throw new exception('recordnotfound');
+			throw new sharing_cart_exception('recordnotfound');
 		return new self($record);
 	}
-	
+
 	/**
 	 *  Insert record
 	 *
@@ -90,27 +90,27 @@ class record
 			$this->weight = self::WEIGHT_BOTTOM;
 		$this->id = $GLOBALS['DB']->insert_record(self::TABLE, $this);
 		if (!$this->id)
-			throw new exception('unexpectederror');
+			throw new sharing_cart_exception('unexpectederror');
 		self::renumber($this->userid);
 
 		return $this->id;
 	}
-	
+
 	/**
 	 *  Update record
-	 *  
+	 *
 	 *  @throws exception
 	 */
 	public function update()
 	{
 		if (!$GLOBALS['DB']->update_record(self::TABLE, $this))
-			throw new exception('unexpectederror');
+			throw new sharing_cart_exception('unexpectederror');
 		self::renumber($this->userid);
 	}
-	
+
 	/**
 	 *  Delete record
-	 *  
+	 *
 	 *  @throws exception
 	 */
 	public function delete()
@@ -118,10 +118,10 @@ class record
 		$GLOBALS['DB']->delete_records(self::TABLE, array('id' => $this->id));
 		self::renumber($this->userid);
 	}
-	
+
 	/**
 	 *  Renumber all items sequentially
-	 *  
+	 *
 	 * @global \moodle_database $DB
 	 * @global \stdClass $USER
 	 * @param int $userid = $USER->id

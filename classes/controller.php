@@ -21,18 +21,15 @@
  *  @copyright  2017 (C) VERSION2, INC.
  *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace sharing_cart;
+namespace block_sharing_cart;
+
+use backup_controller;
+use block_sharing_cart\exceptions\no_backup_support_exception;
+use restore_controller;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
-use block_lp\output\summary;
-use block_sharing_cart\exceptions\no_backup_support_exception;
-use block_sharing_cart\module;
-
-require_once __DIR__.'/storage.php';
-require_once __DIR__.'/record.php';
-require_once __DIR__.'/scoped.php';
-require_once __DIR__.'/helpers/section.php';
 require_once __DIR__.'/../../../course/lib.php';
 
 /**
@@ -220,7 +217,7 @@ class controller
 				'anonymize' => false,
 				);
 		}
-		$controller = new \backup_controller(
+		$controller = new backup_controller(
 			\backup::TYPE_1ACTIVITY,
 			$cm->id,
 			\backup::FORMAT_MOODLE,
@@ -281,7 +278,7 @@ class controller
         try {
             // Save section data
             $section = $DB->get_record('course_sections', array('id' => $sectionid));
-            $sharing_cart_section = new \stdClass();
+            $sharing_cart_section = new stdClass();
             $sharing_cart_section->id = 0;
             $sharing_cart_section->name = get_section_name($section->course, $section->section);
             $sharing_cart_section->summary = $section->summary;
@@ -442,7 +439,7 @@ class controller
 
 		// prepare the temporary directory and generate a temporary name
 		$tempdir = self::get_tempdir();
-		$tempname = \restore_controller::get_tempdir_name($course->id, $USER->id);
+		$tempname = restore_controller::get_tempdir_name($course->id, $USER->id);
 
 		// copy the backup archive into the temporary directory
 		$storage = new storage();
@@ -456,7 +453,7 @@ class controller
 		$tempfiles[] = "$tempdir/$tempname";
 
 		// restore a module from the extracted files
-		$controller = new \restore_controller($tempname, $course->id,
+		$controller = new restore_controller($tempname, $course->id,
 			\backup::INTERACTIVE_NO, \backup::MODE_GENERAL, $USER->id,
 			\backup::TARGET_EXISTING_ADDING);
 		foreach ($controller->get_plan()->get_tasks() as $task) {

@@ -22,6 +22,11 @@
  *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use block_sharing_cart\exception as sharing_cart_exception;
+use block_sharing_cart\record;
+use block_sharing_cart\renderer;
+use block_sharing_cart\storage;
+
 require_once '../../config.php';
 
 require_once __DIR__.'/classes/storage.php';
@@ -39,6 +44,12 @@ if (false) {
 
 $PAGE->requires->css('/blocks/sharing_cart/custom.css');
 $PAGE->requires->js_call_amd('block_sharing_cart/bulkdelete', 'init');
+$PAGE->requires->strings_for_js(
+    array(
+        'modal_bulkdelete_title', 'modal_bulkdelete_confirm'
+    ),
+    'block_sharing_cart'
+);
 
 $courseid = required_param('course', PARAM_INT);
 $returnurl = new moodle_url('/course/view.php', array('id' => $courseid));
@@ -57,11 +68,11 @@ if (is_array($delete_param)) try {
 	$delete_ids = array_map('intval', array_keys($delete_param));
 
 	list ($sql, $params) = $DB->get_in_or_equal($delete_ids);
-	$records = $DB->get_records_select(sharing_cart\record::TABLE, "userid = $USER->id AND id $sql", $params);
+	$records = $DB->get_records_select(record::TABLE, "userid = $USER->id AND id $sql", $params);
 	if (!$records)
-		throw new sharing_cart\exception('recordnotfound');
+		throw new sharing_cart_exception('recordnotfound');
 
-	$storage = new sharing_cart\storage();
+	$storage = new storage();
 
 	$deleted_ids = array();
 	foreach ($records as $record) {
@@ -70,12 +81,12 @@ if (is_array($delete_param)) try {
 	}
 
 	list ($sql, $params) = $DB->get_in_or_equal($deleted_ids);
-	$DB->delete_records_select(sharing_cart\record::TABLE, "id $sql", $params);
+	$DB->delete_records_select(record::TABLE, "id $sql", $params);
 
-	sharing_cart\record::renumber($USER->id);
+    record::renumber($USER->id);
 
 	redirect($returnurl);
-} catch (sharing_cart\exception $ex) {
+} catch (sharing_cart_exception $ex) {
 	print_error($ex->errorcode, $ex->module, $returnurl, $ex->a);
 } catch (Exception $ex) {
 	if (!empty($CFG->debug) and $CFG->debug >= DEBUG_DEVELOPER) {
@@ -90,7 +101,7 @@ if ($DB->get_dbfamily() == 'mssql' || $DB->get_dbfamily() == 'oracle') {
 	// SQL Server and Oracle do not support ordering by TEXT field.
 	$orderby = 'tree,weight,CAST(modtext AS VARCHAR(255))';
 }
-$items = $DB->get_records(sharing_cart\record::TABLE, array('userid' => $USER->id), $orderby);
+$items = $DB->get_records(record::TABLE, array('userid' => $USER->id), $orderby);
 
 $title = get_string('bulkdelete', 'block_sharing_cart');
 
@@ -132,14 +143,9 @@ echo $OUTPUT->header();
 			echo '
 			<li class="bulk-delete-item">
 				<input type="checkbox" name="delete['.$id.']" checked="checked" id="delete_'.$id.'" />
-				', sharing_cart\renderer::render_modicon($item), '
+				', renderer::render_modicon($item), '
                 <label for="delete_'.$id.'">', format_string($item->modtext),'</label>
 			</li>';
-			if (++$i % 10 == 0) {
-				echo '
-		</ul>
-		<ul class="bulk-delete-list">';
-			}
 		}
 		echo '
 		</ul>';

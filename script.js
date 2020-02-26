@@ -767,13 +767,10 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
             $form.submit(submit);
 
             if (dirs.length === 0) {
-                // PTODO: Det virker som om at append input sker hurtigere end noget af koden er læst.
-                // Hvis vi consol.logger inden append($input), er det allerede appended.
                 var $input = $('<input class="form-control" type="text" name="to"/>').val(current_path);
                 setTimeout(function() {
                     $input.focus();
                 }, 1);
-                // $input.focus();
                 $form.append($input);
             } else {
                 dirs.unshift('/');

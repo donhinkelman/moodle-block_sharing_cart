@@ -21,7 +21,7 @@
  *  @copyright  2017 (C) VERSION2, INC.
  *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace sharing_cart;
+namespace block_sharing_cart;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -32,7 +32,7 @@ class exception extends \moodle_exception
 {
     /**
      *  Constructor
-     *  
+     *
      *  @param string $errcode  The error string ID
      *  @param mixed  $a        (Optional) Additional parameter
      */

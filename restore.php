@@ -22,6 +22,9 @@
  *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use block_sharing_cart\controller;
+use block_sharing_cart\section_title_form;
+
 require_once '../../config.php';
 
 require_once __DIR__.'/classes/controller.php';
@@ -51,10 +54,10 @@ $returnurl .= '#section-' . $sectionnumber;
 require_login($courseid);
 
 try {
-	$controller = new sharing_cart\controller();
+	$controller = new controller();
 
 	if ($directory) {
-        $form = new \sharing_cart\section_title_form($directory, $path, $courseid, $sectionnumber, array());
+        $form = new section_title_form($directory, $path, $courseid, $sectionnumber, array());
         if ($form->is_cancelled()) {
             redirect($returnurl);
             exit;
@@ -83,7 +86,7 @@ try {
                 echo $OUTPUT->header();
                 echo $OUTPUT->heading(get_string('section_name_conflict', 'block_sharing_cart'));
 
-                $form = new \sharing_cart\section_title_form($directory, $path, $courseid, $sectionnumber, $sections);
+                $form = new section_title_form($directory, $path, $courseid, $sectionnumber, $sections);
                 $form->display();
 
                 echo $OUTPUT->footer();

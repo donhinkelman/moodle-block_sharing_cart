@@ -22,14 +22,13 @@
  *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use block_sharing_cart\controller;
+use block_sharing_cart\exception as sharing_cart_exception;
+
 require_once '../../config.php';
 
-require_once __DIR__.'/classes/controller.php';
-
-use sharing_cart\helpers;
-
 try {
-	$controller = new sharing_cart\controller();
+	$controller = new controller();
 
 	switch (required_param('action', PARAM_TEXT)) {
         case 'render_tree':
@@ -95,8 +94,8 @@ try {
 			echo $controller->ensure_backup_in_module($cmid, $courseid);
 			exit;
 	}
-	throw new sharing_cart\exception('invalidoperation');
-	
+	throw new sharing_cart_exception('invalidoperation');
+
 } catch (Exception $ex) {
 	header('HTTP/1.1 400 Bad Request');
 	$json = array(

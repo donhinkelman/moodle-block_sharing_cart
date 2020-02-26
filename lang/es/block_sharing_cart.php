@@ -98,3 +98,6 @@ $string['modal_confirm_backup'] = 'Backup (Missing translation)';
 $string['modal_confirm_delete'] = 'Delete (Missing translation)';
 $string['backup_activty_default_header'] = 'Activity (Missing translation)';
 $string['no_backup_support'] = 'No backup support for this module (Missing translation)';
+
+$string['modal_bulkdelete_title'] = 'Sure you want to deleted selected? (Missing translation)';
+$string['modal_bulkdelete_confirm'] = 'Delete selected (Missing translation)';

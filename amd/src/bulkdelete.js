@@ -3,6 +3,20 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
     return {
         init: function() {
 
+            /**
+             *  Returns a localized string
+             *
+             *  @param {String} identifier
+             *  @return {String}
+             */
+            function str(identifier) {
+                return M.str.block_sharing_cart[identifier] || M.str.moodle[identifier];
+            }
+
+            /**
+             *
+             * @param obj
+             */
             function confirm_modal (obj){
                 var trigger = $('#create-modal');
                 ModalFactory.create({
@@ -21,6 +35,10 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                 });
             }
 
+            /**
+             *
+             * @returns {any[]}
+             */
             function get_checks() {
                 var els = document.forms["form"].elements;
                 var ret = new Array();
@@ -33,6 +51,10 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                 return ret;
             }
 
+            /**
+             *
+             * @param check
+             */
             function check_all(check) {
                 var checks = get_checks();
                 for (var i = 0; i < checks.length; i++) {
@@ -41,6 +63,9 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                 document.forms["form"].elements["delete_checked"].disabled = !check.checked;
             }
 
+            /**
+             *
+             */
             function check() {
                 var delete_checked = document.forms["form"].elements["delete_checked"];
                 var checks = get_checks();
@@ -53,21 +78,36 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                 delete_checked.disabled = true;
             }
 
+            /**
+             * Check activity button
+             */
             $('.bulk-delete-item [id^=delete]').on('click', function(){
                 check();
             });
+
+            /**
+             * Select all checkbox.
+             */
             $('.bulk-delete-select-all input').on('click', function() {
                 check_all(this);
             });
 
+            /**
+             * Delete selected, opens modal for confirmation.
+             */
             $('.form_submit').on('click', function(){
-                var checked_for_delete = $(this);
-                console.log(checked_for_delete);
+                var modal_body = '<ul>';
+                var selected_input = $('.bulk-delete-item input:checked');
+                $(selected_input).each(function(){
+                    var label = $('label[for="'+this.id+'"]');
+                    modal_body += '<li>' + label.text() + '</li>';
+                });
+                modal_body += '</ul>';
 
                 confirm_modal({
-                    'title': 'Slet de valgte aktiviteter?',
-                    'body': 'selected activities.',
-                    'save_button': 'Save',
+                    'title': str('modal_bulkdelete_title'),
+                    'body': modal_body,
+                    'save_button': str('modal_bulkdelete_confirm'),
                     'next': function() {
                         $('#form').submit();
                     }

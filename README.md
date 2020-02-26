@@ -11,6 +11,13 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
+* 3.6, release 6    2020.02.26
+    * Copy section dropdown, now won't display empty sections.
+    * Bulkdelete view updated.
+        - Modal added.
+        - Won't be seperated in groups of 10.
+        - JS moved to amd module.
+    * Namespace updated to follow moodle standards.
 * 3.6, release 5    2020.02.21
     * Updated loading icons.
     * Fixed code to use fewer functions, cleaned up some checks.

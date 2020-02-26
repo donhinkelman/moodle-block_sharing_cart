@@ -22,10 +22,10 @@
  *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+use block_sharing_cart\controller;
+use block_sharing_cart\section;
 
-require_once __DIR__.'/classes/controller.php';
-require_once __DIR__.'/classes/helpers/sections.php';
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * PTODO / TODO: See list below
@@ -44,7 +44,7 @@ class block_sharing_cart extends block_base
 	public function init()
 	{
 		$this->title   = get_string('pluginname', __CLASS__);
-		$this->version = 2015012700;
+//		$this->version = 2015012700; // Is this used?
 	}
 
 	public function applicable_formats()
@@ -91,9 +91,10 @@ class block_sharing_cart extends block_base
 		if (!has_capability('moodle/backup:backupactivity', $context))
 			return $this->content = '';
 
-		$controller = new sharing_cart\controller();
-		$html = $controller->render_tree($USER->id);
-		$sections = (new sharing_cart\helpers\sections)->get($COURSE->id);
+		$controller = new controller();
+		$html = $controller->render_tree($USER->id);;
+
+        $sections = (new section)->all($COURSE->id);
 
         /* Place the <noscript> tag to give out an error message if JavaScript is not enabled in the browser.
          * Adding bootstrap classes to show colored info in bootstrap based themes. */
@@ -124,18 +125,21 @@ class block_sharing_cart extends block_base
 			__CLASS__
 			);
 
+
+		// PTODO: Se om sektioner uden indhold bliver vist i dropdown. Det bliver tjekket på sequence som formentlig bliver ryddet op ved cronjobs.
 		$sections_dropdown = '';
         foreach ($sections as $section) {
             $sectionname = $section->name;
-            if(!$section->name) {
-                $sectionname = get_string('sectionname', "format_$COURSE->format") . ' ' . $section->section;
+            if ($section->sequence !== ''){
+                if(!$section->name) {
+                    $sectionname = get_string('sectionname', "format_$COURSE->format") . ' ' . $section->section;
+                }
+                $sections_dropdown .= "
+                    <option class='' data-section-id='$section->id' data-section-number='$section->section' data-course-id='$section->course' data-section-name='$sectionname'>
+                        $sectionname
+                    </option>
+                ";
             }
-
-            $sections_dropdown .= "
-                <option class='' data-section-id='$section->id' data-section-number='$section->section' data-course-id='$section->course' data-section-name='$sectionname'>
-                    $sectionname
-                </option>
-            ";
         }
 
 		$footer = "
