@@ -30,8 +30,8 @@ ul.tree li > div .instancename .no-overflow {
     white-space: nowrap;
     overflow: hidden;
     display: inline-block;
-    padding-right: 5px;
     margin: 2px 0 auto 0;
+    width: 100%;
 }
 
 ul.tree li img.activityicon {
@@ -202,6 +202,10 @@ div.card-text ul.list li.move-to {
     display: flex;
     border-top: 1px solid rgba(0, 0, 0, 0.125);
     padding: 5px 10px;
+}
+
+.bulk-delete-item label {
+    text-align: left;
 }
 
 .bulk-delete-item:last-of-type {
