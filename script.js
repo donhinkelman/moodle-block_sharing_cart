@@ -486,6 +486,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                 this.hide();
 
                 function move(e) {
+
                     var m = $(e.target).closest('a').attr('class').match(/move-(\d+)-to-(\d+)/);
                     var id = m[1],
                         to = m[2];
