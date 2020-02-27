@@ -44,7 +44,7 @@ try {
 			if (empty($sectionid)) {
 				$sectionnumber = required_param('sectionnumber', PARAM_INT);
 				$courseid = required_param('courseid', PARAM_INT);
-				$section = helpers\section::get($courseid, $sectionnumber);
+				$section = section::get($courseid, $sectionnumber);
 				$sectionid = $section->id;
 			}
             echo $controller->is_userdata_copyable_section($sectionid);
@@ -61,7 +61,7 @@ try {
 			if (empty($sectionid) || empty($sectionname)) {
 				$sectionnumber = required_param('sectionnumber', PARAM_INT);
 				$courseid = required_param('courseid', PARAM_INT);
-				$section = helpers\section::get($courseid, $sectionnumber);
+				$section = section::get($courseid, $sectionnumber);
 				$sectionid = $section->id;
 				$sectionname = $section->name;
 			}

@@ -18,6 +18,7 @@ Change Log
         - Won't be seperated in groups of 10.
         - JS moved to amd module.
     * Namespace updated to follow moodle standards.
+    * Small bugfixes
 * 3.6, release 5    2020.02.21
     * Updated loading icons.
     * Fixed code to use fewer functions, cleaned up some checks.

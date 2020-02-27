@@ -1021,13 +1021,18 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                     if (result === 'core_course_edit_module') {
 
                         var data = JSON.parse(settings.data);
+                        var action = data[0].args.action;
+
+                        if (action === 'delete') {
+                            return;
+                        }
 
                         setTimeout(function() {
                             var activity_id = data[0].args.id;
                             var activity = $('#module-' + activity_id);
                             add_activity_backup_control(activity);
 
-                            if (data[0].args.action === 'duplicate') {
+                            if (action === 'duplicate') {
                                 var duplicated = activity.next();
                                 add_activity_backup_control(duplicated);
                             }
