@@ -12,6 +12,8 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 Change Log
 ----------
 * 3.6, release 7    2020.02.27
+    * Hotfix, missing 'use' in rest.php.
+* 3.6, release 7    2020.02.27
     * Small bugfixes.
     * Few style improvements.
     * Tested on Moodle 3.6, 3.7 & 3.8 - tested in New (old) classic theme.

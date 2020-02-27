@@ -24,6 +24,7 @@
 
 use block_sharing_cart\controller;
 use block_sharing_cart\exception as sharing_cart_exception;
+use block_sharing_cart\section;
 
 require_once '../../config.php';
 
