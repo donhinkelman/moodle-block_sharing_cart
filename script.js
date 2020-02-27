@@ -1024,6 +1024,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                         var data = JSON.parse(settings.data);
                         var action = data[0].args.action;
 
+                        // Don't try to add icon if activity has been deleted.
                         if (action === 'delete') {
                             return;
                         }
@@ -1074,8 +1075,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                 // Default activity name.
                 var activityName = str('backup_activty_default_header');
 
-                // PTODO: Check all activities to see which works, and which doesnt.
-                // Due to some activities using different html layout, we exclude those as we find them.
+                // Label is using a different html / css layout, so it's needed to get the name by using another $find.
                 if (modtype[0] !== 'label') {
                     activityName = $('.activity#' + $activity[0].id).find('.mod-indent-outer .activityinstance span.instancename').html();
                 }
