@@ -54,9 +54,6 @@ $string['confirm_backup_section'] = '共有カートにコピーしますか？'
 $string['confirm_userdata'] = '共有カートへのコピーにユーザーデータを含めますか？
 OK：ユーザーデーターを含めて、コピーする
 キャンセル：ユーザーデーターを含めずに、コピーする';
-$string['confirm_userdata_section'] = '共有カートへのコピーにユーザーデータを含めますか？
-OK：ユーザーデーターを含めて、コピーする
-キャンセル：ユーザーデーターを含めずに、コピーする';
 $string['confirm_restore'] = 'コースにコピーしますか？';
 $string['confirm_delete'] = '削除してよろしいですか？';
 $string['confirm_delete_selected'] = '選択したアイテムを全て削除してもよろしいですか？';
@@ -93,10 +90,9 @@ $string['conflict_submit'] = '続く';
 $string['folder_string'] = 'Folder: (Missing translation)';
 $string['activity_string'] = 'Activity: (Missing translation)';
 $string['delete_folder'] = ' and all it\'s content (Missing translation)';
-$string['modal_checkbox'] = 'copy userdata (Missing translation)';
+$string['modal_checkbox'] = 'Do you want to copy user data? (Eg. glossary/wiki/database entries) (Missing translation)';
 $string['modal_confirm_backup'] = 'Confirm (Missing translation)';
 $string['modal_confirm_delete'] = 'Delete (Missing translation)';
-$string['backup_activty_default_header'] = 'Activity (Missing translation)';
 $string['no_backup_support'] = 'No backup support for this module (Missing translation)';
 
 $string['modal_bulkdelete_title'] = 'Sure you want to deleted selected? (Missing translation)';

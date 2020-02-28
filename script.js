@@ -1073,7 +1073,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                 var modtype = activityClass.match(regexPattern);
 
                 // Default activity name.
-                var activityName = str('backup_activty_default_header');
+                var activityName = str('activity_string');
 
                 // Label is using a different html / css layout, so it's needed to get the name by using another $find.
                 if (modtype[0] !== 'label') {

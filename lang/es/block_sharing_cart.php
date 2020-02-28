@@ -55,9 +55,6 @@ $string['confirm_backup_section'] = '¿Está seguro de copiar estas/os actividad
 $string['confirm_userdata'] = '¿Quiere incluir datos de usuarios en la copia de esta/e actividad/recurso?
 OK - Copiar *CON* datos de usuarios
 Cancelar - Copiar *SIN* datos de usuarios';
-$string['confirm_userdata_section'] = '¿Quiere incluir datos de usuarios en la copia de estas/os actividades/recursos?
-OK - Copiar *CON* datos de usuarios
-Cancelar - Copiar *SIN* datos de usuarios';
 $string['confirm_restore'] = '¿Está seguro de copiar este item al curso?';
 $string['confirm_delete'] = '¿Está seguro de borrar?';
 $string['confirm_delete_selected'] = '¿Está seguro de querer borrar todos los elementos seleccionados?';
@@ -93,10 +90,9 @@ $string['conflict_submit'] = 'Continuar';
 $string['folder_string'] = 'Folder: (Missing translation)';
 $string['activity_string'] = 'Activity: (Missing translation)';
 $string['delete_folder'] = ' and all it\'s content (Missing translation)';
-$string['modal_checkbox'] = 'copy userdata (Missing translation)';
+$string['modal_checkbox'] = 'Do you want to copy user data? (Eg. glossary/wiki/database entries) (Missing translation)';
 $string['modal_confirm_backup'] = 'Confirm (Missing translation)';
 $string['modal_confirm_delete'] = 'Delete (Missing translation)';
-$string['backup_activty_default_header'] = 'Activity (Missing translation)';
 $string['no_backup_support'] = 'No backup support for this module (Missing translation)';
 
 $string['modal_bulkdelete_title'] = 'Sure you want to deleted selected? (Missing translation)';

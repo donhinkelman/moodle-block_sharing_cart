@@ -460,7 +460,7 @@ YUI.add('block_sharing_cart', function (Y)
             var helpicon = $block.one('.header-commands .help-icon');
             if (isspeciallayout) {
                 helpicon = helpicon.setAttribute('data-placement', 'left');
-                helpicon = helpicon.prepend(Y.Node.create('<span/>').append(M.str.block_sharing_cart['pluginname']));
+                helpicon.prepend(Y.Node.create('<span/>').append(M.str.block_sharing_cart['pluginname']));
                 $block.one('.header-commands').get('parentNode').setStyle('display', 'block');
             } else {
                 $block.one('.header .commands').append(helpicon);
