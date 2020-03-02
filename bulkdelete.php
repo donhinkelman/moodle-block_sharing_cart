@@ -120,7 +120,7 @@ echo $OUTPUT->header();
 	if (empty($items)) {
 		echo '
 		<div>
-			<input type="button" onclick="history.back();" value="', get_string('back'), '" />
+			<input type="button" class="btn btn-primary" onclick="history.back();" value="', get_string('back'), '" />
 		</div>';
 	} else {
 		echo '
@@ -133,7 +133,7 @@ echo $OUTPUT->header();
 		<div class="bulk-delete-select-all">
 		<label style="cursor:default;">
 			<input type="checkbox" checked="checked" style="height:16px; vertical-align:middle;" />
-			<span>', get_string('selectall'), '</span>
+			
 		</label></div>';
 
 		$i = 0;

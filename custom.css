@@ -190,10 +190,11 @@ div.card-text ul.list li.move-to {
 /* BULK VIEW START */
 .bulk-delete-list {
     list-style: none;
+    padding-left: 10px;
 }
 .bulk-delete-select-all {
     display: flex;
-    justify-content: flex-end;
+    padding-left: 20px;
     margin-right: 10px;
 }
 
