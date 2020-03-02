@@ -149,7 +149,7 @@ class block_sharing_cart extends block_base
 		        </select>
 		        <a href='javascript:void(0)' class='copy_section' title='get_string('sectionname', \"format_$COURSE->format\") . ' ' . $section->section)'>
 		            <!--<i class=\"fa fa-files-o\" aria-hidden=\"true\"></i>-->
-		            <input id='copy' type='button' class='btn btn-primary' value='Copy section'>
+		            <input id='copy' type='button' class='btn btn-primary' value='".get_string('copy_section', __CLASS__)."'>
 		        </a>
             </form>
 		";

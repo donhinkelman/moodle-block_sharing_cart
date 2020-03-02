@@ -58,6 +58,7 @@ $string['confirm_restore'] = 'コースにコピーしますか？';
 $string['confirm_delete'] = '削除してよろしいですか？';
 $string['confirm_delete_selected'] = '選択したアイテムを全て削除してもよろしいですか？';
 $string['inprogess_pleasewait'] = 'しばらくお待ち下さい…';
+$string['copy_section'] = 'Copy section (Missing translation)';
 
 $string['settings:userdata_copyable_modtypes'] = 'ユーザーデータをコピー可能なモジュールタイプ';
 $string['settings:userdata_copyable_modtypes_desc'] = '共有カートへコピーする際、コピーしようとしているモジュールがここでチェックを付けたモジュールタイプで、

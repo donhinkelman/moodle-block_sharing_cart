@@ -57,6 +57,7 @@ $string['confirm_restore'] = 'Er du sikker på du vil kopiere dette element til 
 $string['confirm_delete'] = 'Er du sikker på du vil slette??';
 $string['confirm_delete_selected'] = 'Er du sikker på du vil slette alle valgt elementer?';
 $string['inprogess_pleasewait'] = 'Vent venligst…';
+$string['copy_section'] = 'Kopier sektion';
 
 $string['settings:userdata_copyable_modtypes'] = 'Moduller der tillader kopi af brugerdata';
 $string['settings:userdata_copyable_modtypes_desc'] = 'Når du kopiere en aktivitet ind i delekurv,

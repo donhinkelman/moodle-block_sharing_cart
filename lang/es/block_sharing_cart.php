@@ -59,6 +59,7 @@ $string['confirm_restore'] = '¿Está seguro de copiar este item al curso?';
 $string['confirm_delete'] = '¿Está seguro de borrar?';
 $string['confirm_delete_selected'] = '¿Está seguro de querer borrar todos los elementos seleccionados?';
 $string['inprogess_pleasewait'] = 'Espere un momento…';
+$string['copy_section'] = 'Copy section (Missing translation)';
 
 $string['settings:userdata_copyable_modtypes'] = 'Tipos de módulos que puede ser copiados';
 $string['settings:userdata_copyable_modtypes_desc'] = 'Mientras se copia una actividad en la bolsa de recursos,
