@@ -49,6 +49,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
             }).done(function(modal) {
                 modal.setSaveButtonText(obj.save_button);
 
+                // On save save check - if checkbox is checked.
                 modal.getRoot().on(ModalEvents.save, function(e) {
 
                     var response = {
@@ -56,8 +57,13 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                     };
 
                     obj.next(response);
+                });
+
+                // Remove modal from html.
+                modal.getRoot().on(ModalEvents.hidden, function () {
                     $('.modal.moodle-has-zindex').remove();
                 });
+
                 modal.show();
             });
         }
