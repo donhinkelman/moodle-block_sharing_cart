@@ -31,31 +31,39 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
         function confirm_modal(obj) {
 
             if (obj.checkbox) {
-                obj.body += '<div class="modal-checbox-wrapper">' +
+                obj.body +=
+                    '<div class="modal-checbox-wrapper">' +
                         '<input type="checkbox" id="modal-checkbox" class="modal-checkbox" checked>' +
                         '<label for="modal-checkbox">' + str('modal_checkbox') + '</label>' +
                     '</div>';
             }
 
-            // PTODO: Update to moodle modal.
-            var trigger = $('#create-modal');
+            if(typeof modal !== 'undefined'){
+                console.log(modal);
+                alert('Already exists!');
+            }
             ModalFactory.create({
                 type: ModalFactory.types.SAVE_CANCEL,
                 title: obj.title,
                 body: obj.body,
-            }, trigger).done(function(modal) {
+            }).done(function(modal) {
                 modal.setSaveButtonText(obj.save_button);
 
-                // Figure out what is returned on cancel and continue buttons.
-                // How to change text on buttons
+                // On save save check - if checkbox is checked.
                 modal.getRoot().on(ModalEvents.save, function(e) {
 
                     var response = {
-                        'checkbox': $(e.target).find('.modalcheckbox').is(':checked'),
+                        'checkbox': $(e.target).find('.modal-checkbox').is(':checked'),
                     };
 
                     obj.next(response);
                 });
+
+                // Remove modal from html.
+                modal.getRoot().on(ModalEvents.hidden, function () {
+                    $('.modal.moodle-has-zindex').remove();
+                });
+
                 modal.show();
             });
         }
