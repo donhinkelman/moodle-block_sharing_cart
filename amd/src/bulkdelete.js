@@ -15,21 +15,26 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
 
             /**
              *
-             * @param obj
+             * @param object
              */
-            function confirm_modal (obj){
+            function confirm_modal (object){
                 var trigger = $('#create-modal');
                 ModalFactory.create({
                     type: ModalFactory.types.SAVE_CANCEL,
-                    title: obj.title,
-                    body: obj.body,
+                    title: object.title,
+                    body: object.body,
                 }, trigger).done(function(modal) {
-                    modal.setSaveButtonText(obj.save_button);
+                    modal.setSaveButtonText(object.save_button);
 
                     // Figure out what is returned on cancel and continue buttons.
                     // How to change text on buttons
                     modal.getRoot().on(ModalEvents.save, function() {
-                        obj.next();
+                        object.next();
+                    });
+
+                    // Remove modal from html.
+                    modal.getRoot().on(ModalEvents.hidden, function () {
+                        $('.modal.moodle-has-zindex').remove();
                     });
                     modal.show();
                 });
@@ -40,15 +45,8 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
              * @returns {any[]}
              */
             function get_checks() {
-                var els = document.forms["form"].elements;
-                var ret = new Array();
-                for (var i = 0; i < els.length; i++) {
-                    var el = els[i];
-                    if (el.type == "checkbox" && el.name.match(/^delete\b/)) {
-                        ret.push(el);
-                    }
-                }
-                return ret;
+                var elements = $('form :checkbox[name^="delete"]');
+                return elements;
             }
 
             /**
@@ -57,25 +55,28 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
              */
             function check_all(check) {
                 var checks = get_checks();
-                for (var i = 0; i < checks.length; i++) {
-                    checks[i].checked = check.checked;
-                }
-                document.forms["form"].elements["delete_checked"].disabled = !check.checked;
+                $(checks).prop('checked', check.checked);
+
+                $('form :button[name ="delete_checked"]').prop('disabled', !check.checked);
             }
 
             /**
              *
              */
             function check() {
-                var delete_checked = document.forms["form"].elements["delete_checked"];
+                var delete_checked = $('form :button[name^="delete_checked"]');
                 var checks = get_checks();
-                for (var i = 0; i < checks.length; i++) {
-                    if (checks[i].checked) {
-                        delete_checked.disabled = false;
-                        return;
-                    }
-                }
-                delete_checked.disabled = true;
+                var checked_checkbox = false;
+
+                $(checks).each(function (i, val) {
+                    if($(val).prop('checked')) {
+                        checked_checkbox = true;
+                        return false;
+                    };
+                })
+
+                delete_checked.prop('disabled', !checked_checkbox);
+                $('.bulk-delete-select-all :checkbox').prop('checked', checked_checkbox);
             }
 
             /**
