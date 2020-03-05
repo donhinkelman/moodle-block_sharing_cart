@@ -11,7 +11,11 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
-* 3.6, release 7    2020.02.27
+* 3.6, release 9    2020.03.05
+    * Updated applicable_formats, to only show sharing cart in courses.
+    * In bulkdelete.js updated javascript to jquery.
+    * Cleaned and optimized code according to code review.
+* 3.6, release 8    2020.02.27
     * Hotfix, missing 'use' in rest.php.
 * 3.6, release 7    2020.02.27
     * Small bugfixes.

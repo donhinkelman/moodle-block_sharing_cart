@@ -46,13 +46,8 @@ class block_sharing_cart extends block_base {
 
     public function applicable_formats() {
         return array(
-                'site' => true,
+                'all' => false,
                 'course' => true,
-                'course-category' => false,
-                'mod' => false,
-                'my' => false,
-                'tag' => false,
-                'admin' => false,
         );
     }
 
@@ -73,11 +68,11 @@ class block_sharing_cart extends block_base {
     public function get_content() {
         global $USER, $COURSE;
 
+        $context = context_course::instance($this->page->course->id);
+
         if ($this->content !== null) {
             return $this->content;
         }
-
-        $context = context_course::instance($this->page->course->id);
 
         if (!$this->page->user_is_editing() || !has_capability('moodle/backup:backupactivity', $context)) {
             return $this->content = '';
@@ -86,6 +81,7 @@ class block_sharing_cart extends block_base {
         $controller = new controller();
         $html = $controller->render_tree($USER->id);
 
+        // Fetching all sections for current course.
         $sections = section::all($COURSE->id);
 
         /* Place the <noscript> tag to give out an error message if JavaScript is not enabled in the browser.
@@ -115,6 +111,7 @@ class block_sharing_cart extends block_base {
                 __CLASS__
         );
 
+        // Creating with sections that are not empty.
         $sections_dropdown = '';
         foreach ($sections as $section) {
             $sectionname = $section->name;
