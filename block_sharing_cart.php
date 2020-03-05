@@ -152,27 +152,23 @@ class block_sharing_cart extends block_base {
      *  Get the block header
      *
      * @return string
-     * @global core_renderer $OUTPUT
      */
     private function get_header() {
-        global $OUTPUT;
         // link to bulkdelete
         $alt = get_string('bulkdelete', __CLASS__);
-        $src = $OUTPUT->image_url('bulkdelete', __CLASS__);
         $url = new moodle_url('/blocks/sharing_cart/bulkdelete.php', array('course' => $this->page->course->id));
 
-        return $this->get_bulk_delete($src, $alt, $url) . $this->get_help_icon();
+        return $this->get_bulk_delete($alt, $url) . $this->get_help_icon();
     }
 
     /**
      *  Get bulk delete
      *
-     * @param string $src
      * @param string $alt
      * @param moodle_url $url
      * @return string
      */
-    private function get_bulk_delete($src, $alt, $url) {
+    private function get_bulk_delete($alt, $url) {
         $bulkdelete = '
 		        <a class="editing_bulkdelete" title="' . s($alt) . '" href="' . s($url) . '">
 		        <i class="bulk-icon icon fa fa-times-circle" alt="' . s($alt) . '" /></i>

@@ -17,7 +17,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 class section {
 
-     /**
+    /**
      * Get the section ID
      *
      * @param $course_id

@@ -29,12 +29,6 @@ use block_sharing_cart\storage;
 
 require_once '../../config.php';
 
-$DB = new mysqli_native_moodle_database;
-$CFG = new stdClass;
-$USER = new stdClass;
-$PAGE = new moodle_page;
-$OUTPUT = new core_renderer;
-
 $PAGE->requires->css('/blocks/sharing_cart/custom.css');
 $PAGE->requires->js_call_amd('block_sharing_cart/bulkdelete', 'init');
 $PAGE->requires->strings_for_js(

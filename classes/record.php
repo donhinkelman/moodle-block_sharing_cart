@@ -17,10 +17,11 @@
 /**
  *  Sharing Cart
  *
- *  @package    block_sharing_cart
- *  @copyright  2017 (C) VERSION2, INC.
- *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    block_sharing_cart
+ * @copyright  2017 (C) VERSION2, INC.
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace block_sharing_cart;
 
 defined('MOODLE_INTERNAL') || die();
@@ -30,137 +31,133 @@ use block_sharing_cart\exception as sharing_cart_exception;
 /**
  *  Sharing Cart record manager
  */
-class record
-{
-	const TABLE = 'block_sharing_cart';
+class record {
+    const TABLE = 'block_sharing_cart';
 
-	const WEIGHT_BOTTOM = 9999;
+    const WEIGHT_BOTTOM = 9999;
 
-	public $id       = null;
-	public $userid   = null;
-	public $modname  = null;
-	public $modicon  = '';
-	public $modtext  = null;
-	public $ctime    = null;
-	public $filename = null;
-	public $tree     = '';
-	public $weight   = 0;
-	public $course   = 0;
-	public $coursefullname = '';
+    public $id = null;
+    public $userid = null;
+    public $modname = null;
+    public $modicon = '';
+    public $modtext = null;
+    public $ctime = null;
+    public $filename = null;
+    public $tree = '';
+    public $weight = 0;
+    public $course = 0;
+    public $coursefullname = '';
 
-	/**
-	 *  Constructor
-	 *
-	 *  @param mixed $record = empty
-	 */
-	public function __construct($record = array())
-	{
-	    global $USER;
-		foreach ((array)$record as $field => $value){
+    /**
+     *  Constructor
+     *
+     * @param mixed $record = empty
+     */
+    public function __construct($record = array()) {
+        global $USER;
+        foreach ((array) $record as $field => $value) {
             $this->{$field} = $value;
         }
 
-		// default values
-		$this->userid || $this->userid = $USER-id;
-		$this->ctime || $this->ctime = time();
-	}
+        // default values
+        $this->userid || $this->userid = $USER - id;
+        $this->ctime || $this->ctime = time();
+    }
 
-	/**
-	 *  Create record instance from record ID
-	 *
-	 *  @param int $id
-	 *  @return record
-	 *  @throws exception
-	 */
-	public static function from_id($id)
-	{
+    /**
+     *  Create record instance from record ID
+     *
+     * @param int $id
+     * @return record
+     * @throws exception
+     */
+    public static function from_id($id) {
         global $DB;
-		$record = $DB->get_record(self::TABLE, array('id' => $id));
-		if (!$record){
+        $record = $DB->get_record(self::TABLE, array('id' => $id));
+        if (!$record) {
             throw new sharing_cart_exception('recordnotfound');
         }
-		return new self($record);
-	}
+        return new self($record);
+    }
 
-	/**
-	 *  Insert record
-	 *
-     *  @return int
-	 *  @throws exception
-	 */
-	public function insert()
-	{
+    /**
+     *  Insert record
+     *
+     * @return int
+     * @throws exception
+     */
+    public function insert() {
         global $DB;
-		if (!$this->weight) {
+        if (!$this->weight) {
             $this->weight = self::WEIGHT_BOTTOM;
         }
-		$this->id = $DB->insert_record(self::TABLE, $this);
-		if (!$this->id === false) {
+        $this->id = $DB->insert_record(self::TABLE, $this);
+        if (!$this->id === false) {
             throw new sharing_cart_exception('unexpectederror');
         }
-		self::renumber($this->userid);
+        self::renumber($this->userid);
 
-		return $this->id;
-	}
+        return $this->id;
+    }
 
-	/**
-	 *  Update record
-	 *
-	 *  @throws exception
-	 */
-	public function update()
-	{
+    /**
+     *  Update record
+     *
+     * @throws exception
+     */
+    public function update() {
         global $DB;
-		if (!$DB->update_record(self::TABLE, $this)) {
+        if (!$DB->update_record(self::TABLE, $this)) {
             throw new sharing_cart_exception('unexpectederror');
         }
-		self::renumber($this->userid);
-	}
+        self::renumber($this->userid);
+    }
 
-	/**
-	 *  Delete record
-	 *
-	 *  @throws exception
-	 */
-	public function delete()
-	{
+    /**
+     *  Delete record
+     *
+     * @throws exception
+     */
+    public function delete() {
         global $DB;
         $DB->delete_records(self::TABLE, array('id' => $this->id));
-		self::renumber($this->userid);
-	}
+        self::renumber($this->userid);
+    }
 
-	/**
-	 *  Renumber all items sequentially
-	 *
-	 * @global \moodle_database $DB
-	 * @global \stdClass $USER
-	 * @param int $userid = $USER->id
-	 * @throws exception
-	 */
-	public static function renumber($userid = null)
-	{
-		global $DB, $USER;
-		if ($items = $DB->get_records(self::TABLE, array('userid' => $userid ?: $USER->id))) {
-			$tree = array();
-			foreach ($items as $it) {
-				if (!isset($tree[$it->tree])) {
+    /**
+     *  Renumber all items sequentially
+     *
+     * @param int $userid = $USER->id
+     * @throws exception
+     * @global \moodle_database $DB
+     * @global \stdClass $USER
+     */
+    public static function renumber($userid = null) {
+        global $DB, $USER;
+        if ($items = $DB->get_records(self::TABLE, array('userid' => $userid ?: $USER->id))) {
+            $tree = array();
+            foreach ($items as $it) {
+                if (!isset($tree[$it->tree])) {
                     $tree[$it->tree] = array();
                 }
-				$tree[$it->tree][] = $it;
-			}
-			foreach ($tree as $items) {
-				usort($items, function ($lhs, $rhs)
-				{
-					// keep their order if already weighted
-					if ($lhs->weight < $rhs->weight) return -1;
-					if ($lhs->weight > $rhs->weight) return +1;
-					// order by modtext otherwise
-					return strnatcasecmp($lhs->modtext, $rhs->modtext);
-				});
-				foreach ($items as $i => $it) {
-					$DB->set_field(self::TABLE, 'weight', 1 + $i, array('id' => $it->id));
-				}
-			}
-		}
-	}
+                $tree[$it->tree][] = $it;
+            }
+            foreach ($tree as $items) {
+                usort($items, function($lhs, $rhs) {
+                    // keep their order if already weighted
+                    if ($lhs->weight < $rhs->weight) {
+                        return -1;
+                    }
+                    if ($lhs->weight > $rhs->weight) {
+                        return +1;
+                    }
+                    // order by modtext otherwise
+                    return strnatcasecmp($lhs->modtext, $rhs->modtext);
+                });
+                foreach ($items as $i => $it) {
+                    $DB->set_field(self::TABLE, 'weight', 1 + $i, array('id' => $it->id));
+                }
+            }
+        }
+    }
 }

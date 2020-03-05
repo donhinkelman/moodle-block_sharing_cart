@@ -17,10 +17,11 @@
 /**
  *  Sharing Cart
  *
- *  @package    block_sharing_cart
- *  @copyright  2017 (C) VERSION2, INC.
- *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    block_sharing_cart
+ * @copyright  2017 (C) VERSION2, INC.
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace block_sharing_cart;
 
 defined('MOODLE_INTERNAL') || die();
@@ -28,26 +29,23 @@ defined('MOODLE_INTERNAL') || die();
 /**
  *  Scoped closure
  */
-class scoped
-{
-	/** @var callable */
-	private $callback;
+class scoped {
+    /** @var callable */
+    private $callback;
 
-	/**
-	 *  Constructor
-	 *
-	 *  @param callable $callback
-	 */
-	public function __construct($callback)
-	{
-		$this->callback = $callback;
-	}
+    /**
+     *  Constructor
+     *
+     * @param callable $callback
+     */
+    public function __construct($callback) {
+        $this->callback = $callback;
+    }
 
-	/**
-	 *  Destructor
-	 */
-	public function __destruct()
-	{
-		call_user_func($this->callback);
-	}
+    /**
+     *  Destructor
+     */
+    public function __destruct() {
+        call_user_func($this->callback);
+    }
 }

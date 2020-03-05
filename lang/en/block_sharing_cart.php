@@ -17,9 +17,9 @@
 /**
  *  Sharing Cart
  *
- *  @package    block_sharing_cart
- *  @copyright  2017 (C) VERSION2, INC.
- *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    block_sharing_cart
+ * @copyright  2017 (C) VERSION2, INC.
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $string['pluginname'] = 'Sharing Cart';
