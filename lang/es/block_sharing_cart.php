@@ -45,7 +45,6 @@ $string['sharing_cart:addinstance'] = 'Añadir un nuevo bloque bolsa de recursos
 $string['backup'] = 'Copiar a la bolsa de recursos';
 $string['restore'] = 'Copiar al curso';
 $string['movedir'] = 'Mover al curso';
-$string['click_to_move'] = 'Click to move here (Translation missing)';
 $string['copyhere'] = 'Copiar aquí';
 $string['notarget'] = 'Destino no encontrado';
 $string['clipboard'] = 'Copiar este item compartido';
@@ -59,7 +58,6 @@ $string['confirm_restore'] = '¿Está seguro de copiar este item al curso?';
 $string['confirm_delete'] = '¿Está seguro de borrar?';
 $string['confirm_delete_selected'] = '¿Está seguro de querer borrar todos los elementos seleccionados?';
 $string['inprogess_pleasewait'] = 'Espere un momento…';
-$string['copy_section'] = 'Copy section (Missing translation)';
 
 $string['settings:userdata_copyable_modtypes'] = 'Tipos de módulos que puede ser copiados';
 $string['settings:userdata_copyable_modtypes_desc'] = 'Mientras se copia una actividad en la bolsa de recursos,
@@ -87,14 +85,3 @@ $string['conflict_description_note'] = '*Los formatos de la descripción del tí
 $string['conflict_no_overwrite'] = 'Mantener utilizando <strong>"{$a}"</strong>';
 $string['conflict_overwrite_title'] = 'Cambiar el título a <strong>"{$a}"</strong>';
 $string['conflict_submit'] = 'Continuar';
-
-$string['folder_string'] = 'Folder: (Missing translation)';
-$string['activity_string'] = 'Activity: (Missing translation)';
-$string['delete_folder'] = ' and all it\'s content (Missing translation)';
-$string['modal_checkbox'] = 'Do you want to copy user data? (Eg. glossary/wiki/database entries) (Missing translation)';
-$string['modal_confirm_backup'] = 'Confirm (Missing translation)';
-$string['modal_confirm_delete'] = 'Delete (Missing translation)';
-$string['no_backup_support'] = 'No backup support for this module (Missing translation)';
-
-$string['modal_bulkdelete_title'] = 'Sure you want to deleted selected? (Missing translation)';
-$string['modal_bulkdelete_confirm'] = 'Delete selected (Missing translation)';

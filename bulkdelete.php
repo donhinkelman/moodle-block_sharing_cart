@@ -17,9 +17,9 @@
 /**
  *  Sharing Cart - Bulk Delete Operation
  *
- *  @package    block_sharing_cart
- *  @copyright  2017 (C) VERSION2, INC.
- *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    block_sharing_cart
+ * @copyright  2017 (C) VERSION2, INC.
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use block_sharing_cart\exception as sharing_cart_exception;
@@ -29,26 +29,19 @@ use block_sharing_cart\storage;
 
 require_once '../../config.php';
 
-require_once __DIR__.'/classes/storage.php';
-require_once __DIR__.'/classes/record.php';
-require_once __DIR__.'/classes/renderer.php';
-
-
-if (false) {
-    $DB     = new mysqli_native_moodle_database;
-    $CFG    = new stdClass;
-    $USER   = new stdClass;
-    $PAGE   = new moodle_page;
-    $OUTPUT = new core_renderer;
-}
+$DB = new mysqli_native_moodle_database;
+$CFG = new stdClass;
+$USER = new stdClass;
+$PAGE = new moodle_page;
+$OUTPUT = new core_renderer;
 
 $PAGE->requires->css('/blocks/sharing_cart/custom.css');
 $PAGE->requires->js_call_amd('block_sharing_cart/bulkdelete', 'init');
 $PAGE->requires->strings_for_js(
-    array(
-        'modal_bulkdelete_title', 'modal_bulkdelete_confirm'
-    ),
-    'block_sharing_cart'
+        array(
+                'modal_bulkdelete_title', 'modal_bulkdelete_confirm'
+        ),
+        'block_sharing_cart'
 );
 
 $courseid = required_param('course', PARAM_INT);
@@ -57,49 +50,52 @@ $returnurl = new moodle_url('/course/view.php', array('id' => $courseid));
 require_login($courseid);
 
 $delete_param = function_exists('optional_param_array')
-	? optional_param_array('delete', null, PARAM_RAW)
-	: optional_param('delete', null, PARAM_RAW);
+        ? optional_param_array('delete', null, PARAM_RAW)
+        : optional_param('delete', null, PARAM_RAW);
 
-if (is_array($delete_param)) try {
+if (is_array($delete_param)) {
+    try {
 
-	confirm_sesskey();
-	set_time_limit(0);
+        confirm_sesskey();
+        set_time_limit(0);
 
-	$delete_ids = array_map('intval', array_keys($delete_param));
+        $delete_ids = array_map('intval', array_keys($delete_param));
 
-	list ($sql, $params) = $DB->get_in_or_equal($delete_ids);
-	$records = $DB->get_records_select(record::TABLE, "userid = $USER->id AND id $sql", $params);
-	if (!$records)
-		throw new sharing_cart_exception('recordnotfound');
+        list ($sql, $params) = $DB->get_in_or_equal($delete_ids);
+        $records = $DB->get_records_select(record::TABLE, "userid = $USER->id AND id $sql", $params);
+        if (!$records) {
+            throw new sharing_cart_exception('recordnotfound');
+        }
 
-	$storage = new storage();
+        $storage = new storage();
 
-	$deleted_ids = array();
-	foreach ($records as $record) {
-		$storage->delete($record->filename);
-		$deleted_ids[] = $record->id;
-	}
+        $deleted_ids = array();
+        foreach ($records as $record) {
+            $storage->delete($record->filename);
+            $deleted_ids[] = $record->id;
+        }
 
-	list ($sql, $params) = $DB->get_in_or_equal($deleted_ids);
-	$DB->delete_records_select(record::TABLE, "id $sql", $params);
+        list ($sql, $params) = $DB->get_in_or_equal($deleted_ids);
+        $DB->delete_records_select(record::TABLE, "id $sql", $params);
 
-    record::renumber($USER->id);
+        record::renumber($USER->id);
 
-	redirect($returnurl);
-} catch (sharing_cart_exception $ex) {
-	print_error($ex->errorcode, $ex->module, $returnurl, $ex->a);
-} catch (Exception $ex) {
-	if (!empty($CFG->debug) and $CFG->debug >= DEBUG_DEVELOPER) {
-		print_error('notlocalisederrormessage', 'error', '', $ex->__toString());
-	} else {
-		print_error('unexpectederror', 'block_sharing_cart', $returnurl);
-	}
+        redirect($returnurl);
+    } catch (sharing_cart_exception $ex) {
+        print_error($ex->errorcode, $ex->module, $returnurl, $ex->a);
+    } catch (Exception $ex) {
+        if (!empty($CFG->debug) and $CFG->debug >= DEBUG_DEVELOPER) {
+            print_error('notlocalisederrormessage', 'error', '', $ex->__toString());
+        } else {
+            print_error('unexpectederror', 'block_sharing_cart', $returnurl);
+        }
+    }
 }
 
 $orderby = 'tree,weight,modtext';
 if ($DB->get_dbfamily() == 'mssql' || $DB->get_dbfamily() == 'oracle') {
-	// SQL Server and Oracle do not support ordering by TEXT field.
-	$orderby = 'tree,weight,CAST(modtext AS VARCHAR(255))';
+    // SQL Server and Oracle do not support ordering by TEXT field.
+    $orderby = 'tree,weight,CAST(modtext AS VARCHAR(255))';
 }
 $items = $DB->get_records(record::TABLE, array('userid' => $USER->id), $orderby);
 
@@ -113,17 +109,18 @@ $PAGE->navbar->add(get_string('pluginname', 'block_sharing_cart'))->add($title, 
 
 echo $OUTPUT->header();
 {
-	echo $OUTPUT->heading($title);
+    echo $OUTPUT->heading($title);
 
-	echo '
-	<div style="width:100%; text-align:center;">';
-	if (empty($items)) {
-		echo '
+    echo '
+	    <div style="width:100%; text-align:center;">
+	';
+    if (empty($items)) {
+        echo '
 		<div>
 			<input type="button" class="btn btn-primary" onclick="history.back();" value="', get_string('back'), '" />
 		</div>';
-	} else {
-		echo '
+    } else {
+        echo '
 		<form action="', $PAGE->url->out_omit_querystring(), '"
 		 method="post" id="form">
 		<input type="hidden" name="sesskey" value="', s(sesskey()), '" />
@@ -136,28 +133,28 @@ echo $OUTPUT->header();
 			
 		</label></div>';
 
-		$i = 0;
-		echo '
+        $i = 0;
+        echo '
 		<ul class="bulk-delete-list">';
-		foreach ($items as $id => $item) {
-			echo '
+        foreach ($items as $id => $item) {
+            echo '
 			<li class="bulk-delete-item">
-				<input type="checkbox" name="delete['.$id.']" checked="checked" id="delete_'.$id.'" />
+				<input type="checkbox" name="delete[' . $id . ']" checked="checked" id="delete_' . $id . '" />
 				', renderer::render_modicon($item), '
-                <label for="delete_'.$id.'">', format_string($item->modtext),'</label>
+                <label for="delete_' . $id . '">', format_string($item->modtext), '</label>
 			</li>';
-		}
-		echo '
+        }
+        echo '
 		</ul>';
 
-		echo '
+        echo '
 		<div>
-			<input class="btn btn-primary form_submit" type="button" name="delete_checked" value="', s(get_string('deleteselected')), '" />
-			<input class="btn" type="button" onclick="history.back();" value="', s(get_string('cancel')), '" />
+			<input class="btn btn-primary form_submit" type="button" name="delete_checked" value="', get_string('deleteselected'), '" />
+			<input class="btn" type="button" onclick="history.back();" value="', get_string('cancel'), '" />
 		</div>
 		</form>';
-	}
-	echo '
+    }
+    echo '
 	</div>';
 }
 echo $OUTPUT->footer();

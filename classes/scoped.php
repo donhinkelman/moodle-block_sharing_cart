@@ -38,7 +38,7 @@ class scoped
 	 *
 	 *  @param callable $callback
 	 */
-	public function __construct(/*callable*/ $callback)
+	public function __construct($callback)
 	{
 		$this->callback = $callback;
 	}

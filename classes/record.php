@@ -55,12 +55,14 @@ class record
 	 */
 	public function __construct($record = array())
 	{
-		foreach ((array)$record as $field => $value)
-			$this->{$field} = $value;
+	    global $USER;
+		foreach ((array)$record as $field => $value){
+            $this->{$field} = $value;
+        }
 
 		// default values
-		$this->userid or $this->userid = $GLOBALS['USER']->id;
-		$this->ctime or $this->ctime = time();
+		$this->userid || $this->userid = $USER-id;
+		$this->ctime || $this->ctime = time();
 	}
 
 	/**
@@ -72,9 +74,11 @@ class record
 	 */
 	public static function from_id($id)
 	{
-		$record = $GLOBALS['DB']->get_record(self::TABLE, array('id' => $id));
-		if (!$record)
-			throw new sharing_cart_exception('recordnotfound');
+        global $DB;
+		$record = $DB->get_record(self::TABLE, array('id' => $id));
+		if (!$record){
+            throw new sharing_cart_exception('recordnotfound');
+        }
 		return new self($record);
 	}
 
@@ -86,11 +90,14 @@ class record
 	 */
 	public function insert()
 	{
-		if (!$this->weight)
-			$this->weight = self::WEIGHT_BOTTOM;
-		$this->id = $GLOBALS['DB']->insert_record(self::TABLE, $this);
-		if (!$this->id)
-			throw new sharing_cart_exception('unexpectederror');
+        global $DB;
+		if (!$this->weight) {
+            $this->weight = self::WEIGHT_BOTTOM;
+        }
+		$this->id = $DB->insert_record(self::TABLE, $this);
+		if (!$this->id === false) {
+            throw new sharing_cart_exception('unexpectederror');
+        }
 		self::renumber($this->userid);
 
 		return $this->id;
@@ -103,8 +110,10 @@ class record
 	 */
 	public function update()
 	{
-		if (!$GLOBALS['DB']->update_record(self::TABLE, $this))
-			throw new sharing_cart_exception('unexpectederror');
+        global $DB;
+		if (!$DB->update_record(self::TABLE, $this)) {
+            throw new sharing_cart_exception('unexpectederror');
+        }
 		self::renumber($this->userid);
 	}
 
@@ -115,7 +124,8 @@ class record
 	 */
 	public function delete()
 	{
-		$GLOBALS['DB']->delete_records(self::TABLE, array('id' => $this->id));
+        global $DB;
+        $DB->delete_records(self::TABLE, array('id' => $this->id));
 		self::renumber($this->userid);
 	}
 
@@ -133,8 +143,9 @@ class record
 		if ($items = $DB->get_records(self::TABLE, array('userid' => $userid ?: $USER->id))) {
 			$tree = array();
 			foreach ($items as $it) {
-				if (!isset($tree[$it->tree]))
-					$tree[$it->tree] = array();
+				if (!isset($tree[$it->tree])) {
+                    $tree[$it->tree] = array();
+                }
 				$tree[$it->tree][] = $it;
 			}
 			foreach ($tree as $items) {

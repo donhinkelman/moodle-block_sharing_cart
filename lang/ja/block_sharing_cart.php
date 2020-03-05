@@ -44,7 +44,6 @@ $string['sharing_cart:addinstance'] = '新しい共有カートブロックを�
 $string['backup'] = '共有カートへコピー';
 $string['restore'] = 'コースへコピー';
 $string['movedir'] = 'フォルダ移動';
-$string['click_to_move'] = 'Click to move here (Translation missing)';
 $string['copyhere'] = 'ここにコピー';
 $string['notarget'] = 'ターゲットが見つかりません';
 $string['clipboard'] = 'この共有アイテムをコピーする';
@@ -58,7 +57,6 @@ $string['confirm_restore'] = 'コースにコピーしますか？';
 $string['confirm_delete'] = '削除してよろしいですか？';
 $string['confirm_delete_selected'] = '選択したアイテムを全て削除してもよろしいですか？';
 $string['inprogess_pleasewait'] = 'しばらくお待ち下さい…';
-$string['copy_section'] = 'Copy section (Missing translation)';
 
 $string['settings:userdata_copyable_modtypes'] = 'ユーザーデータをコピー可能なモジュールタイプ';
 $string['settings:userdata_copyable_modtypes_desc'] = '共有カートへコピーする際、コピーしようとしているモジュールがここでチェックを付けたモジュールタイプで、
@@ -87,14 +85,3 @@ $string['conflict_description_note'] = '※トピックの説明のフォーマ�
 $string['conflict_no_overwrite'] = 'トピック名を変更しない。<strong>「{$a}」</strong>のままにする。';
 $string['conflict_overwrite_title'] = 'タイトルを<strong>「{$a}」</strong>に変更する。';
 $string['conflict_submit'] = '続く';
-
-$string['folder_string'] = 'Folder: (Missing translation)';
-$string['activity_string'] = 'Activity: (Missing translation)';
-$string['delete_folder'] = ' and all it\'s content (Missing translation)';
-$string['modal_checkbox'] = 'Do you want to copy user data? (Eg. glossary/wiki/database entries) (Missing translation)';
-$string['modal_confirm_backup'] = 'Confirm (Missing translation)';
-$string['modal_confirm_delete'] = 'Delete (Missing translation)';
-$string['no_backup_support'] = 'No backup support for this module (Missing translation)';
-
-$string['modal_bulkdelete_title'] = 'Sure you want to deleted selected? (Missing translation)';
-$string['modal_bulkdelete_confirm'] = 'Delete selected (Missing translation)';

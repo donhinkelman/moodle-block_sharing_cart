@@ -87,7 +87,7 @@ class renderer
 		if (isset($leaf[''])){
             foreach($leaf[''] as $item)
             {
-                array_push($coursefullnames, $item->coursefullname);
+                $coursefullnames[] = $item->coursefullname;
             }
         }
         $coursefullnames = array_unique($coursefullnames);
@@ -99,12 +99,11 @@ class renderer
         {
             $coursename = ' [' . get_string("variouscourse", "block_sharing_cart") . ']';
         }
-//      ' . $OUTPUT->image_icon('f/folder', 'folder') . '
 		$components = explode('/', trim($path, '/'));
 		$depth = count($components) - 1;
 		return '
-		<li class="directory" directory-path="' . s($path) . '">
-			<div class="sc-indent-' . $depth . '" title="' . s($path) . $coursename . '">
+		<li class="directory" directory-path="' . $path . '">
+			<div class="sc-indent-' . $depth . '" title="' . $path . $coursename . '">
 			    <div class="toggle-wrapper">
                     <i class="icon fa fa-folder-o" alt=""></i>
                     <span class="instancename">' . format_string(end($components)) . '</span>			    
@@ -166,7 +165,7 @@ class renderer
 	{
 		global $OUTPUT;
 
-		$src = '<img class="activityicon iconsmall iconcustom" src="' . s($OUTPUT->image_url('icon', $item->modname)) . '" alt="" />';
+		$src = '<img class="activityicon iconsmall iconcustom" src="' . $OUTPUT->image_url('icon', $item->modname) . '" alt="" />';
 		if (!empty($item->modicon)) {
 			// @see /lib/modinfolib.php#get_icon_url()
 			if (strncmp($item->modicon, 'mod/', 4) == 0) {
@@ -181,14 +180,6 @@ class renderer
 
 	public static function render_label($modtext)
 	{
-//		preg_match('/<1img(.*)src(.*)=(.*)"(.*)"/U', $modtext, $result);
-//		$img_src = array_pop($result);
-//
-//		if (!empty($img_src)) {
-//			$path_parts = pathinfo($img_src);
-//			$modtext = urldecode($path_parts['filename']);
-//		}
-
         $modtext = get_string('pluginname', 'label') . ':<div style="font-size: 0.8em; width: 100%; max-height: 10em; white-space: nowrap; overflow: auto;">' . $modtext . '</div>';
 
 		return $modtext;
