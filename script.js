@@ -327,7 +327,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                 .fail(function (response) {
                     show_error(response);
                 })
-                .always(function (response) {
+                .always(function () {
                     $node_spinner.hide();
                     $spinner.hide();
                 });
@@ -371,7 +371,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                 .fail(function (response) {
                     show_error(response);
                 })
-                .always(function (response) {
+                .always(function () {
                     $spinner.hide();
                     $node_spinner.hide();
                 });
@@ -502,7 +502,6 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                 }
 
                 var $current = $block.find('#block_sharing_cart-item-' + id);
-                var $indent = $current.find('div');
                 var $next = $current.next();
                 var $list = $current.closest('ul');
 

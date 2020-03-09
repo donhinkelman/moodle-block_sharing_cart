@@ -320,8 +320,9 @@ class controller {
 
             // Fixed ISSUE-12 - https://github.com/donhinkelman/moodle-block_sharing_cart/issues/12
             foreach ($modules as $module) {
-                if (isset($module->deletioninprogress) && $module->deletioninprogress == 1 ||
-                        module::has_backup($module->id) === false) {
+                if ((isset($module->deletioninprogress)
+                        && $module->deletioninprogress) === 1
+                        || module::has_backup($module->id) === false) {
                     continue;
                 }
 
