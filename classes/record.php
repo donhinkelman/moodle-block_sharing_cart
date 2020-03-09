@@ -54,14 +54,13 @@ class record {
      * @param mixed $record = empty
      */
     public function __construct($record = array()) {
-        global $USER;
         foreach ((array) $record as $field => $value) {
             $this->{$field} = $value;
         }
 
         // default values
-        $this->userid || $this->userid = $USER - id;
-        $this->ctime || $this->ctime = time();
+        $this->userid or $this->userid = $GLOBALS['USER']->id;
+        $this->ctime or $this->ctime = time();
     }
 
     /**
@@ -72,8 +71,7 @@ class record {
      * @throws exception
      */
     public static function from_id($id) {
-        global $DB;
-        $record = $DB->get_record(self::TABLE, array('id' => $id));
+        $record = $GLOBALS['DB']->get_record(self::TABLE, array('id' => $id));
         if (!$record) {
             throw new sharing_cart_exception('recordnotfound');
         }
@@ -87,12 +85,11 @@ class record {
      * @throws exception
      */
     public function insert() {
-        global $DB;
         if (!$this->weight) {
             $this->weight = self::WEIGHT_BOTTOM;
         }
-        $this->id = $DB->insert_record(self::TABLE, $this);
-        if (!$this->id === false) {
+        $this->id = $GLOBALS['DB']->insert_record(self::TABLE, $this);
+        if (!$this->id) {
             throw new sharing_cart_exception('unexpectederror');
         }
         self::renumber($this->userid);
@@ -106,8 +103,7 @@ class record {
      * @throws exception
      */
     public function update() {
-        global $DB;
-        if (!$DB->update_record(self::TABLE, $this)) {
+        if (!$GLOBALS['DB']->update_record(self::TABLE, $this)) {
             throw new sharing_cart_exception('unexpectederror');
         }
         self::renumber($this->userid);
@@ -119,8 +115,7 @@ class record {
      * @throws exception
      */
     public function delete() {
-        global $DB;
-        $DB->delete_records(self::TABLE, array('id' => $this->id));
+        $GLOBALS['DB']->delete_records(self::TABLE, array('id' => $this->id));
         self::renumber($this->userid);
     }
 
