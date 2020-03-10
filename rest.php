@@ -71,14 +71,14 @@ try {
             $controller->backup_section($sectionid, $sectionname, $userdata, $course);
             exit;
         case 'movedir':
-            $id = required_param('id', PARAM_INT);
-            $to = required_param('to', PARAM_TEXT);
-            $controller->movedir($id, $to);
+            $item_id = required_param('item_id', PARAM_INT);
+            $folder_to = required_param('folder_to', PARAM_TEXT);
+            $controller->movedir($item_id, $folder_to);
             exit;
         case 'move':
-            $id = required_param('id', PARAM_INT);
-            $to = required_param('to', PARAM_INT);
-            $controller->move($id, $to);
+            $item_id = required_param('item_id', PARAM_INT);
+            $area_to = required_param('area_to', PARAM_INT);
+            $controller->move($item_id, $area_to);
             exit;
         case 'delete':
             $id = required_param('id', PARAM_INT);

@@ -473,21 +473,21 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
              *
              *  @param {int} id  The item ID
              */
-            this.show = function (id) {
+            this.show = function (item_id) {
                 this.hide();
 
                 function move(e) {
 
                     var m = $(e.target).closest('a').attr('class').match(/move-(\d+)-to-(\d+)/);
-                    var id = m[1],
-                        to = m[2];
+                    var item_id = m[1],
+                        area_to = m[2];
 
                     var $spinner = add_spinner();
                     $.post(get_action_url("rest"),
                         {
                             "action": "move",
-                            "id": id,
-                            "to": to,
+                            "item_id": item_id,
+                            "area_to": area_to,
                             "sesskey": M.cfg.sesskey
                         },
                         function () {
@@ -501,7 +501,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                         });
                 }
 
-                var $current = $block.find('#block_sharing_cart-item-' + id);
+                var $current = $block.find('#block_sharing_cart-item-' + item_id);
                 var $next = $current.next();
                 var $list = $current.closest('ul');
 
@@ -512,13 +512,13 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
 
                 /**
                  *
-                 * @param id
-                 * @param to
+                 * @param item_id
+                 * @param area_to
                  * @returns {jQuery}
                  */
-                function create_target(id, to) {
+                function create_target(item_id, area_to) {
                     var $anchor = $('<a href="javascript:void(0)"/>')
-                        .addClass('move-' + id + '-to-' + to)
+                        .addClass('move-' + item_id + '-to-' + area_to)
                         .attr('title', str('movehere'))
                         .append(
                             $('<p>' + str('clicktomove') + '</p>')
@@ -537,7 +537,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                 $list.find('> li.activity').each(function (index, item) {
                     var $item = $(item);
                     var to = $item.attr('id').match(/item-(\d+)$/)[1];
-                    if (to === id) {
+                    if (to === item_id) {
                         $cancel = create_command('cancel', 't/left');
                         $cancel.on('click', function () {
                             move_targets.hide();
@@ -549,14 +549,14 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                         $commands.append($cancel);
                         $item.css('opacity', 0.5);
                     } else if (to !== next_id) {
-                        var $target = create_target(id, to);
+                        var $target = create_target(item_id, to);
                         $item.before($target);
                         targets.push($target);
                     }
                 }, this);
 
                 if ($next) {
-                    var $target = create_target(id, 0);
+                    var $target = create_target(item_id, 0);
                     $list.append($target);
                     targets.push($target);
                 }
@@ -744,7 +744,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
             var $current_dir = $commands.closest('li.directory');
             var current_path = $current_dir.length ? $current_dir.attr('directory-path') : '/';
 
-            var id = $(e.target).closest('li.activity').attr('id').match(/(\d+)$/)[1];
+            var item_id = $(e.target).closest('li.activity').attr('id').match(/(\d+)$/)[1];
 
             var dirs = [];
             $block.find('li.directory').each(function () {
@@ -755,13 +755,13 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
             $form.attr('action', 'javascript:void(0)');
 
             function submit() {
-                var to = $form.find('[name="to"]').val();
+                var folder_to = $form.find('[name="to"]').val();
                 var $spinner = add_spinner();
                 $.post(get_action_url('rest'),
                     {
                         "action": "movedir",
-                        "id": id,
-                        "to": to,
+                        "item_id": item_id,
+                        "folder_to": folder_to,
                         "sesskey": M.cfg.sesskey
                     },
                     function () {
@@ -1029,13 +1029,10 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                 var lastslashindex = url.lastIndexOf('=');
                 var result = url.substring(lastslashindex + 1);
 
-                console.log(result);
-
                 if (result === 'core_course_edit_module' || result === 'core_course_get_module') {
 
                     var data = JSON.parse(settings.data);
                     var action = data[0].args.action;
-                    console.log(action);
 
                     // Don't try to add icon if activity has been deleted.
                     if (action === 'delete') {
@@ -1160,8 +1157,6 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                 add_section_backup_control($(this));
             });
         };
-
-        $('');
 
         /**
          * Initialize the Sharing Cart block
