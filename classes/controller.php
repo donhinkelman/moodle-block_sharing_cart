@@ -75,7 +75,7 @@ class controller {
             $node_ptr = &$tree;
             do {
                 $dir = (string) array_shift($components);
-                isset($node_ptr[$dir]) or $node_ptr[$dir] = array();
+                isset($node_ptr[$dir]) || $node_ptr[$dir] = array();
                 $node_ptr = &$node_ptr[$dir];
             } while ($dir !== '');
             $node_ptr[] = $record;

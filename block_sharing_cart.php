@@ -82,7 +82,8 @@ class block_sharing_cart extends block_base {
         $html = $controller->render_tree($USER->id);
 
         // Fetching all sections for current course.
-        $sections = section::all($COURSE->id);
+        $sectionsHandler = new section();
+        $sections = $sectionsHandler->all($COURSE->id);
 
         /* Place the <noscript> tag to give out an error message if JavaScript is not enabled in the browser.
          * Adding bootstrap classes to show colored info in bootstrap based themes. */

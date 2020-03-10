@@ -54,7 +54,7 @@ class section {
      * @return $this
      * @throws \moodle_exception
      */
-    public static function all($course_id) {
+    public function all($course_id) {
         get_fast_modinfo($course_id, 0, true);
         $sections = get_fast_modinfo($course_id);
         return $sections->get_section_info_all();

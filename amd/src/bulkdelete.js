@@ -26,8 +26,6 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Modal
                 }, trigger).done(function (modal) {
                     modal.setSaveButtonText(object.save_button);
 
-                    // Figure out what is returned on cancel and continue buttons.
-                    // How to change text on buttons
                     modal.getRoot().on(ModalEvents.save, function () {
                         object.next();
                     });

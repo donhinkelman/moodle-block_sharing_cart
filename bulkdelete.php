@@ -78,7 +78,7 @@ if (is_array($delete_param)) {
     } catch (sharing_cart_exception $ex) {
         print_error($ex->errorcode, $ex->module, $returnurl, $ex->a);
     } catch (Exception $ex) {
-        if (!empty($CFG->debug) and $CFG->debug >= DEBUG_DEVELOPER) {
+        if (!empty($CFG->debug) && $CFG->debug >= DEBUG_DEVELOPER) {
             print_error('notlocalisederrormessage', 'error', '', $ex->__toString());
         } else {
             print_error('unexpectederror', 'block_sharing_cart', $returnurl);

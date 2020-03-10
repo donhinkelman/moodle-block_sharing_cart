@@ -102,7 +102,7 @@ try {
     $json = array(
             'message' => $ex->getMessage(),
     );
-    if (!empty($CFG->debug) and $CFG->debug >= DEBUG_DEVELOPER) {
+    if (!empty($CFG->debug) && $CFG->debug >= DEBUG_DEVELOPER) {
         $json += array(
                 'file' => substr($ex->getFile(), strlen($CFG->dirroot)),
                 'line' => $ex->getLine(),

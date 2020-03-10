@@ -60,8 +60,8 @@ class record {
         }
 
         // default values
-        $this->userid or $this->userid = $USER->id;
-        $this->ctime or $this->ctime = time();
+        $this->userid || $this->userid = $USER->id;
+        $this->ctime || $this->ctime = time();
     }
 
     /**

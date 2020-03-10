@@ -127,7 +127,7 @@ class restore_fix_missing_questions extends restore_execution_step {
                 return true;
             });
             question_bank::get_qtype($qtypename)->get_question_options($question);
-            isset($oldhandler) and set_error_handler($oldhandler);
+            isset($oldhandler) && set_error_handler($oldhandler);
             if (count(get_object_vars($question->options)) == 0) {
                 if ($qtypename === 'random') {
                     // qtype_random does nothing, but is valid
@@ -136,7 +136,7 @@ class restore_fix_missing_questions extends restore_execution_step {
                 }
             }
         } catch (moodle_exception $ex) {
-            isset($oldhandler) and set_error_handler($oldhandler);
+            isset($oldhandler) && set_error_handler($oldhandler);
             return false;
         }
         // somehow, subquestions might go away, but inconsistency of them causes restore interruption
