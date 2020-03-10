@@ -11,8 +11,10 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
+* 3.6, release 11    2020.03.10
+    * When moving activities, backup sharing icon would'nt be created in the new place.
 * 3.6, release 10    2020.03.05
-    * Fixed bug caused by updating code, reverted back to old code.
+    * Fixed bug caused by refactored code in record.php, updated to work.
 * 3.6, release 9    2020.03.05
     * Updated applicable_formats, to only show sharing cart in courses.
     * In bulkdelete.js updated javascript to jquery.

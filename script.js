@@ -1023,35 +1023,36 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
          * Call add_activity_backup_control to re append sharing cart icon.
          */
         $.init_activity_commands = function () {
-            $(document).one('click', '.mod-indent-outer', function () {
-                $(document).ajaxComplete(function (event, xhr, settings) {
+            $(document).ajaxComplete(function (event, xhr, settings) {
 
-                    var url = settings.url;
-                    var lastslashindex = url.lastIndexOf('=');
-                    var result = url.substring(lastslashindex + 1);
+                var url = settings.url;
+                var lastslashindex = url.lastIndexOf('=');
+                var result = url.substring(lastslashindex + 1);
 
-                    if (result === 'core_course_edit_module') {
+                console.log(result);
 
-                        var data = JSON.parse(settings.data);
-                        var action = data[0].args.action;
+                if (result === 'core_course_edit_module' || result === 'core_course_get_module') {
 
-                        // Don't try to add icon if activity has been deleted.
-                        if (action === 'delete') {
-                            return;
-                        }
+                    var data = JSON.parse(settings.data);
+                    var action = data[0].args.action;
+                    console.log(action);
 
-                        setTimeout(function () {
-                            var activity_id = data[0].args.id;
-                            var activity = $('#module-' + activity_id);
-                            add_activity_backup_control(activity);
-
-                            if (action === 'duplicate') {
-                                var duplicated = activity.next();
-                                add_activity_backup_control(duplicated);
-                            }
-                        }, 1);
+                    // Don't try to add icon if activity has been deleted.
+                    if (action === 'delete') {
+                        return;
                     }
-                });
+
+                    setTimeout(function () {
+                        var activity_id = data[0].args.id;
+                        var activity = $('#module-' + activity_id);
+                        add_activity_backup_control(activity);
+
+                        if (action === 'duplicate') {
+                            var duplicated = activity.next();
+                            add_activity_backup_control(duplicated);
+                        }
+                    }, 1);
+                }
             });
 
             /**
