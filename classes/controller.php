@@ -327,9 +327,9 @@ class controller {
                 }
 
                 if ($userdata && $this->is_userdata_copyable($module->id)) {
-                    array_push($itemids, $this->backup($module->id, true, $course, $sc_section_id));
+                    $itemids[] = $this->backup($module->id, true, $course, $sc_section_id);
                 } else {
-                    array_push($itemids, $this->backup($module->id, false, $course, $sc_section_id));
+                    $itemids[] = $this->backup($module->id, false, $course, $sc_section_id);
                 }
             }
 
@@ -658,7 +658,7 @@ class controller {
         $items = $DB->get_records('block_sharing_cart', array('tree' => $path));
         foreach ($items as $item) {
             if ($item->section) {
-                array_push($section_ids, $item->section);
+                $section_ids[] = $item->section;
             }
         }
 

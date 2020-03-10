@@ -275,7 +275,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
          * @returns {jQuery.fn.init}
          */
         function add_node_spinner($node) {
-            var $node_spinner = ($('<i class="fa fa-circle-o-notch fa-spin node_spinner"></i>'));
+            var $node_spinner = $('<i class="fa fa-circle-o-notch fa-spin node_spinner"></i>');
             $node.append($node_spinner);
             return $node_spinner;
         }
@@ -292,7 +292,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                 function (response) {
                     $block.find(".tree").replaceWith($(response));
                     $.init_item_tree();
-                }, "text")
+                }, "html")
                 .fail(function (response) {
                     show_error(response);
                 });
@@ -397,7 +397,8 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
             }
 
             function open($dir, visible) {
-                var iconElement = icon[visible ? 'dir-open' : 'dir-closed'].iconClass;
+                var iconIndex = visible ? 'dir-open' : 'dir-closed';
+                var iconElement = icon[iconIndex].iconClass;
                 $dir.find('> div i.icon').attr('class', 'icon ' + iconElement);
                 $dir.find('> ul.list')[visible ? 'show' : 'hide']();
             }

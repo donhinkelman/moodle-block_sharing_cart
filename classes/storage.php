@@ -46,8 +46,9 @@ class storage {
      * @param int $userid = $USER->id
      */
     public function __construct($userid = null) {
+        global $USER;
         $this->storage = \get_file_storage();
-        $this->context = \context_user::instance($userid ?: $GLOBALS['USER']->id);
+        $this->context = \context_user::instance($userid ?: $USER->id);
     }
 
     /**
