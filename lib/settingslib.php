@@ -17,14 +17,14 @@
 /**
  *  Sharing Cart
  *
- *  @package    block_sharing_cart
- *  @copyright  2017 (C) VERSION2, INC.
- *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    block_sharing_cart
+ * @copyright  2017 (C) VERSION2, INC.
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once __DIR__.'/../../../question/engine/bank.php';
+require_once __DIR__ . '/../../../question/engine/bank.php';
 
 /**
  * Multiple checkboxes with icons for each label
@@ -36,7 +36,8 @@ class admin_setting_configmulticheckboxwithicon extends admin_setting_configmult
     /**
      * Constructor: uses parent::__construct
      *
-     * @param string $name unique ascii name, either 'mysetting' for settings that in config, or 'myplugin/mysetting' for ones in config_plugins.
+     * @param string $name unique ascii name, either 'mysetting' for settings that in config, or 'myplugin/mysetting' for ones in
+     *         config_plugins.
      * @param string $visiblename localised
      * @param string $description long localised info
      * @param array $defaultsetting array of selected
@@ -55,13 +56,13 @@ class admin_setting_configmulticheckboxwithicon extends admin_setting_configmult
      * acceptable value this may cause a warning/error
      * if (!is_array($data)) would fix the problem
      *
-     * @todo Add vartype handling to ensure $data is an array
-     *
      * @param array $data An array of checked values
      * @param string $query
      * @return string XHTML field
+     * @todo Add vartype handling to ensure $data is an array
+     *
      */
-    public function output_html($data, $query='') {
+    public function output_html($data, $query = '') {
         if (!$this->load_choices() or empty($this->choices)) {
             return '';
         }
@@ -74,7 +75,7 @@ class admin_setting_configmulticheckboxwithicon extends admin_setting_configmult
         }
         $options = array();
         $defaults = array();
-        foreach ($this->choices as $key=>$description) {
+        foreach ($this->choices as $key => $description) {
             if (!empty($data[$key])) {
                 $checked = 'checked="checked"';
             } else {
@@ -84,26 +85,29 @@ class admin_setting_configmulticheckboxwithicon extends admin_setting_configmult
                 $defaults[] = $description;
             }
 
-//            $options[] = '<input type="checkbox" id="'.$this->get_id().'_'.$key.'" name="'.$this->get_full_name().'['.$key.']" value="1" '.$checked.' />'
-//                .'<label for="'.$this->get_id().'_'.$key.'">'.highlightfast($query, $description).'</label>';
-            $options[] = '<input type="checkbox" id="'.$this->get_id().'_'.$key.'" name="'.$this->get_full_name().'['.$key.']" value="1" '.$checked.' />'
-                .'<label for="'.$this->get_id().'_'.$key.'">'.$this->icons[$key].highlightfast($query, $description).'</label>';
+            //            $options[] = '<input type="checkbox" id="'.$this->get_id().'_'.$key.'" name="'.$this->get_full_name().'['.$key.']" value="1" '.$checked.' />'
+            //                .'<label for="'.$this->get_id().'_'.$key.'">'.highlightfast($query, $description).'</label>';
+            $options[] = '<input type="checkbox" id="' . $this->get_id() . '_' . $key . '" name="' . $this->get_full_name() . '[' .
+                    $key . ']" value="1" ' . $checked . ' />'
+                    . '<label for="' . $this->get_id() . '_' . $key . '">' . $this->icons[$key] .
+                    highlightfast($query, $description) . '</label>';
         }
 
         if (is_null($default)) {
-            $defaultinfo = NULL;
-        } elseif (!empty($defaults)) {
+            $defaultinfo = null;
+        } else if (!empty($defaults)) {
             $defaultinfo = implode(', ', $defaults);
         } else {
             $defaultinfo = get_string('none');
         }
 
         $return = '<div class="form-multicheckbox">';
-        $return .= '<input type="hidden" name="'.$this->get_full_name().'[xxxxx]" value="1" />'; // something must be submitted even if nothing selected
+        $return .= '<input type="hidden" name="' . $this->get_full_name() .
+                '[xxxxx]" value="1" />'; // something must be submitted even if nothing selected
         if ($options) {
             $return .= '<ul>';
             foreach ($options as $option) {
-                $return .= '<li>'.$option.'</li>';
+                $return .= '<li>' . $option . '</li>';
             }
             $return .= '</ul>';
         }
@@ -118,12 +122,12 @@ class admin_setting_configmulticheckboxwithicon extends admin_setting_configmult
  */
 class admin_setting_configmulticheckboxmodtypes extends admin_setting_configmulticheckboxwithicon {
     /**
-     * @global moodle_database $DB
-     * @global core_renderer $OUTPUT
      * @param string $name
      * @param string $visiblename
      * @param string $description
      * @param array $defaultsetting
+     * @global moodle_database $DB
+     * @global core_renderer $OUTPUT
      */
     public function __construct($name, $visiblename, $description, $defaultsetting = null) {
         global $DB, $OUTPUT;
@@ -142,11 +146,11 @@ class admin_setting_configmulticheckboxmodtypes extends admin_setting_configmult
  */
 class admin_setting_configmulticheckboxqtypes extends admin_setting_configmulticheckboxwithicon {
     /**
-     * @global core_renderer $OUTPUT
      * @param string $name
      * @param string $visiblename
      * @param string $description
      * @param array $defaultsetting
+     * @global core_renderer $OUTPUT
      */
     public function __construct($name, $visiblename, $description, $defaultsetting = null) {
         global $OUTPUT;
@@ -157,7 +161,9 @@ class admin_setting_configmulticheckboxqtypes extends admin_setting_configmultic
         unset($qtypes['missingtype']);
         unset($qtypes['random']);
         // question_bank::sort_qtype_array() expects array(name => local_name)
-        $qtypenames = array_map(function ($qtype) { return $qtype->local_name(); }, $qtypes);
+        $qtypenames = array_map(function($qtype) {
+            return $qtype->local_name();
+        }, $qtypes);
         foreach (question_bank::sort_qtype_array($qtypenames) as $name => $label) {
             $choices[$name] = $label;
             $icons[$name] = ' ' . $OUTPUT->pix_icon('icon', '', $qtypes[$name]->plugin_name()) . ' ';

@@ -11,78 +11,117 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
-* 3.6, release 2    2020.02.10
-  * Fixed https://github.com/donhinkelman/moodle-block_sharing_cart/issues/12
+* 3.6, release 11    2020.03.10
+    * When moving activities, backup sharing icon would'nt be created in the new place.
+* 3.6, release 10    2020.03.05
+    * Fixed bug caused by refactored code in record.php, updated to work.
+* 3.6, release 9    2020.03.05
+    * Updated applicable_formats, to only show sharing cart in courses.
+    * In bulkdelete.js updated javascript to jquery.
+    * Cleaned and optimized code according to code review.
+* 3.6, release 8    2020.02.27
+    * Hotfix, missing 'use' in rest.php.
+* 3.6, release 7    2020.02.27
+    * Small bugfixes.
+    * Few style improvements.
+    * Tested on Moodle 3.6, 3.7 & 3.8 - tested in New (old) classic theme.
+* 3.6, release 6    2020.02.26
+    * Copy section dropdown, now won't display empty sections.
+    * Bulkdelete view updated.
+        - Modal added.
+        - Won't be seperated in groups of 10.
+        - JS moved to amd module.
+    * Namespace updated to follow moodle standards.
+* 3.6, release 5    2020.02.21
+    * Updated loading icons.
+    * Fixed code to use fewer functions, cleaned up some checks.
+    * Added copy section dropdown to the block.
+* 3.6, release 4    2020.02.21
+    * Updated UI to match moodles better.
+        - Pix images changed to font-awesome icons.
+        - Background color to hightlight folder structure in the tree.
+        - Aligned command icons to hug the right side.
+        - Label images has max height and width.
+        - Dropzones when moving activities/folders, shown with icon and border.
+        - Inputfields updated and has been styles so the icons can fit the same line.
+        - When creating new folder, the cursor will autofocus the input field.
+        - Added modals instead of alerts.
+        - Updated bulkdelete page (Missing modal for confirm.).
+* 3.6, release 3    2020.02.12
+    * Bugfix: When removing dir, that shared a name with another user. The sql would not check for userid.
+* 3.6, release 2    2020.02.11
+    * Fixed https://github.com/donhinkelman/moodle-block_sharing_cart/issues/12
+    * Made a check on groupchange and duplicate, so we can re-add/add sharing cart icon.
 * 3.6, release 1    2019.01.20
-  * No code changes, fixed text in Readme and version.php
-  * Tested OK in Moodle 3.6
+    * No code changes, fixed text in Readme and version.php
+    * Tested OK in Moodle 3.6
 * 3.5, release 1    2018.12.24
-  * Fixed some theme issues
+    * Fixed some theme issues
 * 3.3, release 3    2018.01.24
-  * No longer compatible with Moodle 3.2 or earlier
+    * No longer compatible with Moodle 3.2 or earlier
 * 3.3, release 2
-  * Fixed problem in PostgreSQL
-  * Fixed warning messages from using deprecated functions
-  * Added ability to copy section title
+    * Fixed problem in PostgreSQL
+    * Fixed warning messages from using deprecated functions
+    * Added ability to copy section title
 * 3.3, release 1
-  * Compatible with Moodle 3.3
+    * Compatible with Moodle 3.3
 * 3.2, release 1
-  * Compatible with Moodle 3.2
-  * Ability to copy the whole section to Sharing Cart 
+    * Compatible with Moodle 3.2
+    * Ability to copy the whole section to Sharing Cart 
 * 3.0, release 1
-  * Compatible with Moodle 3.0
+    * Compatible with Moodle 3.0
 * 2.9, release 1
-  * Compatible with Moodle 2.9
+    * Compatible with Moodle 2.9
 * 2.6, release 1 patch 7
-  * Improve javascript
+    * Improve javascript
 * 2.6, release 1 patch 6
-  * Support frontpage
+    * Support frontpage
 * 2.6, release 1 patch 5
-  * Support Moodle 2.7
+    * Support Moodle 2.7
 * 2.6, release 1 patch 4
-  * Fixed issue #16
+    * Fixed issue #16
 * 2.6, release 1 patch 3
-  * Fixed issue: https://tracker.moodle.org/browse/MDLSITE-2806
+    * Fixed issue: https://tracker.moodle.org/browse/MDLSITE-2806
 * 2.6, release 1 patch 2
-  * Support experimental setting "Enable new backup format"
+    * Support experimental setting "Enable new backup format"
 * 2.6, release 1 patch 1
-  * Fixed issue: PHP's numeric string does not work properly
-  * Improved indentation of cart items
+    * Fixed issue: PHP's numeric string does not work properly
+    * Improved indentation of cart items
 * 2.6, release 1
-  * Rename version number
+    * Rename version number
 * 2.4, release 1 patch 9
-  * Improved capability checking (issue #10)
+    * Improved capability checking (issue #10)
 * 2.4, release 1 patch 8
-  * Support Moodle 2.6
+    * Support Moodle 2.6
 * 2.4, release 1 patch 7
-  * Removed block/sharing_cart:myaddinstance capability (issue #6)
-  * Reduced unused strings and moved help content into lang file (issue #7)
+    * Removed block/sharing_cart:myaddinstance capability (issue #6)
+    * Reduced unused strings and moved help content into lang file (issue #7)
 * 2.4, release 1 patch 6
-  * Add block/sharing_cart:myaddinstance capability (issue #6)
-  * Used wrong string from core in bulkdelete.php (issue #8)
+    * Add block/sharing_cart:myaddinstance capability (issue #6)
+    * Used wrong string from core in bulkdelete.php (issue #8)
 * 2.4, release 1 patch 5
-  * Fixed Sharing cart causing file upload box to hang (issue #3 of old repository)
+    * Fixed Sharing cart causing file upload box to hang (issue #3 of old repository)
 * 2.4, release 1 patch 4
-  * Improve icon usage and themability for Moodle 2.4 (pull request #2)
-  * Add element's html code to clipboard div without indents (issue #5)
-  * Notify user that JavaScript is needed for Sharing Cart functionality (issue #3)
+    * Improve icon usage and themability for Moodle 2.4 (pull request #2)
+    * Add element's html code to clipboard div without indents (issue #5)
+    * Notify user that JavaScript is needed for Sharing Cart functionality (issue #3)
 * 2.4, release 1 patch 3
-  * IE8 JavaScript workaround (CONTRIB-4209)
-  * HTML visible on settings screen (issue #1)
+    * IE8 JavaScript workaround (CONTRIB-4209)
+    * HTML visible on settings screen (issue #1)
 * 2.4, release 1 patch 2
-  * Limit applicable formats (issue #2 of old repository)
-  * lib.php is no longer required
+    * Limit applicable formats (issue #2 of old repository)
+    * lib.php is no longer required
 * 2.4, release 1 patch 1
-  * Set instance_can_be_docked to false
+    * Set instance_can_be_docked to false
 * 2.4, release 1
-  * Support Moodle 2.4
+    * Support Moodle 2.4
 * 2.3, release 2
-  * New feature: Workaround for question bank restore issue (error_question_match_sub_missing_in_db)
+    * New feature: Workaround for question bank restore issue (error_question_match_sub_missing_in_db)
 * 2.3, release 1
-  * Some minor fixes
+    * Some minor fixes
 * 2.3, release candidate 1
-  * New feature: Option to copy with user data (for Wiki, Forum, Database, etc.)
-  * Improvement: Ajaxify
+    * New feature: Option to copy with user data (for Wiki, Forum, Database, etc.)
+    * Improvement: Ajaxify
 
 
 Purpose

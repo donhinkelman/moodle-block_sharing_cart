@@ -1,3 +1,242 @@
-img.iconcustom {margin: 0; padding: 0.3em; width: 20px; height: 20px;}
-.header-commands {margin-top: 5px;}
-.header-commands img {margin-left: 0 !important;}
+/* SHARING CART TREE START */
+
+div.card-text ul.tree li:hover {
+    background-color: rgba(0, 0, 0, .03);
+}
+
+div.card-text ul.tree li.directory > div {
+    padding: 5px;
+}
+
+div.card-text ul.tree li.activity {
+    padding: 5px;
+}
+
+div.card-text ul.tree li.activity > div {
+    padding: 0;
+}
+
+ul.tree li > div {
+    display: flex;
+}
+
+ul.tree li > div form {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+ul.tree li > div .instancename,
+ul.tree li > div .instancename .no-overflow {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    display: inline-block;
+    margin: 2px 0 auto 0;
+    width: 100%;
+}
+
+ul.tree li img.activityicon {
+    height: 16px;
+    width: 16px;
+    margin: auto 5px auto 0;
+}
+
+span.commands {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+span.commands form {
+    margin-bottom: 0;
+}
+
+span.commands form select,
+span.commands form input {
+    line-height: 20px;
+    height: auto;
+    border: 1px solid #b1b1b1;
+    box-sizing: border-box;
+    padding: 5px 25px 5px 5px;
+    width: 150px;
+    margin-left: 5px;
+}
+
+span.commands form input:focus {
+    box-shadow: none;
+}
+
+span.commands i.fa {
+    margin: 0;
+    padding: 0 0.3em;
+    height: 20px;
+    color: #373a3c;
+}
+
+span.commands i.fa:hover {
+    cursor: pointer;
+}
+
+span.commands a {
+    margin: auto;
+}
+
+.block_sharing_cart li.label {
+    font-weight: 400;
+}
+
+.block_sharing_cart li.label p {
+    margin-bottom: 0;
+}
+
+.block_sharing_cart .label div span img {
+    max-width: 200px;
+    width: auto;
+    max-height: 100px;
+    height: auto;
+}
+
+div.card-text ul.list li.move-to {
+    border: #c9cacb 2px dashed;
+    padding: 0;
+    margin: 5px;
+}
+
+.move-to a {
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+    padding: 5px;
+}
+
+.move-to a:hover {
+    text-decoration: none;
+}
+
+.move-to p {
+    height: 100%;
+    text-align: center;
+    margin: 5px;
+    color: #9b9d9e;
+}
+
+.toggle-wrapper {
+    width: 100%;
+    display: flex;
+}
+
+.toggle-wrapper i.fa {
+    margin: auto 5px auto 0;
+}
+
+.footer {
+    margin-top: 10px;
+}
+
+.footer form {
+    display: flex;
+    justify-content: space-between;
+}
+
+.footer .header-commands {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0, 0, 0, .125);
+}
+
+.footer form select {
+    width: 100%;
+    margin-right: 10px;
+}
+
+.block_spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, .5);
+}
+
+/* SHARING CART TREE END */
+
+/* MODAL START */
+.modal-checbox-wrapper {
+    display: flex;
+    margin-top: 20px;
+}
+
+.modal-checbox-wrapper input {
+    margin: auto 0;
+}
+
+.modal-checbox-wrapper label {
+    margin: auto 0 auto 5px;
+}
+
+/* MODAL END */
+
+/* ACTIVITIES & SECTION STYLING START */
+.node_spinner {
+    height: 100%;
+    margin: auto;
+    font-size: 16px;
+}
+
+/* ACTIVITIES & SECTION STYLING END */
+
+/* BULK VIEW START */
+.bulk-delete-list {
+    list-style: none;
+    padding-left: 10px;
+}
+
+.bulk-delete-select-all {
+    display: flex;
+    padding-left: 20px;
+    margin-right: 10px;
+}
+
+.bulk-delete-item {
+    display: flex;
+    border-top: 1px solid rgba(0, 0, 0, 0.125);
+    padding: 5px 10px;
+}
+
+.bulk-delete-item label {
+    text-align: left;
+}
+
+.bulk-delete-item:last-of-type {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.bulk-delete-item:hover {
+    background-color: rgba(0, 0, 0, .03);
+}
+
+.bulk-delete-item input {
+    margin: auto 10px auto 0;
+}
+
+.bulk-delete-item label {
+    margin: auto 0 auto 5px;
+}
+
+.bulk-delete-item img {
+    height: 15px;
+    width: 15px;
+    margin: auto 0;
+}
+
+/* BULK VIEW END */
+
+/* IKKE VORES - RYD OP */
+.header-commands img {
+    margin-left: 0 !important;
+}

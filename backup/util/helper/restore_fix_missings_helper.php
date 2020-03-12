@@ -17,27 +17,25 @@
 /**
  *  Sharing Cart
  *
- *  @package    block_sharing_cart
- *  @copyright  2017 (C) VERSION2, INC.
- *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    block_sharing_cart
+ * @copyright  2017 (C) VERSION2, INC.
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once __DIR__.'/../../moodle2/restore_root_task_fix_missings.php';
+require_once __DIR__ . '/../../moodle2/restore_root_task_fix_missings.php';
 
 /**
  *  The helper class that fixes restore plan
  */
-final class restore_fix_missings_helper
-{
+final class restore_fix_missings_helper {
     /**
      *  Fixes a restore plan to perform a workaround for question bank restore issue
-     *  
-     *  @param restore_plan $plan
+     *
+     * @param restore_plan $plan
      */
-    public static function fix_plan(restore_plan $plan)
-    {
+    public static function fix_plan(restore_plan $plan) {
         // replaces an existing restore_root_task with a restore_root_task_fix_missings
         $tasks = $plan->get_tasks();
         foreach ($tasks as $i => $task) {
@@ -56,13 +54,12 @@ final class restore_fix_missings_helper
 
     /**
      *  Sets a protected/private property
-     *  
-     *  @param object $obj
-     *  @param string $prop
-     *  @param mixed $value
+     *
+     * @param object $obj
+     * @param string $prop
+     * @param mixed $value
      */
-    private static function set_protected_property($obj, $prop, $value)
-    {
+    private static function set_protected_property($obj, $prop, $value) {
         $reflector = new ReflectionProperty(get_class($obj), $prop);
         $reflector->setAccessible(true);
         $reflector->setValue($obj, $value);

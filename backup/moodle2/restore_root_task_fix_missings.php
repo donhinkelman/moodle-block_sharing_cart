@@ -17,22 +17,20 @@
 /**
  *  Sharing Cart
  *
- *  @package    block_sharing_cart
- *  @copyright  2017 (C) VERSION2, INC.
- *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    block_sharing_cart
+ * @copyright  2017 (C) VERSION2, INC.
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once __DIR__.'/restore_fix_missing_questions.php';
+require_once __DIR__ . '/restore_fix_missing_questions.php';
 
 /**
  *  The root task that fixes missings before execution
  */
-class restore_root_task_fix_missings extends restore_root_task
-{
-    public function build()
-    {
+class restore_root_task_fix_missings extends restore_root_task {
+    public function build() {
         parent::build();
 
         // inserts a restore_fix_missing_questions step
