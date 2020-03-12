@@ -17,15 +17,15 @@
 /**
  *  Sharing Cart
  *
- *  @package    block_sharing_cart
- *  @copyright  2017 (c) Don Hinkelman
- *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    block_sharing_cart
+ * @copyright  2017 (c) Don Hinkelman
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2020021200;
-$plugin->requires  = 2017050500; // Moodle 3.3
+$plugin->version = 2020031001;
+$plugin->requires = 2018120300; // Moodle 3.6
 $plugin->component = 'block_sharing_cart';
-$plugin->release   = '3.6, release 3';
-$plugin->maturity  = MATURITY_STABLE;
+$plugin->release = '3.6, release 11';
+$plugin->maturity = MATURITY_STABLE;

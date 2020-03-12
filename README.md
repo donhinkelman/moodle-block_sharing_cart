@@ -10,8 +10,43 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 * Moodle 1.9 => "MOODLE_19_STABLE" branch
 
 Change Log
-==========
-
+----------
+* 3.6, release 11    2020.03.10
+    * When moving activities, backup sharing icon would'nt be created in the new place.
+* 3.6, release 10    2020.03.05
+    * Fixed bug caused by refactored code in record.php, updated to work.
+* 3.6, release 9    2020.03.05
+    * Updated applicable_formats, to only show sharing cart in courses.
+    * In bulkdelete.js updated javascript to jquery.
+    * Cleaned and optimized code according to code review.
+* 3.6, release 8    2020.02.27
+    * Hotfix, missing 'use' in rest.php.
+* 3.6, release 7    2020.02.27
+    * Small bugfixes.
+    * Few style improvements.
+    * Tested on Moodle 3.6, 3.7 & 3.8 - tested in New (old) classic theme.
+* 3.6, release 6    2020.02.26
+    * Copy section dropdown, now won't display empty sections.
+    * Bulkdelete view updated.
+        - Modal added.
+        - Won't be seperated in groups of 10.
+        - JS moved to amd module.
+    * Namespace updated to follow moodle standards.
+* 3.6, release 5    2020.02.21
+    * Updated loading icons.
+    * Fixed code to use fewer functions, cleaned up some checks.
+    * Added copy section dropdown to the block.
+* 3.6, release 4    2020.02.21
+    * Updated UI to match moodles better.
+        - Pix images changed to font-awesome icons.
+        - Background color to hightlight folder structure in the tree.
+        - Aligned command icons to hug the right side.
+        - Label images has max height and width.
+        - Dropzones when moving activities/folders, shown with icon and border.
+        - Inputfields updated and has been styles so the icons can fit the same line.
+        - When creating new folder, the cursor will autofocus the input field.
+        - Added modals instead of alerts.
+        - Updated bulkdelete page (Missing modal for confirm.).
 * 3.6, release 3    2020.02.12
     * Bugfix: When removing dir, that shared a name with another user. The sql would not check for userid.
 * 3.6, release 2    2020.02.11

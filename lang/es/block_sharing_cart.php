@@ -17,9 +17,9 @@
 /**
  *  Sharing Cart
  *
- *  @package    block_sharing_cart
- *  @copyright  2017 (C) VERSION2, INC.
- *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    block_sharing_cart
+ * @copyright  2017 (C) VERSION2, INC.
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $string['pluginname'] = 'Bolsa de recursos';
@@ -54,9 +54,6 @@ $string['confirm_backup_section'] = '¿Está seguro de copiar estas/os actividad
 $string['confirm_userdata'] = '¿Quiere incluir datos de usuarios en la copia de esta/e actividad/recurso?
 OK - Copiar *CON* datos de usuarios
 Cancelar - Copiar *SIN* datos de usuarios';
-$string['confirm_userdata_section'] = '¿Quiere incluir datos de usuarios en la copia de estas/os actividades/recursos?
-OK - Copiar *CON* datos de usuarios
-Cancelar - Copiar *SIN* datos de usuarios';
 $string['confirm_restore'] = '¿Está seguro de copiar este item al curso?';
 $string['confirm_delete'] = '¿Está seguro de borrar?';
 $string['confirm_delete_selected'] = '¿Está seguro de querer borrar todos los elementos seleccionados?';
@@ -84,7 +81,8 @@ $string['variouscourse'] = 'desde cursos varios';
 
 $string['section_name_conflict'] = 'Conflicto del título de la sección';
 $string['conflict_description'] = '¿Quiere cambiar el título de la sección en el curso?';
-$string['conflict_description_note'] = '*Los formatos de la descripción del título (colores, imágenes, etc.) se aparecerán después de copiar al curso.';
+$string['conflict_description_note'] =
+        '*Los formatos de la descripción del título (colores, imágenes, etc.) se aparecerán después de copiar al curso.';
 $string['conflict_no_overwrite'] = 'Mantener utilizando <strong>"{$a}"</strong>';
 $string['conflict_overwrite_title'] = 'Cambiar el título a <strong>"{$a}"</strong>';
 $string['conflict_submit'] = 'Continuar';
