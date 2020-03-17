@@ -26,7 +26,7 @@ ul.tree li > div form {
 }
 
 ul.tree li > div .instancename,
-ul.tree li > div .instancename .no-overflow {
+ul.tree li > div .instancename .no-overflow p {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
