@@ -1077,16 +1077,14 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
 
                 var activityClass = $activity[0].className;
 
-                // Regex to select the word after modtype_
-                var regexPattern = new RegExp('(?<=(^_)*modtype_)(\\w*)', 'g');
-
-                var modtype = activityClass.match(regexPattern);
+                // Selecting modtype without prefix.
+                var modtype = activityClass.substr(activityClass.indexOf('modtype_') + 8);
 
                 // Default activity name.
                 var activityName = str('activity_string');
 
                 // Label is using a different html / css layout, so it's needed to get the name by using another $find.
-                if (modtype[0] !== 'label') {
+                if (modtype !== 'label') {
                     activityName = $('.activity#' + $activity[0].id)
                         .find('.mod-indent-outer .activityinstance span.instancename')
                         .html();
