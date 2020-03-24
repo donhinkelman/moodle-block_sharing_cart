@@ -21,44 +21,8 @@
  *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require(['jquery','core/str'], function ($, Str)
-    {
-        $(document).ready(function()
-        {
-
-        /** @var {Object}  The icon configurations */
-        var icon = {
-            // actions
-            'backup': {css: 'editing_backup', pix: 'i/backup'},
-            'movedir': {css: 'editing_right', pix: 't/right'},
-            'move': {css: 'editing_move_', pix: 't/move'},
-            'edit': {css: 'editing_update', pix: 't/edit'},
-            'cancel': {css: 'editing_cancel', pix: 't/delete'},
-            'delete': {css: 'editing_update', pix: 't/delete'},
-            'restore': {css: 'editing_restore', pix: 'i/restore'},
-            // directories
-            'dir-open': {pix: 'f/folder-open'},
-            'dir-closed': {pix: 'f/folder'}
-        };
-
-        /** @var {Node}  The Sharing Cart block container node */
-        var $block = $('.block_sharing_cart');
-
-        var $spinner_modal = {
-            show: function() {
-                $('#sharing-cart-spinner-modal').show();
-            },
-            hide: function() {
-                $('#sharing-cart-spinner-modal').hide();
-            }
-        };
-
-        /** @var {Object}  The current course */
-        var course = new function() {
-            var body = $('body');
-            this.id = body.attr('class').match(/course-(\d+)/)[1];
-            this.is_frontpage = body.hasClass('pagelayout-frontpage');
-        };
+require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, ModalFactory, ModalEvents) {
+    $(document).ready(function () {
 
         /**
          *  Returns a localized string
@@ -68,26 +32,6 @@ require(['jquery','core/str'], function ($, Str)
          */
         function str(identifier) {
             return M.str.block_sharing_cart[identifier] || M.str.moodle[identifier];
-        }
-
-        /**
-         *  Shows an error message with given Ajax error
-         *
-         *  @param {Object} response  The Ajax response
-         */
-        function show_error(response) {
-            try {
-                var ex = JSON.parse(response.responseText);
-                new M.core.exception({
-                    name: str('pluginname') + ' - ' + str('error'),
-                    message: ex.message
-                });
-            } catch (e) {
-                new M.core.exception({
-                    name: str('pluginname') + ' - ' + str('error'),
-                    message: response.responseText
-                });
-            }
         }
 
         /**
@@ -107,6 +51,158 @@ require(['jquery','core/str'], function ($, Str)
                 url += '?' + q.join('&');
             }
             return url;
+        }
+
+        /**
+         * Modal called when confirming an action.
+         *
+         * @param obj
+         */
+        function confirm_modal(obj) {
+
+            // Checkbox for copying userdata confirmation.
+            if (obj.checkbox) {
+                obj.body +=
+                    '<div class="modal-checbox-wrapper">' +
+                    '<input type="checkbox" id="modal-checkbox" class="modal-checkbox" checked>' +
+                    '<label for="modal-checkbox">' + str('modal_checkbox') + '</label>' +
+                    '</div>';
+            }
+
+            ModalFactory.create({
+                type: ModalFactory.types.SAVE_CANCEL,
+                title: obj.title,
+                body: obj.body,
+            }).done(function (modal) {
+                modal.setSaveButtonText(obj.save_button);
+
+                // On save save check - if checkbox is checked.
+                modal.getRoot().on(ModalEvents.save, function (e) {
+
+                    var response = {
+                        'checkbox': $(e.target).find('.modal-checkbox').is(':checked'),
+                    };
+
+                    obj.next(response);
+                });
+
+                // Remove modal from html.
+                modal.getRoot().on(ModalEvents.hidden, function () {
+                    $('.modal.moodle-has-zindex').remove();
+                });
+
+                modal.show();
+            });
+        }
+
+        /**
+         *
+         * @param post_data
+         * @param title_str
+         * @param body_str
+         * @param isSection
+         */
+        function on_backup_modal(post_data, title_str, body_str, isSection) {
+            (function (on_success) {
+                $.post(get_action_url('rest'), post_data,
+                    function (response) {
+                        on_success(response);
+                    }, "text")
+                    .fail(function (response) {
+                        show_error(response);
+                    });
+            })(function (response) {
+                var copyable = response === '1';
+                var checkbox = false;
+
+                if (copyable) {
+                    checkbox = true;
+                }
+
+                confirm_modal({
+                    'title': title_str,
+                    'body': body_str,
+                    'save_button': str('modal_confirm_backup'),
+                    'checkbox': checkbox,
+                    'next': function (data) {
+                        if (isSection === true) {
+                            backup_section(post_data.sectionid, post_data.sectionnumber, post_data.courseid, data.checkbox);
+                        } else {
+                            backup(post_data.cmid, data.checkbox);
+                        }
+                    }
+                });
+            });
+        }
+
+        /** @var {Object}  The icon configurations */
+        var icon = {
+            // Actions
+            'backup': {
+                css: 'editing_backup',
+                iconClass: 'fa fa-frown-o',
+            },
+            'movedir': {
+                css: 'editing_right',
+                iconClass: 'fa fa-arrow-right',
+            },
+            'move': {
+                css: 'editing_move_',
+                iconClass: 'fa fa-arrows-v',
+            },
+            'edit': {
+                css: 'editing_update',
+                iconClass: 'fa fa-pencil',
+            },
+            'cancel': {
+                css: 'editing_cancel',
+                iconClass: 'fa fa-ban',
+            },
+            'delete': {
+                css: 'editing_update',
+                iconClass: 'fa fa-trash',
+            },
+            'restore': {
+                css: 'editing_restore',
+                iconClass: 'fa fa-clone',
+            },
+            // Directories
+            'dir-open': {
+                iconClass: 'fa fa-folder-open-o'
+            },
+            'dir-closed': {
+                iconClass: 'fa fa-folder-o'
+            },
+        };
+
+        /** @var {Node}  The Sharing Cart block container node */
+        var $block = $('.block_sharing_cart');
+
+        /** @var {Object}  The current course */
+        var course = new function () {
+            var body = $('body');
+            this.id = body.attr('class').match(/course-(\d+)/)[1];
+            this.is_frontpage = body.hasClass('pagelayout-frontpage');
+        }();
+
+        /**
+         *  Shows an error message with given Ajax error
+         *
+         *  @param {Object} response  The Ajax response
+         */
+        function show_error(response) {
+            try {
+                var ex = JSON.parse(response.responseText);
+                new M.core.exception({
+                    name: str('pluginname') + ' - ' + str('error'),
+                    message: ex.message
+                });
+            } catch (e) {
+                new M.core.exception({
+                    name: str('pluginname') + ' - ' + str('error'),
+                    message: response.responseText
+                });
+            }
         }
 
         /**
@@ -148,83 +244,57 @@ require(['jquery','core/str'], function ($, Str)
          *  @param {String} name  The command name, predefined in icon
          *  @param {String} [pix] The icon pix name to override
          */
-        function create_command(name, pix) {
-            var imageelement = $('<img class="iconsmall "/>')
+        function create_command(name) {
+            var iconElement = $('<i/>')
                 .attr('alt', str(name))
-                .attr('src', M.util.image_url(pix || icon[name].pix));
-            if (verify_layout()) {
-                imageelement.addClass('iconcustom');
-            }
+                .attr('class', icon[name].iconClass);
+            // If (verify_layout()) {
+            //     iconElement.addClass('iconcustom');
+            // }
 
             return $('<a href="javascript:void(0)"/>')
                 .addClass(icon[name].css)
                 .attr('title', str(name))
-                .append(imageelement);
+                .append(iconElement);
         }
-
-        /**
-         *  Create a command icon for moodle 3.2
-         *
-         *  @param {String} name  The command name, predefined in icon
-         *  @param {String} [pix] The icon pix name to override
-         */
-
-        /*
-        function create_special_activity_command(name, pix)
-        {
-            return $('<a href="javascript:void(0)"/>')
-                .addClass(icon[name].css)
-                .addClass('dropdown-item menu-action cm-edit-action')
-                .attr('title', str(name))
-                .append(
-                    $('<img class="icon"/>')
-                        .attr('alt', str(name))
-                        .attr('src', M.util.image_url(pix || icon[name].pix))
-                );
-        }
-        */
 
         /**
          * Create a spinner
          * @param $node
          * @returns {*|jQuery}
          */
-        function add_spinner($node) {
-            var WAITICON = {'pix': "i/loading_small", 'component': 'moodle'};
-
-            if ($node.find(".spinner").length) {
-                return $node.find(".spinner");
-            }
-
-            var spinner = $("<img/>").attr("src", M.util.image_url(WAITICON.pix, WAITICON.component))
-                .addClass("spinner iconsmall")
-                .hide();
-
-            $node.append(spinner);
-            return spinner;
+        function add_spinner() {
+            var $spinner = ($('<div class="block_spinner"><i class="fa fa-circle-o-notch fa-spin fa-2x"></i></div>'));
+            $('section.block_sharing_cart').append($spinner);
+            return $spinner;
         }
 
         /**
+         *
+         * @param $node
+         * @returns {jQuery.fn.init}
+         */
+        function add_node_spinner($node) {
+            var $node_spinner = $('<i class="fa fa-circle-o-notch fa-spin node_spinner"></i>');
+            $node.append($node_spinner);
+            return $node_spinner;
+        }
+
+        /**
+         *
          *  Reload the Sharing Cart item tree
          */
         function reload_tree() {
-            var $spinner = add_spinner($block.find('.commands'));
-
-            $spinner.show();
-
             $.post(get_action_url("rest"),
                 {
                     "action": "render_tree"
                 },
-                function(response) {
+                function (response) {
                     $block.find(".tree").replaceWith($(response));
                     $.init_item_tree();
-                }, "text")
-                .fail(function(response) {
+                }, "html")
+                .fail(function (response) {
                     show_error(response);
-                })
-                .always(function(response) {
-                    $spinner.hide();
                 });
         }
 
@@ -235,12 +305,13 @@ require(['jquery','core/str'], function ($, Str)
          *  @param {Boolean} userdata
          */
         function backup(cmid, userdata) {
-            var $commands = $('#module-' + cmid + ' .commands');
+            var $commands = $('#module-' + cmid + ' .actions');
             if (!$commands.length) {
                 $commands = $('[data-owner="#module-' + cmid + '"]');
             }
 
-            $spinner_modal.show();
+            var $spinner = add_spinner();
+            var $node_spinner = add_node_spinner($commands);
 
             $.post(get_action_url("rest"),
                 {
@@ -250,14 +321,15 @@ require(['jquery','core/str'], function ($, Str)
                     "sesskey": M.cfg.sesskey,
                     "course": course.id
                 },
-                function() {
+                function () {
                     reload_tree();
                 })
-                .fail(function(response) {
+                .fail(function (response) {
                     show_error(response);
                 })
-                .always(function(response) {
-                    $spinner_modal.hide();
+                .always(function () {
+                    $node_spinner.hide();
+                    $spinner.hide();
                 });
         }
 
@@ -273,14 +345,14 @@ require(['jquery','core/str'], function ($, Str)
             var $commands = $('span.inplaceeditable[data-itemtype=sectionname][data-itemid=' + sectionId + ']');
             var sectionName = $commands.closest("li.section.main").attr('aria-label');
 
-            if (sectionName == null) {
+            if (sectionName === null) {
                 sectionName = String($('#region-main .section_action_menu[data-sectionid=\'' + sectionId + '\']')
                     .parent().parent().find('h3.sectionname').text());
             }
 
-            var $spinner = add_spinner($commands);
+            var $spinner = add_spinner();
+            var $node_spinner = add_node_spinner($commands);
 
-            $spinner_modal.show();
 
             $.post(get_action_url("rest"),
                 {
@@ -293,27 +365,28 @@ require(['jquery','core/str'], function ($, Str)
                     "sesskey": M.cfg.sesskey,
                     "course": course.id
                 },
-                function() {
+                function () {
                     reload_tree();
                 })
-                .fail(function(response) {
+                .fail(function (response) {
                     show_error(response);
                 })
-                .always(function(response) {
-                    $spinner_modal.hide();
+                .always(function () {
+                    $spinner.hide();
+                    $node_spinner.hide();
                 });
         }
 
 
-        ///////// CLASSES /////////
+        // /////// CLASSES /////////
 
         /**
          *  @class Directory states manager
          */
-        var directories = new function() {
+        var directories = new function () {
             var KEY = 'block_sharing_cart-dirs';
 
-            var opens = getCookieValue(KEY).split(',').map(function(v) {
+            var opens = getCookieValue(KEY).split(',').map(function (v) {
                 return parseInt(v);
             });
 
@@ -324,8 +397,9 @@ require(['jquery','core/str'], function ($, Str)
             }
 
             function open($dir, visible) {
-                var pix = icon[visible ? 'dir-open' : 'dir-closed'].pix;
-                $dir.find('> div img').first().attr('src', M.util.image_url(pix));
+                var iconIndex = visible ? 'dir-open' : 'dir-closed';
+                var iconElement = icon[iconIndex].iconClass;
+                $dir.find('> div i.icon').attr('class', 'icon ' + iconElement);
                 $dir.find('> ul.list')[visible ? 'show' : 'hide']();
             }
 
@@ -342,9 +416,9 @@ require(['jquery','core/str'], function ($, Str)
             /**
              *  Initialize directory states
              */
-            this.init = function() {
+            this.init = function () {
                 var i = 0;
-                $block.find('li.directory').each(function(index, dir) {
+                $block.find('li.directory').each(function (index, dir) {
                     var $dir = $(dir);
                     $dir.attr('id', 'block_sharing_cart-dir-' + i);
                     if (i >= opens.length) {
@@ -352,42 +426,43 @@ require(['jquery','core/str'], function ($, Str)
                     } else if (opens[i]) {
                         open($dir, true);
                     }
-                    $dir.find('> div').css('cursor', 'pointer').on('click', function(e) {
+                    $dir.find('> div div.toggle-wrapper').css('cursor', 'pointer').on('click', function (e) {
                         toggle(e);
                     });
                     i++;
                 });
             };
+
             /**
              *  Reset directory states
              */
-            this.reset = function() {
+            this.reset = function () {
                 opens = [];
                 this.init();
                 save();
             };
-        };
+        }();
 
         /**
          *  @class Targets for moving an item directory
          */
-        var move_targets = new function() {
+        var move_targets = new function () {
             var $cancel = null,
                 targets = [];
 
             /**
              *  Hide move targets
              */
-            this.hide = function() {
+            this.hide = function () {
                 if ($cancel !== null) {
                     var $commands = $cancel.closest('.commands');
                     $cancel.remove();
                     $cancel = null;
                     $commands.closest('li.activity').css('opacity', 1.0);
-                    $commands.find('a').each(function() {
+                    $commands.find('a').each(function () {
                         $(this).show();
                     });
-                    $.each(targets, function(index, $target) {
+                    $.each(targets, function (index, $target) {
                         $target.remove();
                     });
                     targets = [];
@@ -399,31 +474,35 @@ require(['jquery','core/str'], function ($, Str)
              *
              *  @param {int} id  The item ID
              */
-            this.show = function(id) {
+            this.show = function (item_id) {
                 this.hide();
 
                 function move(e) {
-                    var m = $(e.target).closest('a').attr('class').match(/move-(\d+)-to-(\d+)/);
-                    var id = m[1],
-                        to = m[2];
 
+                    var m = $(e.target).closest('a').attr('class').match(/move-(\d+)-to-(\d+)/);
+                    var item_id = m[1],
+                        area_to = m[2];
+
+                    var $spinner = add_spinner();
                     $.post(get_action_url("rest"),
                         {
                             "action": "move",
-                            "id": id,
-                            "to": to,
+                            "item_id": item_id,
+                            "area_to": area_to,
                             "sesskey": M.cfg.sesskey
                         },
-                        function() {
+                        function () {
                             reload_tree();
                         })
-                        .fail(function(response) {
+                        .fail(function (response) {
                             show_error(response);
+                        })
+                        .always(function () {
+                            $spinner.hide();
                         });
                 }
 
-                var $current = $block.find('#block_sharing_cart-item-' + id);
-                var $indent = $current.find('div');
+                var $current = $block.find('#block_sharing_cart-item-' + item_id);
                 var $next = $current.next();
                 var $list = $current.closest('ul');
 
@@ -432,62 +511,73 @@ require(['jquery','core/str'], function ($, Str)
                     next_id = $next.attr('id').match(/item-(\d+)$/)[1];
                 }
 
-                function create_target(id, to) {
+                /**
+                 *
+                 * @param item_id
+                 * @param area_to
+                 * @returns {jQuery}
+                 */
+                function create_target(item_id, area_to) {
                     var $anchor = $('<a href="javascript:void(0)"/>')
-                        .addClass('move-' + id + '-to-' + to)
+                        .addClass('move-' + item_id + '-to-' + area_to)
                         .attr('title', str('movehere'))
                         .append(
-                            $('<img class="move_target"/>')
+                            $('<p>' + str('clicktomove') + '</p>')
                                 .attr('alt', str('movehere'))
-                                .attr('src', M.util.image_url('dropzone_arrow', 'block_sharing_cart'))
                         );
 
-                    var $target = $('<li class="activity"/>')
-                        .append($($indent[0].cloneNode(false)).append($anchor));
-                    $anchor.on('click', function(e) {
+                    var $target = $('<li class="activity move-to"/>')
+                        .append($anchor);
+                    $anchor.on('click', function (e) {
                         move(e);
                     });
 
                     return $target;
                 }
 
-                $list.find('> li.activity').each(function(index, item) {
+                $list.find('> li.activity').each(function (index, item) {
                     var $item = $(item);
                     var to = $item.attr('id').match(/item-(\d+)$/)[1];
-                    if (to === id) {
+                    if (to === item_id) {
                         $cancel = create_command('cancel', 't/left');
-                        $cancel.on('click', function() {
+                        $cancel.on('click', function () {
                             move_targets.hide();
                         });
                         var $commands = $item.find('.commands');
-                        $commands.find('a').each(function() {
+                        $commands.find('a').each(function () {
                             $(this).hide();
                         });
                         $commands.append($cancel);
                         $item.css('opacity', 0.5);
                     } else if (to !== next_id) {
-                        var $target = create_target(id, to);
+                        var $target = create_target(item_id, to);
                         $item.before($target);
                         targets.push($target);
                     }
                 }, this);
 
                 if ($next) {
-                    var $target = create_target(id, 0);
+                    var $target = create_target(item_id, 0);
                     $list.append($target);
                     targets.push($target);
                 }
             };
-        };
+        }();
 
         /**
          *  @class Targets for restoring an item
          */
-        var restore_targets = new function() {
+        var restore_targets = new function () {
             this.is_directory = null;
             var $clipboard = null,
                 targets = [];
 
+            /**
+             *
+             * @param id
+             * @param section
+             * @returns {jQuery}
+             */
             function create_target(id, section) {
                 var href = '';
                 if (restore_targets.is_directory) {
@@ -524,11 +614,11 @@ require(['jquery','core/str'], function ($, Str)
             /**
              *  Hide restore targets
              */
-            this.hide = function() {
+            this.hide = function () {
                 if ($clipboard !== null) {
                     $clipboard.remove();
                     $clipboard = null;
-                    $.each(targets, function(index, $target) {
+                    $.each(targets, function (index, $target) {
                         $target.remove();
                     });
                     targets = [];
@@ -536,11 +626,11 @@ require(['jquery','core/str'], function ($, Str)
             };
 
             /**
-             *  Show restore targets for a given item
+             *
              *
              *  @param {int} id  The item ID
              */
-            this.show = function(id) {
+            this.show = function (id) {
                 this.hide();
 
                 var $view = $("<span/>");
@@ -548,9 +638,9 @@ require(['jquery','core/str'], function ($, Str)
                 if (this.is_directory) {
                     $view.html(id).css('display', 'inline');
                     $view.prepend(
-                        $("<img/>").addClass("icon")
+                        $("<i/>").addClass("icon")
                             .attr("alt", id)
-                            .attr("src", M.util.image_url(icon['dir-closed'].pix, null))
+                        // .attr("src", M.util.image_url(icon['dir-closed'].pix, null))
                     );
                 } else {
                     var $item = $block.find('#block_sharing_cart-item-' + id);
@@ -575,7 +665,7 @@ require(['jquery','core/str'], function ($, Str)
                         $mainmenu.find('.content').before($clipboard);
                     }
 
-                    // mainmenu = section #0, sitetopic = section #1
+                    // Mainmenu = section #0, sitetopic = section #1
                     if ($mainmenu) {
                         $mainmenu.find('.footer').before(create_target(id, 0));
                     }
@@ -585,18 +675,22 @@ require(['jquery','core/str'], function ($, Str)
                 } else {
                     var $container = $('.course-content');
                     $container.one('*').before($clipboard);
-                    $container.find(M.course.format.get_section_wrapper(null)).each(function(index, sectionDOM) {
+                    $container.find(M.course.format.get_section_wrapper(null)).each(function (index, sectionDOM) {
                         var $section = $(sectionDOM);
                         var section = $section.attr('id').match(/(\d+)$/)[1];
                         $section.find('ul.section').first().append(create_target(id, section));
                     }, this);
                 }
             };
-        };
+        }();
 
-        ///////// INITIALIZATION /////////
+        // /////// INITIALIZATION /////////
 
-        $.get_plugin_name = function() {
+        /**
+         *
+         * @returns {string|*}
+         */
+        $.get_plugin_name = function () {
             var $blockheader = $block.find("h2");
 
             if (!$blockheader.length) {
@@ -612,8 +706,13 @@ require(['jquery','core/str'], function ($, Str)
             return "";
         };
 
-        $.on_backup = function(e) {
-            var cmid = (function($backup) {
+        /**
+         *
+         * @param e
+         * @param activityName
+         */
+        $.on_backup = function (e, activityName) {
+            var cmid = (function ($backup) {
                 var $activity = $backup.closest('li.activity');
                 if ($activity.length) {
                     return $activity.attr('id').match(/(\d+)$/)[1];
@@ -626,44 +725,13 @@ require(['jquery','core/str'], function ($, Str)
                 return $commands.find('a.editing_delete').attr('href').match(/delete=(\d+)/)[1];
             })($(e.target));
 
-            (function(on_success) {
-                $.post(get_action_url('rest'),
-                    {
-                        "action": "is_userdata_copyable",
-                        "cmid": cmid
-                    },
-                    function(response) {
-                        on_success(response);
-                    }, "text")
-                    .fail(function(response) {
-                        show_error(response);
-                    });
-            })(function(response) {
-                function embed_cmid(cmid) {
-                    return '<!-- #cmid=' + cmid + ' -->';
-                }
+            var data =
+                {
+                    "action": "is_userdata_copyable",
+                    "cmid": cmid
+                };
 
-                function parse_cmid(question) {
-                    return /#cmid=(\d+)/.exec(question)[1];
-                }
-
-                var copyable = response === '1';
-                if (copyable) {
-                    if (confirm(str('confirm_userdata'))) {
-                        if (confirm(str('confirm_backup'))) {
-                            backup(cmid, true);
-                        }
-                    } else {
-                        if (confirm(str('confirm_backup'))) {
-                            backup(cmid, false);
-                        }
-                    }
-                } else {
-                    if (confirm(str('confirm_backup'))) {
-                        backup(cmid, false);
-                    }
-                }
-            });
+            on_backup_modal(data, activityName, str('confirm_backup'), false);
         };
 
         /**
@@ -671,48 +739,56 @@ require(['jquery','core/str'], function ($, Str)
          *
          *  @param {DOMEventFacade} e
          */
-        $.on_movedir = function(e) {
+        $.on_movedir = function (e) {
             var $commands = $(e.target).closest('.commands');
 
             var $current_dir = $commands.closest('li.directory');
             var current_path = $current_dir.length ? $current_dir.attr('directory-path') : '/';
 
-            var id = $(e.target).closest('li.activity').attr('id').match(/(\d+)$/)[1];
+            var item_id = $(e.target).closest('li.activity').attr('id').match(/(\d+)$/)[1];
 
             var dirs = [];
-            $block.find('li.directory').each(function() {
+            $block.find('li.directory').each(function () {
                 dirs.push($(this).attr('directory-path'));
             });
 
-            var $form = $('<form/>').css('display', 'inline');
+            var $form = $('<form/>');
             $form.attr('action', 'javascript:void(0)');
 
             function submit() {
-                var to = $form.find('[name="to"]').val();
+                var folder_to = $form.find('[name="to"]').val();
+                var $spinner = add_spinner();
                 $.post(get_action_url('rest'),
                     {
                         "action": "movedir",
-                        "id": id,
-                        "to": to,
+                        "item_id": item_id,
+                        "folder_to": folder_to,
                         "sesskey": M.cfg.sesskey
                     },
-                    function() {
+                    function () {
                         reload_tree();
                         directories.reset();
                     })
-                    .fail(function(response) {
+                    .fail(function (response) {
                         show_error(response);
+                    })
+                    .always(function () {
+                        $spinner.hide();
                     });
             }
 
             $form.submit(submit);
 
             if (dirs.length === 0) {
-                $form.append($('<input type="text" name="to"/>').val(current_path));
+                var $input = $('<input class="form-control" type="text" name="to"/>').val(current_path);
+                setTimeout(function () {
+                    $input.focus();
+                }, 1);
+                $form.append($input);
             } else {
                 dirs.unshift('/');
 
-                var $select = $('<select name="to"/>');
+                var $select = $('<select class="custom-select" name="to"/>');
                 for (var i = 0; i < dirs.length; i++) {
                     $select.append($('<option/>').val(dirs[i]).append(dirs[i]));
                 }
@@ -722,7 +798,7 @@ require(['jquery','core/str'], function ($, Str)
 
                 var $edit = create_command('edit');
 
-                $edit.on('click', function() {
+                $edit.on('click', function () {
                     var $input = $('<input type="text" name="to"/>').val(current_path);
                     $select.remove();
                     $edit.replaceWith($input);
@@ -733,13 +809,13 @@ require(['jquery','core/str'], function ($, Str)
             }
 
             var $cancel = create_command('cancel');
-            $cancel.on('click', function() {
+            $cancel.on('click', function () {
                 $form.remove();
                 $commands.find('a').show();
             });
             $form.append($cancel);
 
-            $commands.find('a').each(function() {
+            $commands.find('a').each(function () {
                 $(this).hide();
             });
             $commands.append($form);
@@ -750,7 +826,7 @@ require(['jquery','core/str'], function ($, Str)
          *
          *  @param {DOMEventFacade} e
          */
-        $.on_move = function(e) {
+        $.on_move = function (e) {
             var $item = $(e.target).closest('li.activity');
             var id = $item.attr('id').match(/(\d+)$/)[1];
 
@@ -762,44 +838,64 @@ require(['jquery','core/str'], function ($, Str)
          *
          *  @param {DOMEventFacade} e
          */
-        $.on_delete = function(e) {
-            if (!confirm(str('confirm_delete'))) {
-                return;
-            }
-
+        $.on_delete = function (e) {
             var $item = $(e.target).closest('li');
-            var data = {};
+            var liText = $item[0].innerText;
+
+            var isDirectory = false;
+            var modalBody;
+            var item;
+            var description_text = '';
 
             if ($item.hasClass("directory")) {
-                data = {
-                    "action": "delete_directory",
-                    "path": $item.attr("directory-path"),
-                    "sesskey": M.cfg.sesskey
-                };
-            } else if ($item.hasClass("activity")) {
-                data = {
-                    "action": "delete",
-                    "id": $item.attr('id').match(/(\d+)$/)[1],
-                    "sesskey": M.cfg.sesskey
-                };
+                isDirectory = true;
+                item = str('folder_string');
+                description_text = str('delete_folder');
+            } else {
+                item = str('activity_string');
             }
 
-            var $spinner = add_spinner($(e.target).closest('.commands'));
+            modalBody = '<p class="delete-item">' + item + ' ' + liText + description_text + '</p>';
 
-            $spinner.show();
+            confirm_modal({
+                'title': str('confirm_delete'),
+                'body': modalBody,
+                'save_button': str('modal_confirm_delete'),
+                'checkbox': false,
+                'next': function () {
 
-            $.post(get_action_url("rest"), data,
-                function() {
-                    reload_tree();
-                })
-                .fail(function(response) {
-                    show_error(response);
-                })
-                .always(function() {
-                    $spinner.hide();
-                });
+                    var data = {};
 
-            e.stopPropagation();
+                    if (isDirectory === true) {
+                        data = {
+                            "action": "delete_directory",
+                            "path": $item.attr("directory-path"),
+                            "sesskey": M.cfg.sesskey
+                        };
+                    } else if ($item.hasClass("activity")) {
+                        data = {
+                            "action": "delete",
+                            "id": $item.attr('id').match(/(\d+)$/)[1],
+                            "sesskey": M.cfg.sesskey
+                        };
+                    }
+
+                    var $spinner = add_spinner();
+
+                    $.post(get_action_url("rest"), data,
+                        function () {
+                            reload_tree();
+                        })
+                        .fail(function (response) {
+                            show_error(response);
+                        })
+                        .always(function () {
+                            $spinner.hide();
+                        });
+
+                    e.stopPropagation();
+                }
+            });
         };
 
         /**
@@ -807,7 +903,7 @@ require(['jquery','core/str'], function ($, Str)
          *
          *  @param {DOMEventFacade} e
          */
-        $.on_restore = function(e) {
+        $.on_restore = function (e) {
             var $item = $(e.target).closest('li');
             var id = null;
 
@@ -828,53 +924,29 @@ require(['jquery','core/str'], function ($, Str)
          * @param {int} sectionId
          * @param {int} sectionNumber
          * @param {int} courseId
+         * @param {string} sectionName
          */
-        $.on_section_backup = function(sectionId, sectionNumber, courseId) {
-            (function(on_success) {
-                $.post(get_action_url('rest'),
-                    {
-                        "action": "is_userdata_copyable_section",
-                        "sectionid": sectionId,
-                        "sectionnumber": sectionNumber,
-                        "courseid": courseId,
-                    },
-                    function(response) {
-                        on_success(response);
-                    }, "text")
-                    .fail(function(response) {
-                        show_error(response);
-                    });
-            })(function(response) {
-                var copyable = response === '1';
-                if (copyable) {
-                    if (confirm(str('confirm_userdata_section'))) {
-                        if (confirm(str('confirm_backup_section'))) {
-                            backup_section(sectionId, sectionNumber, courseId, true);
-                        }
-                    } else {
-                        if (confirm(str('confirm_backup_section'))) {
-                            backup_section(sectionId, sectionNumber, courseId, false);
-                        }
-                    }
-                } else {
-                    if (confirm(str('confirm_backup_section'))) {
-                        backup_section(sectionId, sectionNumber, courseId, false);
-                    }
-                }
-            });
+        $.on_section_backup = function (sectionId, sectionNumber, courseId, sectionName) {
+
+            var data =
+                {
+                    "action": "is_userdata_copyable_section",
+                    "sectionid": sectionId,
+                    "sectionnumber": sectionNumber,
+                    "courseid": courseId,
+                };
+
+            on_backup_modal(data, sectionName, str('confirm_backup_section'), true);
         };
 
         /**
          *  Initialize the delete bulk
          */
-        $.init_bulk_delete = function(isspeciallayout) {
-            var bulkdelete = $block.find('.header-commands .editing_bulkdelete');
-
+        $.init_bulk_delete = function (isspeciallayout) {
+            var bulkdelete = $block.find('.editing_bulkdelete');
             if (bulkdelete.length) {
                 if (isspeciallayout) {
                     bulkdelete.attr('role', 'menuitem').addClass('dropdown-item menu-action');
-                    bulkdelete.find('img').addClass('icon');
-
                     bulkdelete.append($("<span class='menu-action-text'/>").append(bulkdelete.attr('title')));
 
                     $block.find('.menubar .dropdown .dropdown-menu').append(bulkdelete);
@@ -887,12 +959,12 @@ require(['jquery','core/str'], function ($, Str)
         /**
          *  Initialize the help icon
          */
-        $.init_help_icon = function(isspeciallayout) {
+        $.init_help_icon = function (isspeciallayout) {
             var helpicon = $block.find('.header-commands > .help-icon');
 
             if (isspeciallayout) {
                 helpicon.attr('data-placement', 'left').find('.help-icon')
-                    .prepend($('<span/>').append(M.str.block_sharing_cart['pluginname']).addClass('sc-space-5'));
+                    .prepend($('<span/>').append(M.str.block_sharing_cart.pluginname).addClass('sc-space-5'));
                 $block.find('.header-commands').parent().css('display', 'block');
             } else {
                 $block.find('.header .commands').append(helpicon);
@@ -902,7 +974,7 @@ require(['jquery','core/str'], function ($, Str)
         /**
          *  Initialize the Sharing Cart block header
          */
-        $.init_block_header = function() {
+        $.init_block_header = function () {
             var isspeciallayout = verify_layout();
             $.init_bulk_delete(isspeciallayout);
             $.init_help_icon(isspeciallayout);
@@ -911,14 +983,14 @@ require(['jquery','core/str'], function ($, Str)
         /**
          *  Initialize the Sharing Cart item tree
          */
-        $.init_item_tree = function() {
+        $.init_item_tree = function () {
             function add_actions(item, actions) {
                 var $item = $(item);
                 var $commands = $item.find('.commands').first();
 
-                $.each(actions, function(index, action) {
+                $.each(actions, function (index, action) {
                     var $command = create_command(action);
-                    $command.on('click', function(e) {
+                    $command.on('click', function (e) {
                         $['on_' + action](e);
                     });
                     $commands.append($command);
@@ -933,12 +1005,12 @@ require(['jquery','core/str'], function ($, Str)
             var directory_actions = ['delete', 'restore'];
 
             // Initialize items
-            $block.find('li.activity').each(function(index, item) {
+            $block.find('li.activity').each(function (index, item) {
                 add_actions(item, activity_actions);
             });
 
             // Initialize directory items
-            $block.find('li.directory').each(function(index, item) {
+            $block.find('li.directory').each(function (index, item) {
                 add_actions(item, directory_actions);
             });
 
@@ -946,36 +1018,40 @@ require(['jquery','core/str'], function ($, Str)
             directories.init();
         };
 
-        $.init_activity_commands = function() {
-            /**
-             * Extract html object from area where moodle ajax was called.
-             *
-             * Call add_activity_backup_control to re append sharing cart icon.
-             */
-            $(document).one('click', '.mod-indent-outer', function(){
-                $(document).ajaxComplete(function(event, xhr, settings) {
+        /**
+         * Extract html object from area where moodle ajax was called.
+         *
+         * Call add_activity_backup_control to re append sharing cart icon.
+         */
+        $.init_activity_commands = function () {
+            $(document).ajaxComplete(function (event, xhr, settings) {
 
-                    var url = settings.url;
-                    var lastslashindex = url.lastIndexOf('=');
-                    var result = url.substring(lastslashindex + 1);
+                var url = settings.url;
+                var lastslashindex = url.lastIndexOf('=');
+                var result = url.substring(lastslashindex + 1);
 
-                    if (result === 'core_course_edit_module') {
+                if (result === 'core_course_edit_module' || result === 'core_course_get_module') {
 
-                        var data = JSON.parse(settings.data);
+                    var data = JSON.parse(settings.data);
+                    var action = data[0].args.action;
 
-                        setTimeout(function() {
-                            var activity_id = data[0].args.id;
-                            var activity = $('#module-' + activity_id);
-                            add_activity_backup_control(activity);
-
-                            if (data[0].args.action === 'duplicate'){
-                                var duplicated = activity.next();
-                                add_activity_backup_control(duplicated);
-                            }
-                        }, 1);
+                    // Don't try to add icon if activity has been deleted.
+                    if (action === 'delete') {
+                        return;
                     }
-                });
-            })
+
+                    setTimeout(function () {
+                        var activity_id = data[0].args.id;
+                        var activity = $('#module-' + activity_id);
+                        add_activity_backup_control(activity);
+
+                        if (action === 'duplicate') {
+                            var duplicated = activity.next();
+                            add_activity_backup_control(duplicated);
+                        }
+                    }, 1);
+                }
+            });
 
             /**
              * Create the backup icon
@@ -998,39 +1074,31 @@ require(['jquery','core/str'], function ($, Str)
              * @param $activity
              */
             function add_activity_backup_control($activity) {
-                var cmid = $activity.attr('id').match(/(\d+)$/)[1];
 
-                Str.get_string(
-                    'no_backup_support',
-                    'block_sharing_cart'
-                )
-                .then(function(no_backup_support_string) {
+                var activityClass = $activity[0].className;
 
-                    $.post('/blocks/sharing_cart/rest.php', {
-                        sesskey: M.cfg.sesskey,
-                        action: 'ensure_backup_present',
-                        cmid: cmid,
-                        courseid: course.id
-                    }, function(response){
+                // Selecting modtype without prefix.
+                var modtype = activityClass.substr(activityClass.indexOf('modtype_') + 8);
 
-                        var $backupIcon = create_backup_icon();
-                        var $actionMenuItem = $activity.find('.action-menu.section-cm-edit-actions').parent('.actions');
+                // Default activity name.
+                var activityName = str('activity_string');
 
-                        if(response.data.has_backup_routine === true){
-                            $backupIcon.on('click', function(e) {
-                                $.on_backup(e);
-                            });
-                        }
-                        else{
-                            $backupIcon.removeClass('add-to-sharing-cart').css({'color': 'lightgray'});
-                            $backupIcon.addClass('no-backup-support');
-                            $backupIcon.attr('title', no_backup_support_string);
-                        }
+                // Label is using a different html / css layout, so it's needed to get the name by using another $find.
+                if (modtype !== 'label') {
+                    activityName = $('.activity#' + $activity[0].id)
+                        .find('.mod-indent-outer .activityinstance span.instancename')
+                        .html();
+                }
 
-                        $actionMenuItem.append($backupIcon);
-                    }, 'json');
+                var $backupIcon = create_backup_icon();
 
+                $backupIcon.on('click', function (e) {
+                    $.on_backup(e, activityName);
                 });
+
+                var $actionMenuItem = $activity.find('.action-menu.section-cm-edit-actions').parent('.actions');
+
+                $actionMenuItem.append($backupIcon);
             }
 
             /**
@@ -1042,11 +1110,13 @@ require(['jquery','core/str'], function ($, Str)
 
                 var sectionId = $section.find('.section_action_menu').data('sectionid');
                 var sectionNumber = parseInt(String($section.attr('id')).match(/\d+/)[0]);
+                var sectionName = $section.attr('aria-label');
                 var isFlexibleCourseFormat = $('body[id$=flexsections]').length;
 
                 // Extract the section ID from the section if this is a Flexible
                 // course format (since this format doesn't have an action menu)
-                if (isFlexibleCourseFormat && sectionId == null) {
+                if (isFlexibleCourseFormat && sectionId === null) {
+                    on_section_backup;
                     sectionId = $section.data('section-id');
                 }
 
@@ -1055,8 +1125,8 @@ require(['jquery','core/str'], function ($, Str)
 
                 var $backupIcon = create_backup_icon();
 
-                $backupIcon.on('click', function() {
-                    $.on_section_backup(sectionId, sectionNumber, courseId);
+                $backupIcon.on('click', function () {
+                    $.on_section_backup(sectionId, sectionNumber, courseId, sectionName);
                 });
 
                 var $sectionTitle = $section.find('h3.sectionname').first().find('a').last();
@@ -1077,12 +1147,12 @@ require(['jquery','core/str'], function ($, Str)
 
                 var $activities = $section.find(activitySelector);
 
-                $($activities).each(function() {
+                $($activities).each(function () {
                     add_activity_backup_control($(this));
                 });
             }
 
-            $("body.editing .course-content li.section").each(function() {
+            $("body.editing .course-content li.section").each(function () {
                 add_section_backup_control($(this));
             });
         };
@@ -1090,19 +1160,28 @@ require(['jquery','core/str'], function ($, Str)
         /**
          * Initialize the Sharing Cart block
          */
-        $.init = function() {
-            M.str.block_sharing_cart['pluginname'] = this.get_plugin_name();
+        $.init = function () {
+            M.str.block_sharing_cart.pluginname = this.get_plugin_name();
 
-            // arrange header icons (bulkdelete, help)
+            // Arrange header icons (bulkdelete, help)
             $.init_block_header();
             $.init_item_tree();
             $.init_activity_commands();
         };
-
-        var WAITICON = {'pix': 'i/loading', 'component': 'moodle'};
-        var $spinner = $('<img/>').attr('src', M.util.image_url(WAITICON.pix, WAITICON.component)).addClass('spinner');
+        var $spinner = $('<i/>').addClass('spinner fa fa-3x fa-circle-o-notch fa-spin');
         $('div#sharing-cart-spinner-modal div.spinner-container').prepend($spinner);
 
         $.init();
+    });
+
+    $('.copy_section').on('click', function () {
+
+        var $section_selected = ($('.section-dropdown option:selected'));
+        var sectionId = $section_selected.data('section-id');
+        var sectionNumber = $section_selected.data('section-number');
+        var courseId = $section_selected.data('course-id');
+        var sectionName = $section_selected.data('section-name');
+
+        $.on_section_backup(sectionId, sectionNumber, courseId, sectionName);
     });
 });

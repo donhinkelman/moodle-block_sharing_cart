@@ -17,21 +17,21 @@
 /**
  *  Sharing Cart - REST API
  *
- *  @package    block_sharing_cart
- *  @copyright  2017 (C) VERSION2, INC.
- *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    block_sharing_cart
+ * @copyright  2017 (C) VERSION2, INC.
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use block_sharing_cart\controller;
+use block_sharing_cart\exception as sharing_cart_exception;
+use block_sharing_cart\section;
 
 require_once '../../config.php';
 
-require_once __DIR__.'/classes/controller.php';
-
-use sharing_cart\helpers;
-
 try {
-	$controller = new sharing_cart\controller();
+    $controller = new controller();
 
-	switch (required_param('action', PARAM_TEXT)) {
+    switch (required_param('action', PARAM_TEXT)) {
         case 'render_tree':
             $PAGE->set_context(\context_user::instance($USER->id));
             echo $controller->render_tree($USER->id);
@@ -41,44 +41,44 @@ try {
             echo $controller->is_userdata_copyable($cmid);
             exit;
         case 'is_userdata_copyable_section':
-			$sectionid = optional_param('sectionid', null, PARAM_INT);
-			if (empty($sectionid)) {
-				$sectionnumber = required_param('sectionnumber', PARAM_INT);
-				$courseid = required_param('courseid', PARAM_INT);
-				$section = helpers\section::get($courseid, $sectionnumber);
-				$sectionid = $section->id;
-			}
+            $sectionid = optional_param('sectionid', null, PARAM_INT);
+            if (empty($sectionid)) {
+                $sectionnumber = required_param('sectionnumber', PARAM_INT);
+                $courseid = required_param('courseid', PARAM_INT);
+                $section = section::get($courseid, $sectionnumber);
+                $sectionid = $section->id;
+            }
             echo $controller->is_userdata_copyable_section($sectionid);
             exit;
         case 'backup':
-            $cmid     = required_param('cmid', PARAM_INT);
+            $cmid = required_param('cmid', PARAM_INT);
             $userdata = required_param('userdata', PARAM_BOOL);
             $course = required_param('course', PARAM_INT);
             $controller->backup($cmid, $userdata, $course);
             exit;
         case 'backup_section':
-			$sectionid = optional_param('sectionid', null, PARAM_INT);
-			$sectionname = optional_param('sectionname', null, PARAM_TEXT);
-			if (empty($sectionid) || empty($sectionname)) {
-				$sectionnumber = required_param('sectionnumber', PARAM_INT);
-				$courseid = required_param('courseid', PARAM_INT);
-				$section = helpers\section::get($courseid, $sectionnumber);
-				$sectionid = $section->id;
-				$sectionname = $section->name;
-			}
+            $sectionid = optional_param('sectionid', null, PARAM_INT);
+            $sectionname = optional_param('sectionname', null, PARAM_TEXT);
+            if (empty($sectionid) || empty($sectionname)) {
+                $sectionnumber = required_param('sectionnumber', PARAM_INT);
+                $courseid = required_param('courseid', PARAM_INT);
+                $section = section::get($courseid, $sectionnumber);
+                $sectionid = $section->id;
+                $sectionname = $section->name;
+            }
             $userdata = required_param('userdata', PARAM_BOOL);
             $course = required_param('course', PARAM_INT);
             $controller->backup_section($sectionid, $sectionname, $userdata, $course);
             exit;
         case 'movedir':
-            $id = required_param('id', PARAM_INT);
-            $to = required_param('to', PARAM_TEXT);
-            $controller->movedir($id, $to);
+            $item_id = required_param('item_id', PARAM_INT);
+            $folder_to = required_param('folder_to', PARAM_TEXT);
+            $controller->movedir($item_id, $folder_to);
             exit;
         case 'move':
-            $id = required_param('id', PARAM_INT);
-            $to = required_param('to', PARAM_INT);
-            $controller->move($id, $to);
+            $item_id = required_param('item_id', PARAM_INT);
+            $area_to = required_param('area_to', PARAM_INT);
+            $controller->move($item_id, $area_to);
             exit;
         case 'delete':
             $id = required_param('id', PARAM_INT);
@@ -88,26 +88,26 @@ try {
             $path = required_param('path', PARAM_TEXT);
             $controller->delete_directory($path);
             exit;
-		case 'ensure_backup_present':
-			require_sesskey();
-			$cmid = required_param('cmid', PARAM_INT);
-			$courseid = required_param('courseid', PARAM_INT);
-			echo $controller->ensure_backup_in_module($cmid, $courseid);
-			exit;
-	}
-	throw new sharing_cart\exception('invalidoperation');
-	
+        case 'ensure_backup_present':
+            require_sesskey();
+            $cmid = required_param('cmid', PARAM_INT);
+            $courseid = required_param('courseid', PARAM_INT);
+            echo $controller->ensure_backup_in_module($cmid, $courseid);
+            exit;
+    }
+    throw new sharing_cart_exception('invalidoperation');
+
 } catch (Exception $ex) {
-	header('HTTP/1.1 400 Bad Request');
-	$json = array(
-		'message' => $ex->getMessage(),
-		);
-	if (!empty($CFG->debug) and $CFG->debug >= DEBUG_DEVELOPER) {
-		$json += array(
-			'file'  => substr($ex->getFile(), strlen($CFG->dirroot)),
-			'line'  => $ex->getLine(),
-			'trace' => format_backtrace($ex->getTrace(), true),
-			);
-	}
-	echo json_encode($json);
+    header('HTTP/1.1 400 Bad Request');
+    $json = array(
+            'message' => $ex->getMessage(),
+    );
+    if (!empty($CFG->debug) && $CFG->debug >= DEBUG_DEVELOPER) {
+        $json += array(
+                'file' => substr($ex->getFile(), strlen($CFG->dirroot)),
+                'line' => $ex->getLine(),
+                'trace' => format_backtrace($ex->getTrace(), true),
+        );
+    }
+    echo json_encode($json);
 }

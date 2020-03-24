@@ -17,9 +17,9 @@
 /**
  *  Sharing Cart
  *
- *  @package    block_sharing_cart
- *  @copyright  2017 (C) VERSION2, INC.
- *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    block_sharing_cart
+ * @copyright  2017 (C) VERSION2, INC.
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $string['pluginname'] = '共有カート';
@@ -51,9 +51,6 @@ $string['bulkdelete'] = '一括削除';
 $string['confirm_backup'] = '共有カートにコピーしますか？';
 $string['confirm_backup_section'] = '共有カートにコピーしますか？';
 $string['confirm_userdata'] = '共有カートへのコピーにユーザーデータを含めますか？
-OK：ユーザーデーターを含めて、コピーする
-キャンセル：ユーザーデーターを含めずに、コピーする';
-$string['confirm_userdata_section'] = '共有カートへのコピーにユーザーデータを含めますか？
 OK：ユーザーデーターを含めて、コピーする
 キャンセル：ユーザーデーターを含めずに、コピーする';
 $string['confirm_restore'] = 'コースにコピーしますか？';
