@@ -1,7 +1,7 @@
 Sharing Cart
 ============
 
-Version 3.8, release 1 - 2020.03.15
+Version 3.8, release 2 - 2020.03.26
 
 The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
@@ -12,7 +12,7 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 Change Log
 ----------
 * 3.8, release 2    2020.03.17
-    * Fixed a bug where copy sharing cart icons wasn't loaded in firefox.
+    * Fixed a bug where copy sharing cart icons wasn't loaded in firefox. (issue #31)
 * 3.8, release 1    2020.03.15
     * No code change. Version number and version.php changed to prepare for Moodle Plugins database release.
 * 3.6, release 11   2020.03.10
