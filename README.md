@@ -11,6 +11,9 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
+* 3.8, release 3    2020.03.26
+    * Fix bug with HTML entities where sections can't be copied/deleted.
+    * Only make backup of modules where deletion is not in progress.
 * 3.8, release 2    2020.03.17
     * Fixed a bug where copy sharing cart icons wasn't loaded in firefox.
 * 3.8, release 1    2020.03.15

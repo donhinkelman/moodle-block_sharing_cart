@@ -96,8 +96,8 @@ class renderer {
         $components = explode('/', trim($path, '/'));
         $depth = count($components) - 1;
         return '
-		<li class="directory" directory-path="' . $path . '">
-			<div class="sc-indent-' . $depth . '" title="' . $path . $coursename . '">
+		<li class="directory" directory-path="' . htmlentities($path) . '">
+			<div class="sc-indent-' . $depth . '" title="' . htmlentities($path . $coursename) . '">
 			    <div class="toggle-wrapper">
                     <i class="icon fa fa-folder-o" alt=""></i>
                     <span class="instancename">' . format_string(end($components)) . '</span>			    

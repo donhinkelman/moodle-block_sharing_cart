@@ -307,14 +307,23 @@ class controller {
 
             // Backup all
             $modulesequence = explode(',', $section->sequence);
-            $modulecount = $DB->count_records('course_modules', ['section' => $sectionid]);
+            $modulecount = $DB->count_records('course_modules', [
+                'section' => $sectionid,
+                'deletioninprogress' => 0
+            ]);
 
             if (count($modulesequence) != $modulecount) {
-                $modules = $DB->get_records('course_modules', ['section' => $sectionid]);
+                $modules = $DB->get_records('course_modules', [
+                    'section' => $sectionid,
+                    'deletioninprogress' => 0
+                ]);
             } else {
                 $modules = [];
                 foreach ($modulesequence as $modid) {
-                    $modules[] = $DB->get_record('course_modules', ['id' => $modid]);
+                    $modules[] = $DB->get_record('course_modules', [
+                        'id' => $modid,
+                        'deletioninprogress' => 0
+                    ]);
                 }
             }
 
