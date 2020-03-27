@@ -17,22 +17,21 @@
 /**
  *  Sharing Cart - Restore Operation
  *
- *  @package    block_sharing_cart
- *  @copyright  2017 (C) VERSION2, INC.
- *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    block_sharing_cart
+ * @copyright  2017 (C) VERSION2, INC.
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once '../../config.php';
+use block_sharing_cart\controller;
+use block_sharing_cart\section_title_form;
 
-require_once __DIR__.'/classes/controller.php';
-require_once __DIR__.'/classes/renderer.php';
-require_once __DIR__.'/classes/section_title_form.php';
+require_once '../../config.php';
 
 $directory = required_param('directory', PARAM_BOOL);
 $id = null;
 $path = null;
 
-if($directory) {
+if ($directory) {
     $path = required_param('path', PARAM_TEXT);
 } else {
     $id = required_param('id', PARAM_INT);
@@ -51,10 +50,10 @@ $returnurl .= '#section-' . $sectionnumber;
 require_login($courseid);
 
 try {
-	$controller = new sharing_cart\controller();
+    $controller = new controller();
 
-	if ($directory) {
-        $form = new \sharing_cart\section_title_form($directory, $path, $courseid, $sectionnumber, array());
+    if ($directory) {
+        $form = new section_title_form($directory, $path, $courseid, $sectionnumber, array());
         if ($form->is_cancelled()) {
             redirect($returnurl);
             exit;
@@ -73,17 +72,19 @@ try {
 
                 $PAGE->set_pagelayout('standard');
                 $PAGE->set_url('/blocks/sharing_cart/restore.php');
-                $PAGE->set_title(get_string('pluginname', 'block_sharing_cart') . ' - ' . get_string('restore', 'block_sharing_cart'));
+                $PAGE->set_title(get_string('pluginname', 'block_sharing_cart') . ' - ' .
+                        get_string('restore', 'block_sharing_cart'));
                 $PAGE->set_heading(get_string('restore', 'block_sharing_cart'));
                 $PAGE->navbar
-                    ->add(get_section_name($courseid, $sectionnumber), new moodle_url("/course/view.php?id={$courseid}#section-{$sectionnumber}"))
-                    ->add(get_string('pluginname', 'block_sharing_cart'))
-                    ->add(get_string('restore', 'block_sharing_cart'));
+                        ->add(get_section_name($courseid, $sectionnumber),
+                                new moodle_url("/course/view.php?id={$courseid}#section-{$sectionnumber}"))
+                        ->add(get_string('pluginname', 'block_sharing_cart'))
+                        ->add(get_string('restore', 'block_sharing_cart'));
 
                 echo $OUTPUT->header();
                 echo $OUTPUT->heading(get_string('section_name_conflict', 'block_sharing_cart'));
 
-                $form = new \sharing_cart\section_title_form($directory, $path, $courseid, $sectionnumber, $sections);
+                $form = new section_title_form($directory, $path, $courseid, $sectionnumber, $sections);
                 $form->display();
 
                 echo $OUTPUT->footer();
@@ -100,14 +101,14 @@ try {
         $controller->restore($id, $courseid, $sectionnumber);
     }
 
-	redirect($returnurl);
+    redirect($returnurl);
 
 } catch (sharing_cart\exception $ex) {
-	print_error($ex->errorcode, $ex->module, $returnurl, $ex->a);
+    print_error($ex->errorcode, $ex->module, $returnurl, $ex->a);
 } catch (Exception $ex) {
-	if (!empty($CFG->debug) and $CFG->debug >= DEBUG_DEVELOPER) {
-		print_error('notlocalisederrormessage', 'error', '', $ex->__toString());
-	} else {
-		print_error('unexpectederror', 'block_sharing_cart', $returnurl);
-	}
+    if (!empty($CFG->debug) && $CFG->debug >= DEBUG_DEVELOPER) {
+        print_error('notlocalisederrormessage', 'error', '', $ex->__toString());
+    } else {
+        print_error('unexpectederror', 'block_sharing_cart', $returnurl);
+    }
 }

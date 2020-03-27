@@ -17,9 +17,9 @@
 /**
  *  Sharing Cart
  *
- *  @package    block_sharing_cart
- *  @copyright  2017 (C) VERSION2, INC.
- *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    block_sharing_cart
+ * @copyright  2017 (C) VERSION2, INC.
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $string['pluginname'] = 'Sharing Cart';
@@ -45,6 +45,7 @@ $string['sharing_cart:addinstance'] = 'Add a new Sharing Cart block';
 $string['backup'] = 'Copy to Sharing Cart';
 $string['restore'] = 'Copy to course';
 $string['movedir'] = 'Move into folder';
+$string['clicktomove'] = 'Click to move here';
 $string['copyhere'] = 'Copy here';
 $string['notarget'] = 'Target not found';
 $string['clipboard'] = 'Copying this shared item';
@@ -54,13 +55,11 @@ $string['confirm_backup_section'] = 'Do you want to copy this course section and
 $string['confirm_userdata'] = 'Do you want to include user data in a copy of this activity/resource?
 OK - Copy *with* user data
 Cancel - Copy *without* user data';
-$string['confirm_userdata_section'] = 'Do you want to include user data in a copy of these activities/resources?
-OK - Copy *with* user data
-Cancel - Copy *without* user data';
 $string['confirm_restore'] = 'Are you sure you want to copy this item to course?';
 $string['confirm_delete'] = 'Are you sure you want to delete?';
 $string['confirm_delete_selected'] = 'Are you sure you want to delete all selected items?';
 $string['inprogess_pleasewait'] = 'Please wait…';
+$string['copy_section'] = 'Copy section';
 
 $string['settings:userdata_copyable_modtypes'] = 'User data copyable module types';
 $string['settings:userdata_copyable_modtypes_desc'] = 'While copying an activity into the Sharing Cart,
@@ -89,4 +88,14 @@ $string['conflict_description_note'] = '*Section summary formats (font color, im
 $string['conflict_no_overwrite'] = 'Keep the current section title <strong>"{$a}"</strong>';
 $string['conflict_overwrite_title'] = 'Change section title to <strong>"{$a}"</strong>';
 $string['conflict_submit'] = 'Continue';
+
+$string['folder_string'] = 'Folder:';
+$string['activity_string'] = 'Activity:';
+$string['delete_folder'] = ' and all it\'s content';
+$string['modal_checkbox'] = 'Do you want to copy user data? (Eg. glossary/wiki/database entries)';
+$string['modal_confirm_backup'] = 'Confirm';
+$string['modal_confirm_delete'] = 'Delete';
 $string['no_backup_support'] = 'No backup support for this module';
+
+$string['modal_bulkdelete_title'] = 'Sure you want to delete';
+$string['modal_bulkdelete_confirm'] = 'Delete selected';
