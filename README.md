@@ -13,6 +13,7 @@ Change Log
 ----------
 * 3.8, release 4    2020.03.27
     * Removed pluginname near help button on speciallayouts.
+    * Removed hardcoded color for commands icons.
 * 3.8, release 3    2020.03.26
     * Fix bug with HTML entities where sections can't be copied/deleted.
     * Only make backup of modules where deletion is not in progress.
