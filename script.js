@@ -1113,8 +1113,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
 
                 // Extract the section ID from the section if this is a Flexible
                 // course format (since this format doesn't have an action menu)
-                if (isFlexibleCourseFormat && sectionId === null) {
-                    on_section_backup;
+                if (isFlexibleCourseFormat && (typeof sectionId === 'undefined' || sectionId === null)) {
                     sectionId = $section.data('section-id');
                 }
 

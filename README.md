@@ -11,6 +11,8 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
+* 3.8, release 5    2020.03.30
+    * Make sure the ID of the section can be extracted when no action menu is found
 * 3.8, release 4    2020.03.27
     * Removed pluginname near help button on speciallayouts.
     * Removed hardcoded color for commands icons.
