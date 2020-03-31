@@ -11,6 +11,10 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
+* 3.8, release 6    2020.03.31
+    * Quick edit bugs
+        * Fix bug where quick edit removes the backup icon for the edited section.
+        * Fix bug where the old section name is used when a section is copied to the Sharing Cart after quick edit.
 * 3.8, release 5    2020.03.30
     * Make sure the ID of the section can be extracted when no action menu is found
 * 3.8, release 4    2020.03.27
