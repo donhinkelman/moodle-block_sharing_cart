@@ -33,6 +33,7 @@ ul.tree li > div .instancename .no-overflow p {
     display: inline-block;
     margin: 2px 0 auto 0;
     width: 100%;
+    min-width: 0;
 }
 
 ul.tree li img.activityicon {
@@ -145,6 +146,7 @@ div.card-text ul.list li.move-to {
 }
 
 .footer form select {
+    min-width: 0;
     width: 100%;
     margin-right: 10px;
 }
