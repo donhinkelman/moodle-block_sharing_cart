@@ -11,6 +11,8 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
+* 3.8, release 6    2020.04.03
+    * Minor css update.
 * 3.8, release 5    2020.04.02
     * Added css fix, to prevent elements to overflow in firefox.
 * 3.8, release 4    2020.03.27
