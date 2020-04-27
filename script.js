@@ -598,12 +598,15 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
              */
             function create_target(id, section) {
                 var href = '';
+
+                var inSection = $('#copy-section-form').data('in-section');
                 if (restore_targets.is_directory) {
                     href = get_action_url('restore', {
                         'directory': true,
                         'path': id,
                         'course': course.id,
                         'section': section,
+                        'in_section': inSection,
                         'sesskey': M.cfg.sesskey
                     });
                 } else {
@@ -612,6 +615,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                         'id': id,
                         'course': course.id,
                         'section': section,
+                        'in_section': inSection,
                         'sesskey': M.cfg.sesskey
                     });
                 }
