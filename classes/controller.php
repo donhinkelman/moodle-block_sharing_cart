@@ -189,7 +189,7 @@ class controller {
         if ($this->get_string_length($cleanname) > self::MAX_FILENAME) {
             $cleanname = $this->get_sub_string($cleanname, 0, self::MAX_FILENAME) . '_';
         }
-        $filename = sprintf('%s-%s.mbz', $cleanname, date('Ymd-His'));
+        $filename = sprintf('%s-%s-%s.mbz', $cmid, $cleanname, date('Ymd-His'));
 
         // backup the module into the predefined area
         //    - user/backup ... if userdata not included
