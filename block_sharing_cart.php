@@ -59,14 +59,18 @@ class block_sharing_cart extends block_base {
         return true;
     }
 
-    /**
-     *  Get the block content
-     *
-     * @return object|string
-     * @global object $USER
-     */
+	/**
+	 *  Get the block content
+	 *
+	 * @return object|string
+	 *
+	 * @throws coding_exception
+	 * @global object $USER
+	 */
     public function get_content() {
         global $USER, $COURSE;
+
+        $section_id = optional_param('section', 0, PARAM_INT);
 
         $context = context_course::instance($this->page->course->id);
 
@@ -129,7 +133,7 @@ class block_sharing_cart extends block_base {
         }
 
         $footer = "
-		    <form>
+		    <form id=\"copy-section-form\" data-in-section=\"" . ($section_id ? 1 : 0) . "\">
 		        <select class='custom-select section-dropdown'>
 		            $sections_dropdown
 		        </select>
