@@ -11,6 +11,9 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
+* 3.8, release 8    2020.04.29
+    * Re-added possibility to add sharing cart on site outside courses (Redirect=0).
+    * Added check, if section copy dropdown should be rendered.
 * 3.8, release 7    2020.04.27
     * Fix bug where the active user is redirected out of a section while copying content into the course
 * 3.8, release 6    2020.03.31
