@@ -1,7 +1,7 @@
 Sharing Cart
 ============
 
-Version 3.8, release 1 - 2020.03.15
+Version 3.8, release 3 - 2020.04.12
 
 The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
@@ -11,22 +11,32 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
-* 3.8, release 6    2020.04.03
+* 3.8, release 8    2020.04.29
+    * Re-added possibility to add sharing cart on site outside courses (Redirect=0).
+    * Added check, if section copy dropdown should be rendered.
+* 3.8, release 7    2020.04.27
+    * Fix bug where the active user is redirected out of a section while copying content into the course
+* 3.8, release 6    2020.03.31
+    * Quick edit bugs
+        * Fix bug where quick edit removes the backup icon for the edited section.
+        * Fix bug where the old section name is used when a section is copied to the Sharing Cart after quick edit.
+* 3.8, release 5    2020.03.30
+    * Make sure the ID of the section can be extracted when no action menu is found
+    * Fixed a bug in section copy where some items in the section were skipped or copied twice. (issue #40)
+* 3.8, release 4    2020.04.03
     * Minor css update.
-* 3.8, release 5    2020.04.02
     * Added css fix, to prevent elements to overflow in firefox.
-* 3.8, release 4    2020.03.27
     * Removed pluginname near help button on speciallayouts.
     * Removed hardcoded color for commands icons.
 * 3.8, release 3    2020.03.26
     * Fix bug with HTML entities where sections can't be copied/deleted.
     * Only make backup of modules where deletion is not in progress.
 * 3.8, release 2    2020.03.17
-    * Fixed a bug where copy sharing cart icons wasn't loaded in firefox.
+    * Fixed a bug where copy sharing cart icons weren't loaded in Firefox. (issue #31)
 * 3.8, release 1    2020.03.15
     * No code change. Version number and version.php changed to prepare for Moodle Plugins database release.
 * 3.6, release 11   2020.03.10
-    * When moving activities, backup sharing icon would'nt be created in the new place.
+    * When moving activities, backup sharing icon would not be created in the new place.
 * 3.6, release 10   2020.03.05
     * Fixed bug caused by refactored code in record.php, updated to work.
 * 3.6, release 9    2020.03.05
@@ -51,7 +61,7 @@ Change Log
     * Fixed code to use fewer functions, cleaned up some checks.
     * Added copy section dropdown to the block.
 * 3.6, release 4    2020.02.21
-    * Updated UI to match moodles better.
+    * Updated UI to match moodle standards better.
         - Pix images changed to font-awesome icons.
         - Background color to hightlight folder structure in the tree.
         - Aligned command icons to hug the right side.
@@ -140,7 +150,6 @@ Change Log
 
 Purpose
 -------
-
 The Sharing Cart is a block that enables sharing of Moodle content
 (resources, activities) between multiple courses on your site.
 You can share among teachers or among your own courses.
@@ -165,5 +174,4 @@ Supported course formats
 
 License
 -------
-
 GPL v3

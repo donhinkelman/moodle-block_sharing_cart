@@ -48,6 +48,7 @@ class block_sharing_cart extends block_base {
         return array(
                 'all' => false,
                 'course' => true,
+                'site' => true
         );
     }
 
@@ -59,14 +60,18 @@ class block_sharing_cart extends block_base {
         return true;
     }
 
-    /**
-     *  Get the block content
-     *
-     * @return object|string
-     * @global object $USER
-     */
+	/**
+	 *  Get the block content
+	 *
+	 * @return object|string
+	 *
+	 * @throws coding_exception
+	 * @global object $USER
+	 */
     public function get_content() {
-        global $USER, $COURSE;
+        global $USER, $COURSE, $PAGE;
+
+        $section_id = optional_param('section', 0, PARAM_INT);
 
         $context = context_course::instance($this->page->course->id);
 
@@ -112,24 +117,29 @@ class block_sharing_cart extends block_base {
                 __CLASS__
         );
 
-        // Creating with sections that are not empty.
-        $sections_dropdown = '';
-        foreach ($sections as $section) {
-            $sectionname = $section->name;
-            if ($section->sequence !== '') {
-                if (!$section->name) {
-                    $sectionname = get_string('sectionname', "format_$COURSE->format") . ' ' . $section->section;
-                }
-                $sections_dropdown .= "
+        $footer = '';
+        $page_format = $PAGE->course->format;
+
+        // Check if page format is not site. (Location)
+        if ($page_format !== 'site'){
+            // Creating with sections that are not empty.
+            $sections_dropdown = '';
+            foreach ($sections as $section) {
+                $sectionname = $section->name;
+                if ($section->sequence !== '') {
+                    if (!$section->name) {
+                        $sectionname = get_string('sectionname', "format_$COURSE->format") . ' ' . $section->section;
+                    }
+                    $sections_dropdown .= "
                     <option data-section-id='$section->id' data-section-number='$section->section' data-course-id='$section->course' data-section-name='$sectionname'>
                         $sectionname
                     </option>
                 ";
+                }
             }
-        }
 
-        $footer = "
-		    <form>
+            $footer = "
+		    <form id=\"copy-section-form\" data-in-section=\"" . ($section_id ? 1 : 0) . "\">
 		        <select class='custom-select section-dropdown'>
 		            $sections_dropdown
 		        </select>
@@ -138,6 +148,7 @@ class block_sharing_cart extends block_base {
 		        </a>
             </form>
 		";
+        }
         $footer .= '
                     <div style="display:none;">
                     <div class="header-commands">' . $this->get_header() . '</div>
