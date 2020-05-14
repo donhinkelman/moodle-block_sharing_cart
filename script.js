@@ -1153,7 +1153,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
 
                 var $sectionTitle = $section.find('h3.sectionname').first().find('a').last();
 
-                var $inPlaceEditable = $section.find('h3.sectionname .inplaceeditable');
+                var $inPlaceEditable = $section.find('h3.sectionname .inplaceeditable').first();
                 if ($inPlaceEditable.length) {
                     $sectionTitle = $inPlaceEditable;
                 }
