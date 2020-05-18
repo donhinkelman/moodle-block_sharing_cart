@@ -24,8 +24,6 @@
 require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, ModalFactory, ModalEvents) {
     $(document).ready(function () {
 
-        var is_copying = false;
-
         /**
          *  Returns a localized string
          *
