@@ -88,7 +88,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
 
                 // Remove modal from html.
                 modal.getRoot().on(ModalEvents.hidden, function () {
-                    $('.modal.moodle-has-zindex').remove();
+                    $('body').removeClass('modal-open');
                 });
 
                 modal.show();
@@ -927,7 +927,6 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
          * @param {string} sectionName
          */
         $.on_section_backup = function (sectionId, sectionNumber, courseId, sectionName) {
-
             var data =
                 {
                     "action": "is_userdata_copyable_section",

@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+use block_sharing_cart\mysql_logger;
 
 /**
  *  Sharing Cart - REST API
@@ -98,16 +99,31 @@ try {
     throw new sharing_cart_exception('invalidoperation');
 
 } catch (Exception $ex) {
-    header('HTTP/1.1 400 Bad Request');
+
+	header('HTTP/1.1 400 Bad Request');
+
     $json = array(
-            'message' => $ex->getMessage(),
+        'message' => $ex->getMessage(),
     );
+
     if (!empty($CFG->debug) && $CFG->debug >= DEBUG_DEVELOPER) {
         $json += array(
-                'file' => substr($ex->getFile(), strlen($CFG->dirroot)),
-                'line' => $ex->getLine(),
-                'trace' => format_backtrace($ex->getTrace(), true),
+            'file' => substr($ex->getFile(), strlen($CFG->dirroot)),
+            'line' => $ex->getLine(),
+            'trace' => format_backtrace($ex->getTrace(), true),
         );
     }
+
+	/**
+	 * If logger exists - we log some stuff
+	 */
+    if(class_exists(mysql_logger::class)){
+    	try{
+		    $logger = new mysql_logger();
+		    $logger->log($ex->getMessage(), $ex);
+	    }
+	    catch(\Exception $e){}
+    }
+
     echo json_encode($json);
 }
