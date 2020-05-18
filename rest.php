@@ -122,9 +122,7 @@ try {
 		    $logger = new mysql_logger();
 		    $logger->log($ex->getMessage(), $ex);
 	    }
-	    catch(\Exception $e){
-//    		echo '<pre>'; var_dump($e); echo '</pre>'; die();
-	    }
+	    catch(\Exception $e){}
     }
 
     echo json_encode($json);
