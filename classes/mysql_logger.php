@@ -23,7 +23,7 @@ class mysql_logger{
 	 * @param string $table
 	 * @throws \ddl_exception
 	 */
-	public function __construct($table = 'tmp_pxlog'){
+	public function __construct($table = 'block_sharing_cart_log'){
 
 		$this->table = $table;
 
