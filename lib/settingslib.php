@@ -164,9 +164,9 @@ class admin_setting_configmulticheckboxqtypes extends admin_setting_configmultic
         $qtypenames = array_map(function($qtype) {
             return $qtype->local_name();
         }, $qtypes);
-        foreach (question_bank::sort_qtype_array($qtypenames) as $name => $label) {
-            $choices[$name] = $label;
-            $icons[$name] = ' ' . $OUTPUT->pix_icon('icon', '', $qtypes[$name]->plugin_name()) . ' ';
+        foreach (question_bank::sort_qtype_array($qtypenames) as $qtypename => $label) {
+            $choices[$qtypename] = $label;
+            $icons[$qtypename] = ' ' . $OUTPUT->pix_icon('icon', '', $qtypes[$qtypename]->plugin_name()) . ' ';
         }
         parent::__construct($name, $visiblename, $description, $defaultsetting, $choices, $icons);
     }
