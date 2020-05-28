@@ -88,7 +88,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
 
                 // Remove modal from html.
                 modal.getRoot().on(ModalEvents.hidden, function () {
-                    $('.modal.moodle-has-zindex').remove();
+                    $('body').removeClass('modal-open');
                 });
 
                 modal.show();
@@ -96,7 +96,22 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
         }
 
         /**
+         * Get the section name from the section when
+         * it's changed with the in place editor
          *
+         * @param $section
+         * @returns {*}
+         */
+        function in_place_edit_section_name($section) {
+            var sectionName = '';
+            var $inPlaceEditable = $section.find('h3.sectionname .inplaceeditable');
+            if ($inPlaceEditable.length) {
+                sectionName = $inPlaceEditable.data('value');
+            }
+            return sectionName;
+        }
+
+        /**
          * @param post_data
          * @param title_str
          * @param body_str
@@ -343,16 +358,19 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
          */
         function backup_section(sectionId, sectionNumber, courseId, userdata) {
             var $commands = $('span.inplaceeditable[data-itemtype=sectionname][data-itemid=' + sectionId + ']');
-            var sectionName = $commands.closest("li.section.main").attr('aria-label');
+            var $section = $commands.closest("li.section.main");
+            var sectionName = $section.attr('aria-label');
 
             if (sectionName === null) {
                 sectionName = String($('#region-main .section_action_menu[data-sectionid=\'' + sectionId + '\']')
                     .parent().parent().find('h3.sectionname').text());
             }
 
+            var inPlaceEditSectionName = in_place_edit_section_name($section);
+            sectionName = (inPlaceEditSectionName !== '') ? inPlaceEditSectionName : sectionName;
+
             var $spinner = add_spinner();
             var $node_spinner = add_node_spinner($commands);
-
 
             $.post(get_action_url("rest"),
                 {
@@ -580,12 +598,15 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
              */
             function create_target(id, section) {
                 var href = '';
+
+                var inSection = $('#copy-section-form').data('in-section');
                 if (restore_targets.is_directory) {
                     href = get_action_url('restore', {
                         'directory': true,
                         'path': id,
                         'course': course.id,
                         'section': section,
+                        'in_section': inSection,
                         'sesskey': M.cfg.sesskey
                     });
                 } else {
@@ -594,6 +615,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                         'id': id,
                         'course': course.id,
                         'section': section,
+                        'in_section': inSection,
                         'sesskey': M.cfg.sesskey
                     });
                 }
@@ -927,7 +949,6 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
          * @param {string} sectionName
          */
         $.on_section_backup = function (sectionId, sectionNumber, courseId, sectionName) {
-
             var data =
                 {
                     "action": "is_userdata_copyable_section",
@@ -963,8 +984,6 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
             var helpicon = $block.find('.header-commands > .help-icon');
 
             if (isspeciallayout) {
-                helpicon.attr('data-placement', 'left').find('.help-icon')
-                    .prepend($('<span/>').append(M.str.block_sharing_cart.pluginname).addClass('sc-space-5'));
                 $block.find('.header-commands').parent().css('display', 'block');
             } else {
                 $block.find('.header .commands').append(helpicon);
@@ -1111,12 +1130,12 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                 var sectionId = $section.find('.section_action_menu').data('sectionid');
                 var sectionNumber = parseInt(String($section.attr('id')).match(/\d+/)[0]);
                 var sectionName = $section.attr('aria-label');
+
                 var isFlexibleCourseFormat = $('body[id$=flexsections]').length;
 
                 // Extract the section ID from the section if this is a Flexible
                 // course format (since this format doesn't have an action menu)
-                if (isFlexibleCourseFormat && sectionId === null) {
-                    on_section_backup;
+                if (isFlexibleCourseFormat && (typeof sectionId === 'undefined' || sectionId === null)) {
                     sectionId = $section.data('section-id');
                 }
 
@@ -1126,10 +1145,17 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                 var $backupIcon = create_backup_icon();
 
                 $backupIcon.on('click', function () {
+                    var inPlaceEditSectionName = in_place_edit_section_name($section);
+                    sectionName = (inPlaceEditSectionName !== '') ? inPlaceEditSectionName : sectionName;
                     $.on_section_backup(sectionId, sectionNumber, courseId, sectionName);
                 });
 
                 var $sectionTitle = $section.find('h3.sectionname').first().find('a').last();
+
+                var $inPlaceEditable = $section.find('h3.sectionname .inplaceeditable').first();
+                if ($inPlaceEditable.length) {
+                    $sectionTitle = $inPlaceEditable;
+                }
 
                 // Add the backup icon after the cog wheel if this is a Flexible course format
                 if (isFlexibleCourseFormat && sectionNumber === 0) {

@@ -70,7 +70,6 @@ span.commands i.fa {
     margin: 0;
     padding: 0 0.3em;
     height: 20px;
-    color: #373a3c;
 }
 
 span.commands i.fa:hover {
@@ -117,11 +116,11 @@ div.card-text ul.list li.move-to {
     height: 100%;
     text-align: center;
     margin: 5px;
-    color: #9b9d9e;
 }
 
 .toggle-wrapper {
     width: 100%;
+    min-width: 0;
     display: flex;
 }
 
@@ -147,6 +146,7 @@ div.card-text ul.list li.move-to {
 }
 
 .footer form select {
+    min-width: 0;
     width: 100%;
     margin-right: 10px;
 }
