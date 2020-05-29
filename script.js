@@ -295,6 +295,10 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
             return $node_spinner;
         }
 
+        $(document).on('click', 'a.restore', function () {
+            add_spinner();
+        });
+
         /**
          *
          *  Reload the Sharing Cart item tree
@@ -585,6 +589,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
         /**
          *  @class Targets for restoring an item
          */
+
         var restore_targets = new function () {
             this.is_directory = null;
             var $clipboard = null,
@@ -596,6 +601,8 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
              * @param section
              * @returns {jQuery}
              */
+
+
             function create_target(id, section) {
                 var href = '';
 
@@ -621,6 +628,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                 }
 
                 var $target = $('<a/>')
+                    .attr('class', 'restore')
                     .attr('href', href)
                     .attr('title', str('copyhere'))
                     .append(
