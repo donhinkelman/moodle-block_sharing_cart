@@ -88,7 +88,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
 
                 // Remove modal from html.
                 modal.getRoot().on(ModalEvents.hidden, function () {
-                    $('.modal.moodle-has-zindex').remove();
+                    $('body').removeClass('modal-open');
                 });
 
                 modal.show();
@@ -294,6 +294,10 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
             $node.append($node_spinner);
             return $node_spinner;
         }
+
+        $(document).on('click', 'a.restore', function () {
+            add_spinner();
+        });
 
         /**
          *
@@ -585,6 +589,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
         /**
          *  @class Targets for restoring an item
          */
+
         var restore_targets = new function () {
             this.is_directory = null;
             var $clipboard = null,
@@ -596,6 +601,8 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
              * @param section
              * @returns {jQuery}
              */
+
+
             function create_target(id, section) {
                 var href = '';
 
@@ -621,6 +628,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                 }
 
                 var $target = $('<a/>')
+                    .attr('class', 'restore')
                     .attr('href', href)
                     .attr('title', str('copyhere'))
                     .append(
@@ -949,7 +957,6 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
          * @param {string} sectionName
          */
         $.on_section_backup = function (sectionId, sectionNumber, courseId, sectionName) {
-
             var data =
                 {
                     "action": "is_userdata_copyable_section",

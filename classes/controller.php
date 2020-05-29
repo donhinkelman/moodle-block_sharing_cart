@@ -149,6 +149,18 @@ class controller {
         return false;
     }
 
+	/**
+	 * @param $modtext
+	 * @return string
+	 */
+    protected function get_unique_filename($modtext): string{
+	    $cleanname = \clean_filename(strip_tags($modtext));
+	    if ($this->get_string_length($cleanname) > self::MAX_FILENAME) {
+		    $cleanname = $this->get_sub_string($cleanname, 0, self::MAX_FILENAME) . '_';
+	    }
+	    return sprintf('%s-%s.mbz', $cleanname, microtime(true));
+    }
+
     /**
      *  Backup a module into Sharing Cart
      *
@@ -185,11 +197,8 @@ class controller {
 
         // generate a filename from the module info
         $modtext = $cm->modname == 'label' ? self::get_cm_intro($cm) : $cm->name;
-        $cleanname = \clean_filename(strip_tags($modtext));
-        if ($this->get_string_length($cleanname) > self::MAX_FILENAME) {
-            $cleanname = $this->get_sub_string($cleanname, 0, self::MAX_FILENAME) . '_';
-        }
-        $filename = sprintf('%s-%s-%s.mbz', $cmid, $cleanname, date('Ymd-His'));
+
+        $filename = $this->get_unique_filename($modtext);
 
         // backup the module into the predefined area
         //    - user/backup ... if userdata not included
