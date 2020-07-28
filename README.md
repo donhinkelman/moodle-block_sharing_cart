@@ -11,6 +11,9 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
+* 3.8, release 11   2020.07.24
+    * Add privacy API.
+    * Fix Sharing cart folder name when copy the same section name, it shouldn't affect other user(s) that have the same folder name.
 * 3.8, release 10   2020.05.29
     * Added fix for the spinner in the block when restoring an item from the block to a course.
 * 3.8, release 10   2020.05.18
