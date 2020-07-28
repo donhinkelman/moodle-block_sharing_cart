@@ -1,7 +1,7 @@
 Sharing Cart
 ============
 
-Version 3.8, release 10 - 2020.05.18
+Version 3.8, release 11 - 2020.07.27
 
 The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
@@ -11,6 +11,8 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
+* 3.8, release 11   2020.07.27
+    * Folder naming and creation improved
 * 3.8, release 10   2020.05.18
     * Added fix for duplicate entry in database, when two created a section in the same second. This was a random error and is NOT confirmed fixed. A log table is added to the plugin is an exception is thown in the REST api (block_sharing_cart_log).
     * Added a loading-spinner when you copy an item from the block to the course
