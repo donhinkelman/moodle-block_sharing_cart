@@ -26,22 +26,49 @@ namespace block_sharing_cart;
 
 defined('MOODLE_INTERNAL') || die();
 
-use tool_monitor\output\managesubs\subs;
+use core_renderer;
+use html_writer;
 
 /**
  *  Sharing Cart item tree renderer
  */
 class renderer {
-    /**
-     *  Render an item tree
-     *
-     * @param array & $tree
-     * @return string
-     */
+	/**
+	 *  Render an item tree
+	 *
+	 * @param array & $tree
+	 * @return string
+	 * @throws \coding_exception
+	 */
     public static function render_tree(array &$tree) {
-        return '<ul class="tree list" style="font-size:90%;">'
-                . self::render_node($tree, '/')
-                . '</ul>';
+
+    	$html  = html_writer::start_tag('ul', ['class' => 'tree list']);
+
+    	$requirede_capabilities = required_capabilities::init([
+			'moodle/restore:restorecourse',
+			'moodle/restore:restoreactivity'
+		]);
+		if (!empty($requirede_capabilities->get_disallowed_actions())) {
+			$html .= html_writer::start_div('alert alert-danger', [
+				'role' => 'alert',
+				'id' => 'alert-disallow',
+				'data-disallowed-actions' => implode(',', $requirede_capabilities->get_disallowed_actions())
+			]);
+			$missing_key = $requirede_capabilities->total_capabilities_missing() > 1
+				? 'missing_capabilities'
+				: 'missing_capability';
+			$html .= get_string(
+				$missing_key,
+				'block_sharing_cart',
+				implode(', ', $requirede_capabilities->get_missing_capabilities())
+			);
+			$html .= html_writer::end_div();
+		}
+
+		$html .= self::render_node($tree, '/');
+		$html .= html_writer::end_tag('ul');
+
+        return $html;
     }
 
     /**
@@ -74,7 +101,7 @@ class renderer {
      * @param string $path
      * @param $leaf
      * @return string
-     * @global \core_renderer $OUTPUT
+     * @global core_renderer $OUTPUT
      */
     private static function render_dir_open($path, $leaf) {
         global $OUTPUT, $DB;
@@ -152,7 +179,7 @@ class renderer {
      *
      * @param object $item
      * @return string
-     * @global \core_renderer $OUTPUT
+     * @global core_renderer $OUTPUT
      */
     public static function render_modicon($item) {
         global $OUTPUT;

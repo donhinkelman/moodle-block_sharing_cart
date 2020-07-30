@@ -1000,12 +1000,35 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
         };
 
         /**
+         * Remove an action
+         *
+         * @param actions   The actions
+         * @param actionKey The key of the action to remove
+         *
+         * @returns actions The actions without the item to remove
+         */
+        $.remove_action = function(actions, actionKey) {
+            var indexOfAction = actions.indexOf(actionKey);
+            if (indexOfAction > -1) {
+                actions.splice(indexOfAction, 1);
+            }
+            return actions;
+        };
+
+        /**
          *  Initialize the Sharing Cart item tree
          */
         $.init_item_tree = function () {
             function add_actions(item, actions) {
                 var $item = $(item);
                 var $commands = $item.find('.commands').first();
+
+                var disallowedActions = $('#alert-disallow').data('disallowed-actions');
+                if (disallowedActions != null) {
+                    disallowedActions.split(',').forEach(function(actionKey) {
+                        $.remove_action(actions, actionKey);
+                    });
+                }
 
                 $.each(actions, function (index, action) {
                     var $command = create_command(action);

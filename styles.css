@@ -82,6 +82,10 @@
     margin-left: 5px;
 }
 
+.block_sharing_cart .tree.list {
+    font-size:90%;
+}
+
 .course-content .move_target {
     max-width: 100%;
     border: 2px dashed #999;
