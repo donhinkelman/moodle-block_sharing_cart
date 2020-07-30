@@ -355,15 +355,10 @@ class controller {
             $foldername = str_replace("/", "-", $sectionname);
 
             if ($DB->record_exists("block_sharing_cart", array("tree" => $foldername, 'userid' => $USER->id))) {
-                $folder_like = $DB->sql_like_escape($foldername);
-                $sql = 'SELECT `tree` FROM {block_sharing_cart}'
-                    . ' WHERE `tree` LIKE :tree AND `userid` = :userid';
-
                 // Get other folder that contain increment number
-                $folders = $DB->get_fieldset_sql(
-                    $sql,
-                    ['userid' => $USER->id, 'tree' => $folder_like . ' (%)']
-                );
+                $folder_like = $DB->sql_like_escape($foldername);
+                $params = ['userid' => $USER->id, 'tree' => $folder_like . ' (%)'];
+                $folders = $DB->get_fieldset_select(record::TABLE, 'tree', 'userid = :userid AND tree LIKE :tree', $params);
 
                 // Increase folder number
                 $folder_number = empty($folders) ? 1 : count($folders) + 1;
