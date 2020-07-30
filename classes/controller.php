@@ -354,14 +354,20 @@ class controller {
             // Check empty folder name
             $foldername = str_replace("/", "-", $sectionname);
 
-            if ($DB->record_exists("block_sharing_cart", array("tree" => $foldername))) {
-                $i = 0;
+            if ($DB->record_exists("block_sharing_cart", array("tree" => $foldername, 'userid' => $USER->id))) {
+                $folder_like = $DB->sql_like_escape($foldername);
+                $sql = 'SELECT `tree` FROM {block_sharing_cart}'
+                    . ' WHERE `tree` LIKE :tree AND `userid` = :userid';
 
-                do {
-                    $i++;
-                } while ($DB->record_exists("block_sharing_cart", array("tree" => $foldername . " ({$i})")));
+                // Get other folder that contain increment number
+                $folders = $DB->get_fieldset_sql(
+                    $sql,
+                    ['userid' => $USER->id, 'tree' => $folder_like . ' (%)']
+                );
 
-                $foldername .= " ({$i})";
+                // Increase folder number
+                $folder_number = empty($folders) ? 1 : count($folders) + 1;
+                $foldername .= " ({$folder_number})";
             }
 
             // Move backup files to folder
