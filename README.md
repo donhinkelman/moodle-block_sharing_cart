@@ -11,6 +11,8 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
+* 3.8, release 12   2020.07.30
+    * Show a "more welcoming" error message and remove copy to course when the user does not have the required capabilities.
 * 3.8, release 11   2020.07.24
     * Add privacy API.
     * Fix Sharing cart folder name when copy the same section name, it shouldn't affect other user(s) that have the same folder name.
@@ -172,7 +174,10 @@ Requirements
 ------------
 New Versions:  Moodle 3.3 or later
 Older Versions: Moodle 2.3.1 or later, with AJAX enabled
-
+* Capabilities
+    - moodle/restore:restoreactivity
+    - moodle/restore:restorecourse
+    
 Supports
 ------------
 Supported course formats
