@@ -37,7 +37,7 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
     if ($oldversion < 2011111100) {
         $table = new xmldb_table('sharing_cart');
 
-        $field = new xmldb_field('user', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+        $field = new xmldb_field('user', XMLDB_TYPE_INTEGER, 10, true, XMLDB_NOTNULL, null, null);
         $dbman->rename_field($table, $field, 'userid');
 
         $field = new xmldb_field('name', XMLDB_TYPE_CHAR, 32, null, XMLDB_NOTNULL, null, null);
@@ -51,20 +51,20 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
         $field = new xmldb_field('modtext', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
         $dbman->change_field_type($table, $field);
 
-        $field = new xmldb_field('time', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+        $field = new xmldb_field('time', XMLDB_TYPE_INTEGER, 10, true, XMLDB_NOTNULL, null, null);
         $dbman->rename_field($table, $field, 'ctime');
 
         $field = new xmldb_field('file', XMLDB_TYPE_CHAR, 255, null, XMLDB_NOTNULL, null, null);
         $dbman->rename_field($table, $field, 'filename');
 
-        $field = new xmldb_field('sort', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+        $field = new xmldb_field('sort', XMLDB_TYPE_INTEGER, 10, true, XMLDB_NOTNULL, null, null);
         $dbman->rename_field($table, $field, 'weight');
     }
 
     if ($oldversion < 2011111101) {
         $table = new xmldb_table('sharing_cart_plugins');
 
-        $field = new xmldb_field('user', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+        $field = new xmldb_field('user', XMLDB_TYPE_INTEGER, 10, true, XMLDB_NOTNULL, null, null);
         $dbman->rename_field($table, $field, 'userid');
     }
 
@@ -112,15 +112,38 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
         $table = new xmldb_table('block_sharing_cart_sections');
         if (!$dbman->table_exists($table)) {
             $table->add_field('id', XMLDB_TYPE_INTEGER, 10, null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-            $table->add_field('name', XMLDB_TYPE_CHAR, 255, null, XMLDB_NOTNULL, null, '', 'id');
-            $table->add_field('summary', XMLDB_TYPE_TEXT, null, null, null, null, '', 'name');
-            $table->add_field('summaryformat', XMLDB_TYPE_INTEGER, 2, null, XMLDB_NOTNULL, null, 0, 'summary');
+            $table->add_field('name', XMLDB_TYPE_CHAR, 255, null, XMLDB_NOTNULL, null, null, 'id');
+            $table->add_field('summary', XMLDB_TYPE_TEXT, null, null, null, null, null, 'name');
+            $table->add_field('summaryformat', XMLDB_TYPE_INTEGER, 2, null, XMLDB_NOTNULL, false, 0, 'summary');
 
             $table->add_key('id', XMLDB_KEY_PRIMARY, array('id'));
             $dbman->create_table($table);
         }
 
         upgrade_block_savepoint(true, 2017121200, 'sharing_cart');
+    }
+
+    // Fix default value incompatible with moodle database manager
+    if ($oldversion < 2020073001) {
+        $table = new xmldb_table('block_sharing_cart_sections');
+
+        if ($dbman->table_exists($table)) {
+            $field_name = new xmldb_field('name', XMLDB_TYPE_CHAR, 255);
+            $field_summary = new xmldb_field('summary', XMLDB_TYPE_TEXT, null, null, null, null, null, 'name');
+            $field_summaryformat = new xmldb_field('summaryformat', XMLDB_TYPE_INTEGER, 2, null, XMLDB_NOTNULL, false, 0, 'summary');
+
+            if ($dbman->field_exists($table, $field_name)) {
+                $dbman->change_field_default($table, $field_name);
+            }
+            if ($dbman->field_exists($table, $field_summary)) {
+                $dbman->change_field_default($table, $field_summary);
+            }
+            if ($dbman->field_exists($table, $field_summaryformat)) {
+                $dbman->change_field_default($table, $field_summaryformat);
+            }
+
+            upgrade_block_savepoint(true, 2020073001, 'sharing_cart');
+        }
     }
 
     return true;
