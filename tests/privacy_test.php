@@ -160,23 +160,23 @@ class block_sharing_cart_privacy_testcase extends \core_privacy\tests\provider_t
         $this->assertNotEmpty($data_section2_copy);
 
         foreach ($data_root as $data) {
-            $this->assertEquals('assign', $data['modname']);
-            $this->assertContains($data['modtext'], $root_cm_names);
+            $this->assertEquals('assign', $data['type']);
+            $this->assertContains($data['name'], $root_cm_names);
         }
 
         foreach ($data_section1 as $data) {
-            $this->assertEquals('assign', $data['modname']);
-            $this->assertContains($data['modtext'], $section1_cm_names);
+            $this->assertEquals('assign', $data['type']);
+            $this->assertContains($data['name'], $section1_cm_names);
         }
 
         foreach ($data_section2 as $data) {
-            $this->assertEquals('assign', $data['modname']);
-            $this->assertContains($data['modtext'], $section2_cm_names);
+            $this->assertEquals('assign', $data['type']);
+            $this->assertContains($data['name'], $section2_cm_names);
         }
 
         foreach ($data_section2_copy as $data) {
-            $this->assertEquals('assign', $data['modname']);
-            $this->assertContains($data['modtext'], $section2_cm_names);
+            $this->assertEquals('assign', $data['type']);
+            $this->assertContains($data['name'], $section2_cm_names);
         }
     }
 
