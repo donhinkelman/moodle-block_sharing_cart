@@ -38,25 +38,32 @@ require_once __DIR__ . '/../../../course/lib.php';
  */
 class controller {
     /** @const int  The maximum length of a backup file name */
-    const MAX_FILENAME = 20;
+    protected const MAX_FILENAME = 20;
 
-    /**
-     *  Constructor
-     *
-     * @throws \require_login_exception
-     */
+    /** @var string	The prefix to add to the file to let the user know this is a Sharing Cart file */
+    protected const PREFIX_FILENAME = 'Sharingcart';
+
+	/**
+	 *  Constructor
+	 *
+	 * @throws \coding_exception
+	 * @throws \moodle_exception
+	 * @throws \require_login_exception
+	 */
     public function __construct() {
         \require_login(null, false, null, false, true);
     }
 
-    /**
-     *  Render an item tree
-     *
-     * @param int $userid = $USER->id
-     * @return string HTML
-     * @global \moodle_database $DB
-     * @global object $USER
-     */
+	/**
+	 *  Render an item tree
+	 *
+	 * @param null $userid = $USER->id
+	 * @return string HTML
+	 * @throws \coding_exception
+	 * @throws \dml_exception
+	 * @global \moodle_database $DB
+	 * @global object $USER
+	 */
     public function render_tree($userid = null) {
         global $DB, $USER;
 
@@ -114,12 +121,14 @@ class controller {
         return renderer::render_tree($tree);
     }
 
-    /**
-     *  Get whether a module is userdata copyable and the logged-in user has enough capabilities
-     *
-     * @param int $cmid
-     * @return boolean
-     */
+	/**
+	 *  Get whether a module is userdata copyable and the logged-in user has enough capabilities
+	 *
+	 * @param int $cmid
+	 * @return boolean
+	 * @throws \coding_exception
+	 * @throws \dml_exception
+	 */
     public function is_userdata_copyable($cmid) {
         $cm = \get_coursemodule_from_id(null, $cmid, 0, false, MUST_EXIST);
         $modtypes = \get_config('block_sharing_cart', 'userdata_copyable_modtypes');
@@ -130,12 +139,14 @@ class controller {
                 && \has_capability('moodle/restore:userinfo', $context);
     }
 
-    /**
-     *  Get whether any module in section is userdata copyable and the logged-in user has enough capabilities
-     *
-     * @param int $sectionid
-     * @return boolean
-     */
+	/**
+	 *  Get whether any module in section is userdata copyable and the logged-in user has enough capabilities
+	 *
+	 * @param int $sectionid
+	 * @return boolean
+	 * @throws \coding_exception
+	 * @throws \dml_exception
+	 */
     public function is_userdata_copyable_section($sectionid) {
         GLOBAL $DB;
 
@@ -158,7 +169,8 @@ class controller {
 	    if ($this->get_string_length($cleanname) > self::MAX_FILENAME) {
 		    $cleanname = $this->get_sub_string($cleanname, 0, self::MAX_FILENAME) . '_';
 	    }
-	    return sprintf('%s-%s.mbz', $cleanname, microtime(true));
+	    $cleanname = mb_strtolower($cleanname, 'UTF-8');
+	    return sprintf('%s-%s-%s.mbz', self::PREFIX_FILENAME, $cleanname, microtime(true));
     }
 
     /**
