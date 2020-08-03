@@ -71,10 +71,29 @@ class controller {
 
         // build an item tree from flat records
         $records = $DB->get_records('block_sharing_cart', array('userid' => $USER->id));
-        foreach ($records as $record) {
+
+        foreach ($records as $i => $record) {
+
+            // If the file is removed from the private backup area for the user
+            if (!empty($record->userid) && !$DB->record_exists('files', [
+                'userid' => $record->userid,
+                'filename' => $record->filename,
+                'filearea' => 'backup'
+            ])) {
+                // Then remove the file from the sharing cart as well since we don't want to show a deleted file
+                $DB->delete_records('block_sharing_cart', [
+                    'userid' => $record->userid,
+                    'filename' => $record->filename
+                ]);
+                unset($records[$i]);
+                continue;
+            }
+
             $course = $DB->get_record('course', array('id' => $record->course));
             $record->coursefullname = $course ? $course->fullname : '';
         }
+
+        $records = array_values($records);
 
         $tree = array();
         foreach ($records as $record) {
@@ -642,6 +661,7 @@ class controller {
      * Delete a directory
      *
      * @param $path
+     * @throws \dml_exception
      */
     public function delete_directory($path) {
         global $DB, $USER;
@@ -656,13 +676,7 @@ class controller {
             $this->delete($idObject->id);
         }
 
-        // Delete unused section
-        $sections = $DB->get_records('block_sharing_cart_sections');
-        foreach ($sections as $section) {
-            if ($DB->count_records('block_sharing_cart', array('section' => $section->id)) == 0) {
-                $DB->delete_records('block_sharing_cart_sections', array('id' => $section->id));
-            }
-        }
+        $this->delete_unused_sections();
 
         // Delete unused file
         $fs = get_file_storage();
@@ -672,6 +686,39 @@ class controller {
             $sectionid = $file->get_itemid();
             if (!$DB->record_exists('block_sharing_cart_sections', array('id' => $sectionid))) {
                 $file->delete();
+            }
+        }
+    }
+
+    /**
+    * Delete sections without activities since they are not used anymore
+    *
+    * @param int $course_id
+    *
+    * @return void
+    * @throws \dml_exception
+    */
+    public function delete_unused_sections(int $course_id = 0) : void {
+
+        global $DB;
+
+        $sql_params = [];
+
+        $sql = /** @lang mysql */'
+        SELECT s.id
+        FROM {block_sharing_cart_sections} s
+        LEFT JOIN {block_sharing_cart} sc ON s.id = sc.section
+        ';
+
+        if (!empty($course_id)) {
+            $sql .= 'WHERE sc.course = :course_id';
+            $sql_params['course_id'] = $course_id;
+        }
+
+        $sections = $DB->get_records_sql($sql, $sql_params);
+        foreach ($sections as $section) {
+            if ((int)$DB->count_records('block_sharing_cart', ['section' => $section->id]) === 0) {
+                $DB->delete_records('block_sharing_cart_sections', ['id' => $section->id]);
             }
         }
     }
