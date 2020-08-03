@@ -66,6 +66,7 @@ class block_sharing_cart extends block_base {
 	 * @return object|string
 	 *
 	 * @throws coding_exception
+	 * @throws dml_exception|moodle_exception
 	 * @global object $USER
 	 */
     public function get_content() {
@@ -85,6 +86,8 @@ class block_sharing_cart extends block_base {
 
         $controller = new controller();
         $html = $controller->render_tree($USER->id);
+
+        $controller->delete_unused_sections($this->page->course->id);
 
         // Fetching all sections for current course.
         $sectionsHandler = new section();

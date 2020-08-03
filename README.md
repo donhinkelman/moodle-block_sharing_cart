@@ -11,8 +11,10 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
+* 3.8, release 15   2020.08.03
+    * Remove a Sharing Cart item if the corresponding backup file is removed from the "User private backup area"
 * 3.8, release 14   2020.07.31
-    Add a prefix to files to let the user know this is a Sharing Cart file. Especially useful in the private backup area for the user.
+    * Add a prefix to files to let the user know this is a Sharing Cart file. Especially useful in the private backup area for the user.
 * 3.8, release 13   2020.07.30
     * Fix an unsupported query for Postgres when create a folder name.
     * Fix upgrade script that doesn't match the install.xml properties.
