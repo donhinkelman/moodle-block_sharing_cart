@@ -234,7 +234,10 @@ class controller {
         $plan = $controller->get_plan();
         foreach ($settings as $name => $value) {
             if ($plan->setting_exists($name)) {
-                $plan->get_setting($name)->set_value($value);
+                $oldvalue = $plan->get_setting($name)->get_value();
+                if($value != $oldvalue){
+                    $plan->get_setting($name)->set_value($value);
+                }
             }
         }
         $plan->get_setting('filename')->set_value($filename);
