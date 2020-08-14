@@ -11,6 +11,8 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
+* 3.8, release 16   2020.08.14
+    * Added warnings when making a restore or backup on multiple items at once.
 * 3.8, release 15   2020.08.03
     * Remove a Sharing Cart item if the corresponding backup file is removed from the "User private backup area"
 * 3.8, release 14   2020.07.31

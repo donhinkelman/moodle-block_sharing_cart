@@ -115,7 +115,7 @@ class block_sharing_cart extends block_base {
                         'confirm_backup', 'confirm_backup_section', 'confirm_userdata',
                         'confirm_userdata', 'confirm_delete', 'clicktomove', 'folder_string',
                         'activity_string', 'delete_folder', 'modal_checkbox',
-                        'modal_confirm_backup', 'modal_confirm_delete'
+                        'modal_confirm_backup', 'modal_confirm_delete', 'backup_heavy_load_warning_message'
                 ),
                 __CLASS__
         );
