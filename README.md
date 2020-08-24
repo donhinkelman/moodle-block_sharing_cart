@@ -13,6 +13,7 @@ Change Log
 ----------
 * 3.8, release 16   2020.08.24
     * Make the backup support check use the built in Moodle function and secure the module class.
+    * Fix issue #42 - Setting locked by config. Avoid copying locked settings.
 * 3.8, release 15   2020.08.03
     * Remove a Sharing Cart item if the corresponding backup file is removed from the "User private backup area"
 * 3.8, release 14   2020.07.31
