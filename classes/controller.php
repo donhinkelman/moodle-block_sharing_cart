@@ -28,6 +28,7 @@ use backup_controller;
 use block_sharing_cart\exceptions\no_backup_support_exception;
 use restore_controller;
 use stdClass;
+use base_setting;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -265,7 +266,12 @@ class controller {
         $plan = $controller->get_plan();
         foreach ($settings as $name => $value) {
             if ($plan->setting_exists($name)) {
-                $plan->get_setting($name)->set_value($value);
+                $current_setting = $plan->get_setting($name);
+                // If locked
+                if (base_setting::NOT_LOCKED !== $current_setting->get_status()) {
+                    continue;
+                }
+                $current_setting->set_value($value);
             }
         }
         $plan->get_setting('filename')->set_value($filename);
