@@ -11,7 +11,9 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
-* 3.8, release 16   2020.08.24
+<<<<<<< HEAD
+* 3.8, release 16   2020.08.28
+    * Added warnings when making a restore or backup on multiple items at once.
     * Make the backup support check use the built in Moodle function and secure the module class.
     * Fix issue #42 - Setting locked by config. Avoid copying locked settings.
 * 3.8, release 15   2020.08.03
