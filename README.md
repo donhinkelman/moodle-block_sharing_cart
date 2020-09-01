@@ -12,6 +12,10 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 Change Log
 ----------
 <<<<<<< HEAD
+* 3.8, release 17   2020.09.01
+    * Set active course to make sure capabilities work as expected.
+    * Make course id naming similar for rest actions.
+    * Avoid notice when Moodle removes duplicate records from the DB result.
 * 3.8, release 16   2020.08.28
     * Added warnings when making a restore or backup on multiple items at once.
     * Make the backup support check use the built in Moodle function and secure the module class.
