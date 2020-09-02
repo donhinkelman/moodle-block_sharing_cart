@@ -83,6 +83,8 @@ $string['section_name_conflict'] = 'Conflicto del título de la sección';
 $string['conflict_description'] = '¿Quiere cambiar el título de la sección en el curso?';
 $string['conflict_description_note'] =
         '*Los formatos de la descripción del título (colores, imágenes, etc.) se aparecerán después de copiar al curso.';
+$string['restore_heavy_load_warning_message'] = 'Load time are longer, because more than 10 activities/resources are being processed. (Translation missing)';
+$string['backup_heavy_load_warning_message'] = 'If section contains several activites, processing time will be longer. (Translation missing)';
 $string['conflict_no_overwrite'] = 'Mantener utilizando <strong>"{$a}"</strong>';
 $string['conflict_overwrite_title'] = 'Cambiar el título a <strong>"{$a}"</strong>';
 $string['conflict_submit'] = 'Continuar';

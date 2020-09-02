@@ -70,6 +70,10 @@ try {
             $path = substr($path, 1);
         }
 
+        GLOBAL $DB;
+        $items = $DB->get_records('block_sharing_cart', array('tree' => $path));
+        $items_count = count($items);
+
         if ($use_sc_section < 0) {
             $sections = $controller->get_path_sections($path, $courseid, $sectionnumber);
             if (count($sections) > 0) {
@@ -95,7 +99,7 @@ try {
                 echo $OUTPUT->header();
                 echo $OUTPUT->heading(get_string('section_name_conflict', 'block_sharing_cart'));
 
-                $form = new section_title_form($directory, $path, $courseid, $sectionnumber, $sections);
+                $form = new section_title_form($directory, $path, $courseid, $sectionnumber, $sections, $items_count);
                 $form->display();
 
                 echo $OUTPUT->footer();
