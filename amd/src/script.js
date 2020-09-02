@@ -310,7 +310,8 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                 function reload_tree() {
                     $.post(get_action_url("rest"),
                         {
-                            "action": "render_tree"
+                            "action": "render_tree",
+                            "courseid": course.id
                         },
                         function(response) {
                             $block.find(".tree").replaceWith($(response));
@@ -342,7 +343,7 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                             "cmid": cmid,
                             "userdata": userdata,
                             "sesskey": M.cfg.sesskey,
-                            "course": course.id
+                            "courseid": course.id
                         },
                         function() {
                             reload_tree();
@@ -388,8 +389,7 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                             "courseid": courseId,
                             "sectionname": sectionName,
                             "userdata": userdata,
-                            "sesskey": M.cfg.sesskey,
-                            "course": course.id
+                            "sesskey": M.cfg.sesskey
                         },
                         function() {
                             reload_tree();

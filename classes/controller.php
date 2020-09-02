@@ -711,7 +711,7 @@ class controller {
         $sql_params = [];
 
         $sql = /** @lang mysql */'
-        SELECT s.id
+        SELECT DISTINCT s.id
         FROM {block_sharing_cart_sections} s
         LEFT JOIN {block_sharing_cart} sc ON s.id = sc.section
         ';
@@ -722,6 +722,7 @@ class controller {
         }
 
         $sections = $DB->get_records_sql($sql, $sql_params);
+
         foreach ($sections as $section) {
             if ((int)$DB->count_records('block_sharing_cart', ['section' => $section->id]) === 0) {
                 $DB->delete_records('block_sharing_cart_sections', ['id' => $section->id]);

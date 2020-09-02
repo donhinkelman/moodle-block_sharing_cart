@@ -27,13 +27,15 @@ use block_sharing_cart\controller;
 use block_sharing_cart\exception as sharing_cart_exception;
 use block_sharing_cart\section;
 
-require_once '../../config.php';
+require_once __DIR__ . '/../../config.php';
 
 try {
     $controller = new controller();
 
     switch (required_param('action', PARAM_TEXT)) {
         case 'render_tree':
+            $courseid = required_param('courseid', PARAM_INT);
+            $PAGE->set_course(get_course($courseid));
             $PAGE->set_context(\context_user::instance($USER->id));
             echo $controller->render_tree($USER->id);
             exit;
@@ -54,8 +56,8 @@ try {
         case 'backup':
             $cmid = required_param('cmid', PARAM_INT);
             $userdata = required_param('userdata', PARAM_BOOL);
-            $course = required_param('course', PARAM_INT);
-            $controller->backup($cmid, $userdata, $course);
+            $courseid = required_param('courseid', PARAM_INT);
+            $controller->backup($cmid, $userdata, $courseid);
             exit;
         case 'backup_section':
             $sectionid = optional_param('sectionid', null, PARAM_INT);
@@ -68,8 +70,8 @@ try {
                 $sectionname = $section->name;
             }
             $userdata = required_param('userdata', PARAM_BOOL);
-            $course = required_param('course', PARAM_INT);
-            $controller->backup_section($sectionid, $sectionname, $userdata, $course);
+            $courseid = required_param('courseid', PARAM_INT);
+            $controller->backup_section($sectionid, $sectionname, $userdata, $courseid);
             exit;
         case 'movedir':
             $item_id = required_param('item_id', PARAM_INT);
