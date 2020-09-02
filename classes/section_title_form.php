@@ -54,6 +54,15 @@ class section_title_form extends \moodleform {
 
         $mform =& $this->_form;
 
+        if ($this->items_count > 9) {
+            $mform->addElement('static', 'restore_heavy_load_warning_message', '',
+                '<p class="alert alert-danger" role="alert">
+                '.
+                get_string('restore_heavy_load_warning_message', 'block_sharing_cart')
+                .'
+                </p>');
+        }
+
         $mform->addElement('static', 'description', '', get_string('conflict_description', 'block_sharing_cart'));
 
         $mform->addElement('radio', 'sharing_cart_section',
@@ -79,15 +88,6 @@ class section_title_form extends \moodleform {
 
         $mform->addElement('static', 'description_note', '',
                 '<div class="small">' . get_string('conflict_description_note', 'block_sharing_cart') . '</div>');
-
-        if ($this->items_count > 9) {
-            $mform->addElement('static', 'restore_heavy_load_warning_message', '',
-                '<p class="alert alert-danger" role="alert">
-                '.
-                    get_string('restore_heavy_load_warning_message', 'block_sharing_cart')
-                .'
-                </p>');
-        }
 
         $this->add_action_buttons(true, get_string('conflict_submit', 'block_sharing_cart'));
     }
