@@ -71,7 +71,6 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                             '</div>';
                     }
 
-                    obj.body += '<p class="alert alert-danger mt-3">' + str('backup_heavy_load_warning_message') + '</p>';
 
                     ModalFactory.create({
                         type: ModalFactory.types.SAVE_CANCEL,
@@ -970,7 +969,10 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                             "courseid": courseId,
                         };
 
-                    on_backup_modal(data, sectionName, str('confirm_backup_section'), true);
+                    var body_html = '<p class="alert alert-danger mt-3">' + str('backup_heavy_load_warning_message') +
+                        '</p>' + str('confirm_backup_section');
+
+                    on_backup_modal(data, sectionName, body_html, true);
                 };
 
                 /**
