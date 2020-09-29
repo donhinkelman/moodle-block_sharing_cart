@@ -27,18 +27,23 @@ class section_title_form extends \moodleform {
      * @var string $sectionnumber
      */
     private $sectionnumber;
+    /**
+     * @var string $sectionnumber
+     */
+    private $items_count;
 
     /**
      * section_title_form constructor.
      *
      * @param array $eligible_sections
      */
-    public function __construct($directory, $path, $courseid, $sectionnumber, $eligible_sections) {
+    public function __construct($directory, $path, $courseid, $sectionnumber, $eligible_sections, $items_count = 0) {
         $this->directory = $directory;
         $this->path = $path;
         $this->courseid = $courseid;
         $this->sectionnumber = $sectionnumber;
         $this->sections = $eligible_sections;
+        $this->items_count = $items_count;
         parent::__construct();
     }
 
@@ -74,6 +79,15 @@ class section_title_form extends \moodleform {
 
         $mform->addElement('static', 'description_note', '',
                 '<div class="small">' . get_string('conflict_description_note', 'block_sharing_cart') . '</div>');
+
+        if ($this->items_count > 9) {
+            $mform->addElement('static', 'restore_heavy_load_warning_message', '',
+                '<p class="alert alert-danger" role="alert">
+                '.
+                    get_string('restore_heavy_load_warning_message', 'block_sharing_cart')
+                .'
+                </p>');
+        }
 
         $this->add_action_buttons(true, get_string('conflict_submit', 'block_sharing_cart'));
     }

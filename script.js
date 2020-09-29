@@ -21,8 +21,8 @@
  *  @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, ModalFactory, ModalEvents) {
-    $(document).ready(function () {
+require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalFactory, ModalEvents) {
+    $(document).ready(function() {
 
         /**
          *  Returns a localized string
@@ -73,11 +73,11 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                 type: ModalFactory.types.SAVE_CANCEL,
                 title: obj.title,
                 body: obj.body,
-            }).done(function (modal) {
+            }).done(function(modal) {
                 modal.setSaveButtonText(obj.save_button);
 
                 // On save save check - if checkbox is checked.
-                modal.getRoot().on(ModalEvents.save, function (e) {
+                modal.getRoot().on(ModalEvents.save, function(e) {
 
                     var response = {
                         'checkbox': $(e.target).find('.modal-checkbox').is(':checked'),
@@ -87,7 +87,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                 });
 
                 // Remove modal from html.
-                modal.getRoot().on(ModalEvents.hidden, function () {
+                modal.getRoot().on(ModalEvents.hidden, function() {
                     $('body').removeClass('modal-open');
                 });
 
@@ -118,15 +118,15 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
          * @param isSection
          */
         function on_backup_modal(post_data, title_str, body_str, isSection) {
-            (function (on_success) {
+            (function(on_success) {
                 $.post(get_action_url('rest'), post_data,
-                    function (response) {
+                    function(response) {
                         on_success(response);
                     }, "text")
-                    .fail(function (response) {
+                    .fail(function(response) {
                         show_error(response);
                     });
-            })(function (response) {
+            })(function(response) {
                 var copyable = response === '1';
                 var checkbox = false;
 
@@ -139,7 +139,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                     'body': body_str,
                     'save_button': str('modal_confirm_backup'),
                     'checkbox': checkbox,
-                    'next': function (data) {
+                    'next': function(data) {
                         if (isSection === true) {
                             backup_section(post_data.sectionid, post_data.sectionnumber, post_data.courseid, data.checkbox);
                         } else {
@@ -194,7 +194,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
         var $block = $('.block_sharing_cart');
 
         /** @var {Object}  The current course */
-        var course = new function () {
+        var course = new function() {
             var body = $('body');
             this.id = body.attr('class').match(/course-(\d+)/)[1];
             this.is_frontpage = body.hasClass('pagelayout-frontpage');
@@ -304,11 +304,11 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                 {
                     "action": "render_tree"
                 },
-                function (response) {
+                function(response) {
                     $block.find(".tree").replaceWith($(response));
                     $.init_item_tree();
                 }, "html")
-                .fail(function (response) {
+                .fail(function(response) {
                     show_error(response);
                 });
         }
@@ -336,13 +336,13 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                     "sesskey": M.cfg.sesskey,
                     "course": course.id
                 },
-                function () {
+                function() {
                     reload_tree();
                 })
-                .fail(function (response) {
+                .fail(function(response) {
                     show_error(response);
                 })
-                .always(function () {
+                .always(function() {
                     $node_spinner.hide();
                     $spinner.hide();
                 });
@@ -383,13 +383,13 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                     "sesskey": M.cfg.sesskey,
                     "course": course.id
                 },
-                function () {
+                function() {
                     reload_tree();
                 })
-                .fail(function (response) {
+                .fail(function(response) {
                     show_error(response);
                 })
-                .always(function () {
+                .always(function() {
                     $spinner.hide();
                     $node_spinner.hide();
                 });
@@ -401,10 +401,10 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
         /**
          *  @class Directory states manager
          */
-        var directories = new function () {
+        var directories = new function() {
             var KEY = 'block_sharing_cart-dirs';
 
-            var opens = getCookieValue(KEY).split(',').map(function (v) {
+            var opens = getCookieValue(KEY).split(',').map(function(v) {
                 return parseInt(v);
             });
 
@@ -434,9 +434,9 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
             /**
              *  Initialize directory states
              */
-            this.init = function () {
+            this.init = function() {
                 var i = 0;
-                $block.find('li.directory').each(function (index, dir) {
+                $block.find('li.directory').each(function(index, dir) {
                     var $dir = $(dir);
                     $dir.attr('id', 'block_sharing_cart-dir-' + i);
                     if (i >= opens.length) {
@@ -444,7 +444,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                     } else if (opens[i]) {
                         open($dir, true);
                     }
-                    $dir.find('> div div.toggle-wrapper').css('cursor', 'pointer').on('click', function (e) {
+                    $dir.find('> div div.toggle-wrapper').css('cursor', 'pointer').on('click', function(e) {
                         toggle(e);
                     });
                     i++;
@@ -454,7 +454,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
             /**
              *  Reset directory states
              */
-            this.reset = function () {
+            this.reset = function() {
                 opens = [];
                 this.init();
                 save();
@@ -464,23 +464,23 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
         /**
          *  @class Targets for moving an item directory
          */
-        var move_targets = new function () {
+        var move_targets = new function() {
             var $cancel = null,
                 targets = [];
 
             /**
              *  Hide move targets
              */
-            this.hide = function () {
+            this.hide = function() {
                 if ($cancel !== null) {
                     var $commands = $cancel.closest('.commands');
                     $cancel.remove();
                     $cancel = null;
                     $commands.closest('li.activity').css('opacity', 1.0);
-                    $commands.find('a').each(function () {
+                    $commands.find('a').each(function() {
                         $(this).show();
                     });
-                    $.each(targets, function (index, $target) {
+                    $.each(targets, function(index, $target) {
                         $target.remove();
                     });
                     targets = [];
@@ -492,7 +492,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
              *
              *  @param {int} id  The item ID
              */
-            this.show = function (item_id) {
+            this.show = function(item_id) {
                 this.hide();
 
                 function move(e) {
@@ -509,13 +509,13 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                             "area_to": area_to,
                             "sesskey": M.cfg.sesskey
                         },
-                        function () {
+                        function() {
                             reload_tree();
                         })
-                        .fail(function (response) {
+                        .fail(function(response) {
                             show_error(response);
                         })
-                        .always(function () {
+                        .always(function() {
                             $spinner.hide();
                         });
                 }
@@ -546,23 +546,23 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
 
                     var $target = $('<li class="activity move-to"/>')
                         .append($anchor);
-                    $anchor.on('click', function (e) {
+                    $anchor.on('click', function(e) {
                         move(e);
                     });
 
                     return $target;
                 }
 
-                $list.find('> li.activity').each(function (index, item) {
+                $list.find('> li.activity').each(function(index, item) {
                     var $item = $(item);
                     var to = $item.attr('id').match(/item-(\d+)$/)[1];
                     if (to === item_id) {
                         $cancel = create_command('cancel', 't/left');
-                        $cancel.on('click', function () {
+                        $cancel.on('click', function() {
                             move_targets.hide();
                         });
                         var $commands = $item.find('.commands');
-                        $commands.find('a').each(function () {
+                        $commands.find('a').each(function() {
                             $(this).hide();
                         });
                         $commands.append($cancel);
@@ -585,7 +585,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
         /**
          *  @class Targets for restoring an item
          */
-        var restore_targets = new function () {
+        var restore_targets = new function() {
             this.is_directory = null;
             var $clipboard = null,
                 targets = [];
@@ -636,11 +636,11 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
             /**
              *  Hide restore targets
              */
-            this.hide = function () {
+            this.hide = function() {
                 if ($clipboard !== null) {
                     $clipboard.remove();
                     $clipboard = null;
-                    $.each(targets, function (index, $target) {
+                    $.each(targets, function(index, $target) {
                         $target.remove();
                     });
                     targets = [];
@@ -652,7 +652,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
              *
              *  @param {int} id  The item ID
              */
-            this.show = function (id) {
+            this.show = function(id) {
                 this.hide();
 
                 var $view = $("<span/>");
@@ -697,7 +697,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                 } else {
                     var $container = $('.course-content');
                     $container.one('*').before($clipboard);
-                    $container.find(M.course.format.get_section_wrapper(null)).each(function (index, sectionDOM) {
+                    $container.find(M.course.format.get_section_wrapper(null)).each(function(index, sectionDOM) {
                         var $section = $(sectionDOM);
                         var section = $section.attr('id').match(/(\d+)$/)[1];
                         $section.find('ul.section').first().append(create_target(id, section));
@@ -712,7 +712,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
          *
          * @returns {string|*}
          */
-        $.get_plugin_name = function () {
+        $.get_plugin_name = function() {
             var $blockheader = $block.find("h2");
 
             if (!$blockheader.length) {
@@ -733,8 +733,8 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
          * @param e
          * @param activityName
          */
-        $.on_backup = function (e, activityName) {
-            var cmid = (function ($backup) {
+        $.on_backup = function(e, activityName) {
+            var cmid = (function($backup) {
                 var $activity = $backup.closest('li.activity');
                 if ($activity.length) {
                     return $activity.attr('id').match(/(\d+)$/)[1];
@@ -761,7 +761,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
          *
          *  @param {DOMEventFacade} e
          */
-        $.on_movedir = function (e) {
+        $.on_movedir = function(e) {
             var $commands = $(e.target).closest('.commands');
 
             var $current_dir = $commands.closest('li.directory');
@@ -770,7 +770,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
             var item_id = $(e.target).closest('li.activity').attr('id').match(/(\d+)$/)[1];
 
             var dirs = [];
-            $block.find('li.directory').each(function () {
+            $block.find('li.directory').each(function() {
                 dirs.push($(this).attr('directory-path'));
             });
 
@@ -787,14 +787,14 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                         "folder_to": folder_to,
                         "sesskey": M.cfg.sesskey
                     },
-                    function () {
+                    function() {
                         reload_tree();
                         directories.reset();
                     })
-                    .fail(function (response) {
+                    .fail(function(response) {
                         show_error(response);
                     })
-                    .always(function () {
+                    .always(function() {
                         $spinner.hide();
                     });
             }
@@ -803,7 +803,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
 
             if (dirs.length === 0) {
                 var $input = $('<input class="form-control" type="text" name="to"/>').val(current_path);
-                setTimeout(function () {
+                setTimeout(function() {
                     $input.focus();
                 }, 1);
                 $form.append($input);
@@ -820,7 +820,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
 
                 var $edit = create_command('edit');
 
-                $edit.on('click', function () {
+                $edit.on('click', function() {
                     var $input = $('<input type="text" name="to"/>').val(current_path);
                     $select.remove();
                     $edit.replaceWith($input);
@@ -831,13 +831,13 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
             }
 
             var $cancel = create_command('cancel');
-            $cancel.on('click', function () {
+            $cancel.on('click', function() {
                 $form.remove();
                 $commands.find('a').show();
             });
             $form.append($cancel);
 
-            $commands.find('a').each(function () {
+            $commands.find('a').each(function() {
                 $(this).hide();
             });
             $commands.append($form);
@@ -848,7 +848,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
          *
          *  @param {DOMEventFacade} e
          */
-        $.on_move = function (e) {
+        $.on_move = function(e) {
             var $item = $(e.target).closest('li.activity');
             var id = $item.attr('id').match(/(\d+)$/)[1];
 
@@ -860,7 +860,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
          *
          *  @param {DOMEventFacade} e
          */
-        $.on_delete = function (e) {
+        $.on_delete = function(e) {
             var $item = $(e.target).closest('li');
             var liText = $item[0].innerText;
 
@@ -884,7 +884,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                 'body': modalBody,
                 'save_button': str('modal_confirm_delete'),
                 'checkbox': false,
-                'next': function () {
+                'next': function() {
 
                     var data = {};
 
@@ -905,13 +905,13 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                     var $spinner = add_spinner();
 
                     $.post(get_action_url("rest"), data,
-                        function () {
+                        function() {
                             reload_tree();
                         })
-                        .fail(function (response) {
+                        .fail(function(response) {
                             show_error(response);
                         })
-                        .always(function () {
+                        .always(function() {
                             $spinner.hide();
                         });
 
@@ -925,7 +925,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
          *
          *  @param {DOMEventFacade} e
          */
-        $.on_restore = function (e) {
+        $.on_restore = function(e) {
             var $item = $(e.target).closest('li');
             var id = null;
 
@@ -948,7 +948,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
          * @param {int} courseId
          * @param {string} sectionName
          */
-        $.on_section_backup = function (sectionId, sectionNumber, courseId, sectionName) {
+        $.on_section_backup = function(sectionId, sectionNumber, courseId, sectionName) {
             var data =
                 {
                     "action": "is_userdata_copyable_section",
@@ -963,7 +963,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
         /**
          *  Initialize the delete bulk
          */
-        $.init_bulk_delete = function (isspeciallayout) {
+        $.init_bulk_delete = function(isspeciallayout) {
             var bulkdelete = $block.find('.editing_bulkdelete');
             if (bulkdelete.length) {
                 if (isspeciallayout) {
@@ -980,7 +980,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
         /**
          *  Initialize the help icon
          */
-        $.init_help_icon = function (isspeciallayout) {
+        $.init_help_icon = function(isspeciallayout) {
             var helpicon = $block.find('.header-commands > .help-icon');
 
             if (isspeciallayout) {
@@ -993,23 +993,46 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
         /**
          *  Initialize the Sharing Cart block header
          */
-        $.init_block_header = function () {
+        $.init_block_header = function() {
             var isspeciallayout = verify_layout();
             $.init_bulk_delete(isspeciallayout);
             $.init_help_icon(isspeciallayout);
         };
 
         /**
+         * Remove an action
+         *
+         * @param actions   The actions
+         * @param actionKey The key of the action to remove
+         *
+         * @returns actions The actions without the item to remove
+         */
+        $.remove_action = function(actions, actionKey) {
+            var indexOfAction = actions.indexOf(actionKey);
+            if (indexOfAction > -1) {
+                actions.splice(indexOfAction, 1);
+            }
+            return actions;
+        };
+
+        /**
          *  Initialize the Sharing Cart item tree
          */
-        $.init_item_tree = function () {
+        $.init_item_tree = function() {
             function add_actions(item, actions) {
                 var $item = $(item);
                 var $commands = $item.find('.commands').first();
 
-                $.each(actions, function (index, action) {
+                var disallowedActions = $('#alert-disallow').data('disallowed-actions');
+                if (disallowedActions != null) {
+                    disallowedActions.split(',').forEach(function(actionKey) {
+                        $.remove_action(actions, actionKey);
+                    });
+                }
+
+                $.each(actions, function(index, action) {
                     var $command = create_command(action);
-                    $command.on('click', function (e) {
+                    $command.on('click', function(e) {
                         $['on_' + action](e);
                     });
                     $commands.append($command);
@@ -1024,12 +1047,12 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
             var directory_actions = ['delete', 'restore'];
 
             // Initialize items
-            $block.find('li.activity').each(function (index, item) {
+            $block.find('li.activity').each(function(index, item) {
                 add_actions(item, activity_actions);
             });
 
             // Initialize directory items
-            $block.find('li.directory').each(function (index, item) {
+            $block.find('li.directory').each(function(index, item) {
                 add_actions(item, directory_actions);
             });
 
@@ -1042,8 +1065,8 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
          *
          * Call add_activity_backup_control to re append sharing cart icon.
          */
-        $.init_activity_commands = function () {
-            $(document).ajaxComplete(function (event, xhr, settings) {
+        $.init_activity_commands = function() {
+            $(document).ajaxComplete(function(event, xhr, settings) {
 
                 var url = settings.url;
                 var lastslashindex = url.lastIndexOf('=');
@@ -1059,7 +1082,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
                         return;
                     }
 
-                    setTimeout(function () {
+                    setTimeout(function() {
                         var activity_id = data[0].args.id;
                         var activity = $('#module-' + activity_id);
                         add_activity_backup_control(activity);
@@ -1111,7 +1134,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
 
                 var $backupIcon = create_backup_icon();
 
-                $backupIcon.on('click', function (e) {
+                $backupIcon.on('click', function(e) {
                     $.on_backup(e, activityName);
                 });
 
@@ -1144,7 +1167,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
 
                 var $backupIcon = create_backup_icon();
 
-                $backupIcon.on('click', function () {
+                $backupIcon.on('click', function() {
                     var inPlaceEditSectionName = in_place_edit_section_name($section);
                     sectionName = (inPlaceEditSectionName !== '') ? inPlaceEditSectionName : sectionName;
                     $.on_section_backup(sectionId, sectionNumber, courseId, sectionName);
@@ -1173,12 +1196,12 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
 
                 var $activities = $section.find(activitySelector);
 
-                $($activities).each(function () {
+                $($activities).each(function() {
                     add_activity_backup_control($(this));
                 });
             }
 
-            $("body.editing .course-content li.section").each(function () {
+            $("body.editing .course-content li.section").each(function() {
                 add_section_backup_control($(this));
             });
         };
@@ -1186,7 +1209,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
         /**
          * Initialize the Sharing Cart block
          */
-        $.init = function () {
+        $.init = function() {
             M.str.block_sharing_cart.pluginname = this.get_plugin_name();
 
             // Arrange header icons (bulkdelete, help)
@@ -1200,7 +1223,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function ($, Moda
         $.init();
     });
 
-    $('.copy_section').on('click', function () {
+    $('.copy_section').on('click', function() {
 
         var $section_selected = ($('.section-dropdown option:selected'));
         var sectionId = $section_selected.data('section-id');

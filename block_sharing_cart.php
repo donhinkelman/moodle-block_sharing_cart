@@ -66,6 +66,7 @@ class block_sharing_cart extends block_base {
 	 * @return object|string
 	 *
 	 * @throws coding_exception
+	 * @throws dml_exception|moodle_exception
 	 * @global object $USER
 	 */
     public function get_content() {
@@ -86,6 +87,8 @@ class block_sharing_cart extends block_base {
         $controller = new controller();
         $html = $controller->render_tree($USER->id);
 
+        $controller->delete_unused_sections($this->page->course->id);
+
         // Fetching all sections for current course.
         $sectionsHandler = new section();
         $sections = $sectionsHandler->all($COURSE->id);
@@ -102,7 +105,7 @@ class block_sharing_cart extends block_base {
             $this->page->requires->css('/blocks/sharing_cart/custom.css');
         }
         $this->page->requires->jquery();
-        $this->page->requires->js('/blocks/sharing_cart/script.js');
+		$this->page->requires->js_call_amd('block_sharing_cart/script', 'init');
         $this->page->requires->strings_for_js(
                 array('yes', 'no', 'ok', 'cancel', 'error', 'edit', 'move', 'delete', 'movehere'),
                 'moodle'
@@ -112,7 +115,7 @@ class block_sharing_cart extends block_base {
                         'confirm_backup', 'confirm_backup_section', 'confirm_userdata',
                         'confirm_userdata', 'confirm_delete', 'clicktomove', 'folder_string',
                         'activity_string', 'delete_folder', 'modal_checkbox',
-                        'modal_confirm_backup', 'modal_confirm_delete'
+                        'modal_confirm_backup', 'modal_confirm_delete', 'backup_heavy_load_warning_message'
                 ),
                 __CLASS__
         );

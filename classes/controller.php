@@ -28,6 +28,7 @@ use backup_controller;
 use block_sharing_cart\exceptions\no_backup_support_exception;
 use restore_controller;
 use stdClass;
+use base_setting;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -38,25 +39,32 @@ require_once __DIR__ . '/../../../course/lib.php';
  */
 class controller {
     /** @const int  The maximum length of a backup file name */
-    const MAX_FILENAME = 20;
+    protected const MAX_FILENAME = 20;
 
-    /**
-     *  Constructor
-     *
-     * @throws \require_login_exception
-     */
+    /** @var string	The prefix to add to the file to let the user know this is a Sharing Cart file */
+    protected const PREFIX_FILENAME = 'Sharingcart';
+
+	/**
+	 *  Constructor
+	 *
+	 * @throws \coding_exception
+	 * @throws \moodle_exception
+	 * @throws \require_login_exception
+	 */
     public function __construct() {
         \require_login(null, false, null, false, true);
     }
 
-    /**
-     *  Render an item tree
-     *
-     * @param int $userid = $USER->id
-     * @return string HTML
-     * @global \moodle_database $DB
-     * @global object $USER
-     */
+	/**
+	 *  Render an item tree
+	 *
+	 * @param null $userid = $USER->id
+	 * @return string HTML
+	 * @throws \coding_exception
+	 * @throws \dml_exception
+	 * @global \moodle_database $DB
+	 * @global object $USER
+	 */
     public function render_tree($userid = null) {
         global $DB, $USER;
 
@@ -64,10 +72,29 @@ class controller {
 
         // build an item tree from flat records
         $records = $DB->get_records('block_sharing_cart', array('userid' => $USER->id));
-        foreach ($records as $record) {
+
+        foreach ($records as $i => $record) {
+
+            // If the file is removed from the private backup area for the user
+            if (!empty($record->userid) && !$DB->record_exists('files', [
+                'userid' => $record->userid,
+                'filename' => $record->filename,
+                'filearea' => 'backup'
+            ])) {
+                // Then remove the file from the sharing cart as well since we don't want to show a deleted file
+                $DB->delete_records('block_sharing_cart', [
+                    'userid' => $record->userid,
+                    'filename' => $record->filename
+                ]);
+                unset($records[$i]);
+                continue;
+            }
+
             $course = $DB->get_record('course', array('id' => $record->course));
             $record->coursefullname = $course ? $course->fullname : '';
         }
+
+        $records = array_values($records);
 
         $tree = array();
         foreach ($records as $record) {
@@ -114,12 +141,14 @@ class controller {
         return renderer::render_tree($tree);
     }
 
-    /**
-     *  Get whether a module is userdata copyable and the logged-in user has enough capabilities
-     *
-     * @param int $cmid
-     * @return boolean
-     */
+	/**
+	 *  Get whether a module is userdata copyable and the logged-in user has enough capabilities
+	 *
+	 * @param int $cmid
+	 * @return boolean
+	 * @throws \coding_exception
+	 * @throws \dml_exception
+	 */
     public function is_userdata_copyable($cmid) {
         $cm = \get_coursemodule_from_id(null, $cmid, 0, false, MUST_EXIST);
         $modtypes = \get_config('block_sharing_cart', 'userdata_copyable_modtypes');
@@ -130,12 +159,14 @@ class controller {
                 && \has_capability('moodle/restore:userinfo', $context);
     }
 
-    /**
-     *  Get whether any module in section is userdata copyable and the logged-in user has enough capabilities
-     *
-     * @param int $sectionid
-     * @return boolean
-     */
+	/**
+	 *  Get whether any module in section is userdata copyable and the logged-in user has enough capabilities
+	 *
+	 * @param int $sectionid
+	 * @return boolean
+	 * @throws \coding_exception
+	 * @throws \dml_exception
+	 */
     public function is_userdata_copyable_section($sectionid) {
         GLOBAL $DB;
 
@@ -158,7 +189,8 @@ class controller {
 	    if ($this->get_string_length($cleanname) > self::MAX_FILENAME) {
 		    $cleanname = $this->get_sub_string($cleanname, 0, self::MAX_FILENAME) . '_';
 	    }
-	    return sprintf('%s-%s.mbz', $cleanname, microtime(true));
+	    $cleanname = mb_strtolower($cleanname, 'UTF-8');
+	    return sprintf('%s-%s-%s.mbz', self::PREFIX_FILENAME, $cleanname, microtime(true));
     }
 
     /**
@@ -234,7 +266,12 @@ class controller {
         $plan = $controller->get_plan();
         foreach ($settings as $name => $value) {
             if ($plan->setting_exists($name)) {
-                $plan->get_setting($name)->set_value($value);
+                $current_setting = $plan->get_setting($name);
+                // If locked
+                if (base_setting::NOT_LOCKED !== $current_setting->get_status()) {
+                    continue;
+                }
+                $current_setting->set_value($value);
             }
         }
         $plan->get_setting('filename')->set_value($filename);
@@ -354,14 +391,15 @@ class controller {
             // Check empty folder name
             $foldername = str_replace("/", "-", $sectionname);
 
-            if ($DB->record_exists("block_sharing_cart", array("tree" => $foldername))) {
-                $i = 0;
+            if ($DB->record_exists("block_sharing_cart", array("tree" => $foldername, 'userid' => $USER->id))) {
+                // Get other folder that contain increment number
+                $folder_like = $DB->sql_like_escape($foldername);
+                $params = ['userid' => $USER->id, 'tree' => $folder_like . ' (%)'];
+                $folders = $DB->get_fieldset_select(record::TABLE, 'tree', 'userid = :userid AND tree LIKE :tree', $params);
 
-                do {
-                    $i++;
-                } while ($DB->record_exists("block_sharing_cart", array("tree" => $foldername . " ({$i})")));
-
-                $foldername .= " ({$i})";
+                // Increase folder number
+                $folder_number = empty($folders) ? 1 : count($folders) + 1;
+                $foldername .= " ({$folder_number})";
             }
 
             // Move backup files to folder
@@ -629,6 +667,7 @@ class controller {
      * Delete a directory
      *
      * @param $path
+     * @throws \dml_exception
      */
     public function delete_directory($path) {
         global $DB, $USER;
@@ -643,13 +682,7 @@ class controller {
             $this->delete($idObject->id);
         }
 
-        // Delete unused section
-        $sections = $DB->get_records('block_sharing_cart_sections');
-        foreach ($sections as $section) {
-            if ($DB->count_records('block_sharing_cart', array('section' => $section->id)) == 0) {
-                $DB->delete_records('block_sharing_cart_sections', array('id' => $section->id));
-            }
-        }
+        $this->delete_unused_sections();
 
         // Delete unused file
         $fs = get_file_storage();
@@ -659,6 +692,40 @@ class controller {
             $sectionid = $file->get_itemid();
             if (!$DB->record_exists('block_sharing_cart_sections', array('id' => $sectionid))) {
                 $file->delete();
+            }
+        }
+    }
+
+    /**
+    * Delete sections without activities since they are not used anymore
+    *
+    * @param int $course_id
+    *
+    * @return void
+    * @throws \dml_exception
+    */
+    public function delete_unused_sections(int $course_id = 0) : void {
+
+        global $DB;
+
+        $sql_params = [];
+
+        $sql = /** @lang mysql */'
+        SELECT DISTINCT s.id
+        FROM {block_sharing_cart_sections} s
+        LEFT JOIN {block_sharing_cart} sc ON s.id = sc.section
+        ';
+
+        if (!empty($course_id)) {
+            $sql .= 'WHERE sc.course = :course_id';
+            $sql_params['course_id'] = $course_id;
+        }
+
+        $sections = $DB->get_records_sql($sql, $sql_params);
+
+        foreach ($sections as $section) {
+            if ((int)$DB->count_records('block_sharing_cart', ['section' => $section->id]) === 0) {
+                $DB->delete_records('block_sharing_cart_sections', ['id' => $section->id]);
             }
         }
     }

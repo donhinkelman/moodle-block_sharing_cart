@@ -85,6 +85,8 @@ $string['variouscourse'] = 'from various courses';
 $string['section_name_conflict'] = 'Section title conflict';
 $string['conflict_description'] = 'Do you want to overwrite section title in course?';
 $string['conflict_description_note'] = '*Section summary formats (font color, images, etc.) will appear after copied to course.';
+$string['restore_heavy_load_warning_message'] = 'Load time are longer, because more than 10 activities/resources are being processed.';
+$string['backup_heavy_load_warning_message'] = 'If section contains several activites, processing time will be longer.';
 $string['conflict_no_overwrite'] = 'Keep the current section title <strong>"{$a}"</strong>';
 $string['conflict_overwrite_title'] = 'Change section title to <strong>"{$a}"</strong>';
 $string['conflict_submit'] = 'Continue';
@@ -96,6 +98,18 @@ $string['modal_checkbox'] = 'Do you want to copy user data? (Eg. glossary/wiki/d
 $string['modal_confirm_backup'] = 'Confirm';
 $string['modal_confirm_delete'] = 'Delete';
 $string['no_backup_support'] = 'No backup support for this module';
+$string['define_required_capabilities'] = 'Please define the required capabilities';
+$string['missing_capability'] = 'Required capability missing: {$a}';
+$string['missing_capabilities'] = 'Required capabilities missing: {$a}';
 
 $string['modal_bulkdelete_title'] = 'Sure you want to delete';
 $string['modal_bulkdelete_confirm'] = 'Delete selected';
+
+$string['privacy:metadata:block_sharing_cart'] = 'Sharing cart data is stored here';
+$string['privacy:metadata:block_sharing_cart:userid'] = 'The ID of user';
+$string['privacy:metadata:block_sharing_cart:modname'] = 'The name of activity module';
+$string['privacy:metadata:block_sharing_cart:modicon'] = 'Activity module icon';
+$string['privacy:metadata:block_sharing_cart:modtext'] = 'The title of the activity module';
+$string['privacy:metadata:block_sharing_cart:ctime'] = 'Created time';
+$string['privacy:metadata:block_sharing_cart:tree'] = 'The title of sharing cart folder that display in the block';
+$string['privacy:metadata:block_sharing_cart:weight'] = 'Order of items, sorting in ascending order';
