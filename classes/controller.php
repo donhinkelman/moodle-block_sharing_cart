@@ -543,10 +543,9 @@ class controller {
     public function restore_directory($path, $courseid, $sectionnumber, $overwritesectionid) {
         global $DB, $USER;
 
-        $idObjects = $DB->get_records("block_sharing_cart", array("tree" => $path), "weight ASC", "id");
-
-        foreach ($idObjects as $idObject) {
-            $this->restore($idObject->id, $courseid, $sectionnumber);
+        $cart_items = $DB->get_records("block_sharing_cart", ['tree' => $path, 'userid' => $USER->id], "weight ASC", "id");
+        foreach ($cart_items as $cart_item) {
+            $this->restore($cart_item->id, $courseid, $sectionnumber);
         }
 
         if ($overwritesectionid > 0) {
@@ -676,10 +675,9 @@ class controller {
             $path = substr($path, 1);
         }
 
-        $idObjects = $DB->get_records('block_sharing_cart', array('tree' => $path, 'userid' => $USER->id), '', 'id');
-
-        foreach ($idObjects as $idObject) {
-            $this->delete($idObject->id);
+        $cart_items = $DB->get_records('block_sharing_cart', ['tree' => $path, 'userid' => $USER->id], '', 'id');
+        foreach ($cart_items as $cart_item) {
+            $this->delete($cart_item->id);
         }
 
         $this->delete_unused_sections();
