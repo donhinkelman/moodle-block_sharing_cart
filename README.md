@@ -11,7 +11,11 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
-<<<<<<< HEAD
+* 3.8, release 19   2020.10.06
+    * Load cart items for the active user only during directory restore.
+* 3.8, release 18   2020.09.02
+    * Now only shows heavy load warning on sections.
+    * Warnings appear on the top of modals instead of the bottom.
 * 3.8, release 17   2020.09.01
     * Set active course to make sure capabilities work as expected.
     * Make course id naming similar for rest actions.
