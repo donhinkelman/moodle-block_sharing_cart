@@ -66,6 +66,11 @@ class course_repository
      * @throws dml_exception
      */
     public function get_course_fullnames(array $ids, string $default_name = '') {
+
+        if (empty($ids)) {
+            return [];
+        }
+
         [$in_sql, $params] = $this->db->get_in_or_equal($ids);
         $records = $this->db->get_recordset_select('course', 'id ' . $in_sql, $params);
 
