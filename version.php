@@ -18,7 +18,7 @@
  *  Sharing Cart
  *
  * @package    block_sharing_cart
- * @copyright  2020 (c) Don Hinkelman
+ * @copyright  2020 (c) Don Hinkelman and others
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
