@@ -1,7 +1,8 @@
 Sharing Cart
 ============
 
-Version 3.8, release 3 - 2020.04.12
+
+Version 3.8, release 17 - 2020.09.01
 
 The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
@@ -33,13 +34,15 @@ Change Log
     * Fix upgrade script that doesn't match the install.xml properties.
 * 3.8, release 12   2020.07.30
     * Show a "more welcoming" error message and remove copy to course when the user does not have the required capabilities.
-* 3.8, release 11   2020.07.24
+* 3.8, release 11   2020.07.27
     * Add privacy API.
+    * Folder naming and creation improved
     * Fix Sharing cart folder name when copy the same section name, it shouldn't affect other user(s) that have the same folder name.
 * 3.8, release 10   2020.05.29
     * Added fix for the spinner in the block when restoring an item from the block to a course.
-* 3.8, release 10   2020.05.18
     * Added fix for duplicate entry in database, when two created a section in the same second. This was a random error and is NOT confirmed fixed. A log table is added to the plugin is an exception is thown in the REST api (block_sharing_cart_log).
+    * Added a loading-spinner when you copy an item from the block to the course
+    * Fixes bug on admin setting which may change the setting name.
 * 3.8, release 9    2020.05.14
     * Limited sharing cart icon on sections, only to be added once when inplaceeditable.
 * 3.8, release 8    2020.04.29
