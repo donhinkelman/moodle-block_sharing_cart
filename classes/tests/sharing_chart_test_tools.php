@@ -185,6 +185,39 @@ trait sharing_chart_test_tools {
     }
 
     /**
+     * @param $user
+     * @param $course
+     * @param int $section
+     * @param null $filename
+     * @return object
+     * @throws \dml_exception
+     */
+    private function create_sharing_chart_record($user, $course, $section = 0, $filename = null) {
+
+        $filename = $filename ?? md5(random_bytes(16));
+        $modname = md5(random_bytes(16));
+        $modicon = md5(random_bytes(16));
+        $modtext = md5(random_bytes(16));
+
+        $params = [
+            'userid' => $user->id,
+            'course' => $course->id,
+            'section' => $section,
+            'ctime' => time(),
+            'weight' => 1,
+            'filename' => $filename,
+            'modname' => $modname,
+            'modicon' => $modicon,
+            'modtext' => $modtext,
+            'tree' => '',
+        ];
+
+        $id = $this->db()->insert_record('block_sharing_cart', (object)$params);
+        $params['id'] = $id;
+        return (object)$params;
+    }
+
+    /**
      * Get moodle database
      * @return \moodle_database
      */

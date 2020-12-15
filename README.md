@@ -12,6 +12,11 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
+* 3.9, release 20   2020.12.15
+    * Add support for Moodle 3.9
+* 3.8, release 20   2020.10.14
+    * Improved performance.
+    * Add sharing cart entity cleaner, after the file got delete from the system.
 * 3.8, release 19   2020.10.06
     * Load cart items for the active user only during directory restore.
 * 3.8, release 18   2020.09.02
