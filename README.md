@@ -12,6 +12,8 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
+* 3.9, release 21   2021.01.05
+    * Removing html tags, when showing label in sharing cart block.
 * 3.9, release 20   2020.12.15
     * Add support for Moodle 3.9
 * 3.8, release 20   2020.10.14

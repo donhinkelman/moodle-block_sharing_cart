@@ -153,6 +153,9 @@ class renderer {
 
         $title = html_to_text($item->modtext) . $coursename;
 
+        if ($item->modname === 'label') {
+            $item->modtext = strip_tags($item->modtext);
+        }
         return '
 				<li class="activity ' . $class . '" id="block_sharing_cart-item-' . $item->id . '">
 					<div class="sc-indent-' . $depth . '" title="' . $title . '">
