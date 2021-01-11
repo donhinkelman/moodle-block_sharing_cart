@@ -1,8 +1,7 @@
 Sharing Cart
 ============
 
-
-Version 3.8, release 17 - 2020.09.01
+Version 3.9, release 1 - 2021.01.11
 
 The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
@@ -12,7 +11,8 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
-
+* 3.9, release 1   2021.01.11
+    * Improved section copy process
 * 3.8, release 17   2020.09.01
     * Set active course to make sure capabilities work as expected.
     * Make course id naming similar for rest actions.
