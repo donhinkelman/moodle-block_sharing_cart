@@ -24,22 +24,22 @@
 
 $string['pluginname'] = 'Bolsa de recursos';
 $string['sharing_cart'] = 'Bolsa de recursos';
-$string['sharing_cart_help'] = '<h2 class="helpheading">Operación</h2>
-<dl style="margin-left:0.5em;">
-<dt>Copiando del curso a bolsa de recursos</dt>
-    <dd>Aparecerá un pequeño icono de copia de bolsa de recurso al final de cada 
-        recurso o actividad dentro de un curso.
-        Clique ese icono para enviar una copia del recurso o actividad a la bolsa de recursos.
-        Solo se clonará la actividad sin datos de usuario.</dd>
-<dt>Copiando desde bolsa de recusos al curso</dt>
-    <dd>Clique el icono de "copiar a un curso" y seleccione el destino de cada sección.
-        O clique "cancelar" que esta junto a ese icono.</dd>
-<dt>Creando carpetas dentro de bolsa de recursos</dt>
-    <dd>Clique el icono "mover dentro de una carpeta".
-        Un elemento de escritura aparecerá si no hay carpeta.
-        O puede seleccionar una carpeta existente en la lista desplegable.
-        Se remplazará con un elemento de entrada si clica el icono de "editar"</dd>
-</dl>';
+$string['sharing_cart_help'] =
+'<div>
+    <strong>Copiando del curso a bolsa de recursos</strong>
+        <p>Aparecerá un pequeño icono de copia de bolsa de recurso al final de cada 
+            recurso o actividad dentro de un curso.
+            Clique ese icono para enviar una copia del recurso o actividad a la bolsa de recursos.
+            Solo se clonará la actividad sin datos de usuario.</p>
+    <strong>Copiando desde bolsa de recusos al curso</strong>
+        <p>Clique el icono de "copiar a un curso" y seleccione el destino de cada sección.
+            O clique "cancelar" que esta junto a ese icono.</p>
+    <strong>Creando carpetas dentro de bolsa de recursos</strong>
+        <p>Clique el icono "mover dentro de una carpeta".
+            Un elemento de escritura aparecerá si no hay carpeta.
+            O puede seleccionar una carpeta existente en la lista desplegable.
+            Se remplazará con un elemento de entrada si clica el icono de "editar"</p>
+</div>';
 $string['sharing_cart:addinstance'] = 'Añadir un nuevo bloque bolsa de recursos';
 
 $string['backup'] = 'Copiar a la bolsa de recursos';

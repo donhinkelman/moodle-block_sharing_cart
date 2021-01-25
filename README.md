@@ -12,6 +12,8 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
+* 3.9, release 22   2021.01.25
+  * Remove incompatible HTML from help button language string.
 * 3.9, release 21   2021.01.05
     * Removing html tags, when showing label in sharing cart block.
 * 3.9, release 20   2020.12.15
