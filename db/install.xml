@@ -43,6 +43,7 @@
                 <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="id"/>
                 <FIELD NAME="summary" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="name"/>
                 <FIELD NAME="summaryformat" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false" DEFAULT="0" PREVIOUS="summary"/>
+                <FIELD NAME="availability" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Availability restrictions for viewing this section, in JSON format. Null if no restrictions."/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="id" TYPE="primary" FIELDS="id"/>

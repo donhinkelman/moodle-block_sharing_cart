@@ -311,6 +311,7 @@ class controller {
             $sharing_cart_section->name = get_section_name($section->course, $section->section);
             $sharing_cart_section->summary = $section->summary;
             $sharing_cart_section->summaryformat = $section->summaryformat;
+            $sharing_cart_section->availability = $section->availability;
             $sc_section_id = $DB->insert_record('block_sharing_cart_sections', $sharing_cart_section);
             $sc_section_id = $sc_section_id ? $sc_section_id : 0;
 
@@ -543,6 +544,7 @@ class controller {
                 $restored_section->name = $overwrite_section->name;
                 $restored_section->summary = $overwrite_section->summary;
                 $restored_section->summaryformat = $overwrite_section->summaryformat;
+                $restored_section->availability = $overwrite_section->availability;
 
                 course_update_section($courseid, $original_restored_section, $restored_section);
             }

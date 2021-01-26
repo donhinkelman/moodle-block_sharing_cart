@@ -146,5 +146,18 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
         }
     }
 
+    if ($oldversion < 2020112001) {
+        $table = new xmldb_table('block_sharing_cart_sections');
+
+        if ($dbman->table_exists($table)) {
+            $field_availability = new xmldb_field('availability', XMLDB_TYPE_TEXT, null, null, false, false, null, 'summaryformat');
+            if (!$dbman->field_exists($table, $field_availability)) {
+                $dbman->add_field($table, $field_availability);
+            }
+        }
+
+        upgrade_block_savepoint(true, 2020112001, 'sharing_cart');
+    }
+
     return true;
 }

@@ -83,13 +83,13 @@ $string['requireajax'] = 'Sharing Cart requires AJAX';
 
 $string['variouscourse'] = 'from various courses';
 
-$string['section_name_conflict'] = 'Section title conflict';
-$string['conflict_description'] = 'Do you want to overwrite section title in course?';
-$string['conflict_description_note'] = '*Section summary formats (font color, images, etc.) will appear after copied to course.';
+$string['section_name_conflict'] = 'Section conflict';
+$string['conflict_description'] = 'Do you want to overwrite section information to course?';
+$string['conflict_description_note'] = '*Section summary formats (font color, images, etc.) and availability settings will overwrite after copied to course.';
 $string['restore_heavy_load_warning_message'] = 'Load time are longer, because more than 10 activities/resources are being processed.';
 $string['backup_heavy_load_warning_message'] = 'If section contains several activites, processing time will be longer.';
-$string['conflict_no_overwrite'] = 'Keep the current section title <strong>"{$a}"</strong>';
-$string['conflict_overwrite_title'] = 'Change section title to <strong>"{$a}"</strong>';
+$string['conflict_no_overwrite'] = 'Keep the current section name and settings <strong>"{$a}"</strong>';
+$string['conflict_overwrite_title'] = 'Overwrite section name and settings to <strong>"{$a}"</strong>';
 $string['conflict_submit'] = 'Continue';
 
 $string['folder_string'] = 'Folder:';
