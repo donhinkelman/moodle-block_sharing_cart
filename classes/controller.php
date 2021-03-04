@@ -26,6 +26,7 @@ namespace block_sharing_cart;
 
 use backup_controller;
 use block_sharing_cart\exceptions\no_backup_support_exception;
+use block_sharing_cart\repositories\course_repository;
 use restore_controller;
 use stdClass;
 use base_setting;
@@ -73,44 +74,28 @@ class controller {
         // build an item tree from flat records
         $records = $DB->get_records('block_sharing_cart', array('userid' => $USER->id));
 
-        foreach ($records as $i => $record) {
-
-            // If the file is removed from the private backup area for the user
-            if (!empty($record->userid) && !$DB->record_exists('files', [
-                'userid' => $record->userid,
-                'filename' => $record->filename,
-                'filearea' => 'backup'
-            ])) {
-                // Then remove the file from the sharing cart as well since we don't want to show a deleted file
-                $DB->delete_records('block_sharing_cart', [
-                    'userid' => $record->userid,
-                    'filename' => $record->filename
-                ]);
-                unset($records[$i]);
-                continue;
-            }
-
-            $course = $DB->get_record('course', array('id' => $record->course));
-            $record->coursefullname = $course ? $course->fullname : '';
-        }
+        $course_repo = new course_repository($DB);
+        // Get all course full name from course ids in the records
+        $course_fullnames = $course_repo->get_course_fullnames_by_sharing_carts($records);
 
         $records = array_values($records);
 
-        $tree = array();
+        $tree = [];
         foreach ($records as $record) {
+            $record->coursefullname = $course_fullnames[(int)$record->course] ?? '';
             $components = explode('/', trim($record->tree, '/'));
             $node_ptr = &$tree;
             do {
                 $dir = (string) array_shift($components);
-                isset($node_ptr[$dir]) || $node_ptr[$dir] = array();
+                isset($node_ptr[$dir]) || $node_ptr[$dir] = [];
                 $node_ptr = &$node_ptr[$dir];
             } while ($dir !== '');
             $node_ptr[] = $record;
         }
 
         // sort tree nodes and leaves
-        $sort_node = function(array &$node) use (&$sort_node) {
-            uksort($node, function($lhs, $rhs) {
+        $sort_node = static function(array &$node) use (&$sort_node) {
+            uksort($node, static function($lhs, $rhs) {
                 // items follow directory
                 if ($lhs === '') {
                     return +1;
@@ -124,7 +109,7 @@ class controller {
                 if ($name !== '') {
                     $sort_node($leaf);
                 } else {
-                    usort($leaf, function($lhs, $rhs) {
+                    usort($leaf, static function($lhs, $rhs) {
                         if ($lhs->weight < $rhs->weight) {
                             return -1;
                         }
@@ -544,10 +529,9 @@ class controller {
     public function restore_directory($path, $courseid, $sectionnumber, $overwritesectionid) {
         global $DB, $USER;
 
-        $idObjects = $DB->get_records("block_sharing_cart", array("tree" => $path), "weight ASC", "id");
-
-        foreach ($idObjects as $idObject) {
-            $this->restore($idObject->id, $courseid, $sectionnumber);
+        $cart_items = $DB->get_records("block_sharing_cart", ['tree' => $path, 'userid' => $USER->id], "weight ASC", "id");
+        foreach ($cart_items as $cart_item) {
+            $this->restore($cart_item->id, $courseid, $sectionnumber);
         }
 
         if ($overwritesectionid > 0) {
@@ -678,10 +662,9 @@ class controller {
             $path = substr($path, 1);
         }
 
-        $idObjects = $DB->get_records('block_sharing_cart', array('tree' => $path, 'userid' => $USER->id), '', 'id');
-
-        foreach ($idObjects as $idObject) {
-            $this->delete($idObject->id);
+        $cart_items = $DB->get_records('block_sharing_cart', ['tree' => $path, 'userid' => $USER->id], '', 'id');
+        foreach ($cart_items as $cart_item) {
+            $this->delete($cart_item->id);
         }
 
         $this->delete_unused_sections();

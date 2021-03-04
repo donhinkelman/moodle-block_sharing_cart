@@ -24,22 +24,22 @@
 
 $string['pluginname'] = 'Sharing Cart';
 $string['sharing_cart'] = 'Sharing Cart';
-$string['sharing_cart_help'] = '<h2 class="helpheading">Operation</h2>
-<dl style="margin-left:0.5em;">
-<dt>Copying from course to Sharing Cart</dt>
-    <dd>You will notice a small "Copy to Sharing Cart" icon which appears after each
-        resource or activity in a course.
-        Click on that icon to send a copy of that resource/activity into Sharing Cart.
-        Only the activity itself, without user data, will be cloned.</dd>
-<dt>Copying from Sharing Cart to course</dt>
-    <dd>Click a "Copy to course" icon in Sharing Cart and select one of target markers on each section.
-        Or click "Cancel" icon which is above those.</dd>
-<dt>Making folders inside Sharing Cart</dt>
-    <dd>Click a "Move into folder" icon in a Sharing Cart item.
-        An input box for new folder name will appear if there\'s no folder.
-        Or you can select an existing folder in drop-down list.
-        Which will be replaced with an input box if you click "Edit" icon.</dd>
-</dl>';
+$string['sharing_cart_help'] =
+'<div>
+    <strong>Copying from course to Sharing Cart</strong>
+        <p>You will notice a small "Copy to Sharing Cart" icon which appears after each
+            resource or activity in a course.
+            Click on that icon to send a copy of that resource/activity into Sharing Cart.
+            Only the activity itself, without user data, will be cloned.</p>
+    <strong>Copying from Sharing Cart to course</strong>
+        <p>Click a "Copy to course" icon in Sharing Cart and select one of target markers on each section.
+            Or click "Cancel" icon which is above those.</p>
+    <strong>Making folders inside Sharing Cart</strong>
+        <p>Click a "Move into folder" icon in a Sharing Cart item.
+            An input box for new folder name will appear if there\'s no folder.
+            Or you can select an existing folder in drop-down list.
+            Which will be replaced with an input box if you click "Edit" icon.</p>
+</div>';
 $string['sharing_cart:addinstance'] = 'Add a new Sharing Cart block';
 
 $string['backup'] = 'Copy to Sharing Cart';
@@ -60,6 +60,7 @@ $string['confirm_delete'] = 'Are you sure you want to delete?';
 $string['confirm_delete_selected'] = 'Are you sure you want to delete all selected items?';
 $string['inprogess_pleasewait'] = 'Please wait…';
 $string['copy_section'] = 'Copy section';
+$string['label_image_replaced_text'] = ' (Label: Image)';
 
 $string['settings:userdata_copyable_modtypes'] = 'User data copyable module types';
 $string['settings:userdata_copyable_modtypes_desc'] = 'While copying an activity into the Sharing Cart,
