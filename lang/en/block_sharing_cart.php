@@ -113,3 +113,7 @@ $string['privacy:metadata:block_sharing_cart:modtext'] = 'The title of the activ
 $string['privacy:metadata:block_sharing_cart:ctime'] = 'Created time';
 $string['privacy:metadata:block_sharing_cart:tree'] = 'The title of sharing cart folder that display in the block';
 $string['privacy:metadata:block_sharing_cart:weight'] = 'Order of items, sorting in ascending order';
+$string['privacy:metadata:block_sharing_cart_plugins'] = 'Sharing cart plugins data is stored here';
+$string['privacy:metadata:block_sharing_cart_plugins:plugin'] = 'The name of the plugin';
+$string['privacy:metadata:block_sharing_cart_plugins:userid'] = 'The ID of user';
+$string['privacy:metadata:block_sharing_cart_plugins:data'] = 'Sharing cart plugins data';
