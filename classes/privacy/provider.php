@@ -147,6 +147,12 @@ class provider implements
             'weight' => 'privacy:metadata:block_sharing_cart:weight',
         ], 'privacy:metadata:block_sharing_cart');
 
+        $collection->add_database_table('block_sharing_cart_plugins', [
+            'plugin' => 'privacy:metadata:block_sharing_cart_plugins:plugin',
+            'userid' => 'privacy:metadata:block_sharing_cart_plugins:userid',
+            'data' => 'privacy:metadata:block_sharing_cart_plugins:data',
+        ], 'privacy:metadata:block_sharing_cart_plugins');
+
         return $collection;
     }
 
