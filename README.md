@@ -1,7 +1,7 @@
 Sharing Cart
 ============
 
-Version 3.9, release 2 - 2021.01.25
+Version 3.9, release 3 - 2021.03.13
 
 The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
@@ -11,6 +11,8 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
+* 3.9, release 3   2021.01.25
+  * Merged pull request.
 * 3.9, release 2   2021.01.25
   * Remove incompatible HTML from help button language string.
 * 3.9, release 1   2021.01.11
