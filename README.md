@@ -11,7 +11,7 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
-* 3.9, release 3   2021.01.25
+* 3.9, release 3   2021.03.13
   * Added more support for moodle 3.9 and fixed some minor issues #84.
   * Merged pull request about metadata table #89.
 * 3.9, release 2   2021.01.25
