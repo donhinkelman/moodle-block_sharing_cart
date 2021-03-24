@@ -11,6 +11,9 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
+* 3.9, release 4   2021.03.24
+  * Minor css and javascript changes
+  * Fixed "Copy section button" title
 * 3.9, release 3   2021.01.25
   * Added more support for moodle 3.9 and fixed some minor issues #84.
   * Merged pull request about metadata table #89.
