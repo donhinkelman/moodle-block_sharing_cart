@@ -79,6 +79,7 @@ class controller {
         $course_fullnames = $course_repo->get_course_fullnames_by_sharing_carts($records);
 
         $records = array_values($records);
+        $records = $this->attach_uninstall_attribute($records);
 
         $tree = [];
         foreach ($records as $record) {
@@ -827,5 +828,24 @@ class controller {
                         'has_backup_routine' => module::has_backup($cmid, $courseid)
                 ),
         ));
+    }
+
+    /**
+     * @param stdClass[] $records
+     * @return stdClass[]
+     * @throws \ddl_exception
+     */
+    public function attach_uninstall_attribute($records) {
+        global $DB;
+
+        foreach ($records as $record) {
+            $record->uninstalled_plugin = true;
+
+            if ($DB->get_field('modules', 'id', ['name' => $record->modname])) {
+                $record->uninstalled_plugin = false;
+            }
+        }
+
+        return $records;
     }
 }

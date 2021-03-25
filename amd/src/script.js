@@ -1040,6 +1040,10 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
 
                     // Initialize items
                     $block.find('li.activity').each(function(index, item) {
+                        if($(item).attr('data-disable-copy') == 1) {
+                            add_actions(item, ['movedir', 'move', 'delete']);
+                            return;
+                        }
                         add_actions(item, activity_actions);
                     });
 

@@ -11,9 +11,12 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
 Change Log
 ----------
-* 3.9, release 4   2021.03.24
+* 3.9, release 4   2021.03.25
   * Minor css and javascript changes
   * Fixed "Copy section button" title
+  * If a module in the sharing cart is uninstalled it now:
+    * Is marked by a warning icon with a tooltip and light red background color
+    * Is unable to be restored until reinstalled
 * 3.9, release 3   2021.01.25
   * Added more support for moodle 3.9 and fixed some minor issues #84.
   * Merged pull request about metadata table #89.
