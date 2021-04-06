@@ -16,6 +16,10 @@ div.card-text ul.tree li.activity > div {
     padding: 0;
 }
 
+ul.tree li.disabled {
+    background-color: #f2dede;
+}
+
 ul.tree li > div {
     display: flex;
 }

@@ -123,11 +123,3 @@
 .editing.format-grid .course-content h3.sectionname .add-to-sharing-cart {
     padding-top: 15px;
 }
-
-.add-to-sharing-cart {
-    opacity: 0.3;
-}
-
-.add-to-sharing-cart:hover {
-    opacity: 1;
-}

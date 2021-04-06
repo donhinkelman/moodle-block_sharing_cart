@@ -144,7 +144,7 @@ class renderer {
     private static function render_item($path, $item) {
         $components = array_filter(explode('/', trim($path, '/')), 'strlen');
         $depth = count($components);
-        $class = $item->modname . ' ' . "modtype_{$item->modname}";
+        $class = $item->modname . ' ' . "modtype_{$item->modname}" . ($item->uninstalled_plugin ? ' disabled' : '');
 
         $coursename = '';
         if ($item->coursefullname != null) {
@@ -159,7 +159,7 @@ class renderer {
         }
 
         return '
-				<li class="activity ' . $class . '" id="block_sharing_cart-item-' . $item->id . '">
+				<li class="activity ' . $class . '" id="block_sharing_cart-item-' . $item->id . '" data-disable-copy="'. ($item->uninstalled_plugin ?? 0) .'">
 					<div class="sc-indent-' . $depth . '" title="' . $title . '">
 						' . self::render_modicon($item) . '
 						<span class="instancename">' . $item->modtext . '</span>
@@ -188,6 +188,10 @@ class renderer {
      */
     public static function render_modicon($item) {
         global $OUTPUT;
+
+        if($item->uninstalled_plugin) {
+            return '<i class="icon fa fa-fw fa-exclamation text-danger align-self-center" title="'.get_string('uninstalled_plugin_warning_title', 'block_sharing_cart', 'mod_'.$item->modname).'"></i>';
+        }
 
         $src = '<img class="activityicon iconsmall iconcustom" src="' . $OUTPUT->image_url('icon', $item->modname) . '" alt="" />';
         if (!empty($item->modicon)) {
