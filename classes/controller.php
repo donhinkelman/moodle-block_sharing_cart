@@ -183,7 +183,7 @@ class controller {
      *  Backup a module into Sharing Cart
      *
      * @param int $cmid
-     * @param boolean $userdata
+     * @param boolean $has_userdata
      * @param int $course
      * @param int $section
      * @return int
@@ -192,7 +192,7 @@ class controller {
      * @global \moodle_database $DB
      * @global object $USER
      */
-    public function backup($cmid, $userdata, $course, $section = 0) {
+    public function backup($cmid, $has_userdata, $course, $section = 0) {
         global $CFG, $DB, $USER;
 
         if (module::has_backup($cmid, $course) === false) {
@@ -206,10 +206,8 @@ class controller {
         $cm = \get_coursemodule_from_id(null, $cmid, 0, false, MUST_EXIST);
         $context = \context_module::instance($cm->id);
         \require_capability('moodle/backup:backupactivity', $context);
-        if ($userdata) {
+        if ($has_userdata) {
             \require_capability('moodle/backup:userinfo', $context);
-            \require_capability('moodle/backup:anonymise', $context);
-            \require_capability('moodle/restore:userinfo', $context);
         }
         self::validate_sesskey();
 
@@ -221,7 +219,7 @@ class controller {
         // backup the module into the predefined area
         //    - user/backup ... if userdata not included
         //    - backup/activity ... if userdata included
-        $settings = array(
+        $settings = [
                 'role_assignments' => false,
                 'activities' => true,
                 'blocks' => false,
@@ -231,15 +229,14 @@ class controller {
                 'userscompletion' => false,
                 'logs' => false,
                 'grade_histories' => false,
-        );
-        if (\has_capability('moodle/backup:userinfo', $context) &&
-                \has_capability('moodle/backup:anonymise', $context) &&
-                \has_capability('moodle/restore:userinfo', $context)) {
-            // set the userdata flags only if the operator has capability
-            $settings += array(
-                    'users' => $userdata,
-                    'anonymize' => false,
-            );
+                'users' => false,
+                'anonymize' => false
+        ];
+        if ($has_userdata && \has_capability('moodle/backup:userinfo', $context)) {
+            $settings['users'] = true;
+        }
+        if (\has_capability('moodle/backup:anonymise', $context)) {
+            $settings['anonymize'] = true;
         }
         $controller = new backup_controller(
                 \backup::TYPE_1ACTIVITY,
