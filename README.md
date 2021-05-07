@@ -9,6 +9,8 @@ The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 * Moodle 2.2 => "MOODLE_22_STABLE" branch
 * Moodle 1.9 => "MOODLE_19_STABLE" branch
 
+Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unrelated to the Sharing Cart, such as badges.
+
 Change Log
 ----------
 * 3.9, release 5   2021.04.26
