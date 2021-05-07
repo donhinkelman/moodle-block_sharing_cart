@@ -208,7 +208,7 @@ class block_sharing_cart extends block_base {
      * @return boolean
      */
     private function is_special_version() {
-        return moodle_major_version() >= 3.2;
+        return version_compare(moodle_major_version(), '3.2') === 1;
     }
 
     /**
