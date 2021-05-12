@@ -70,8 +70,8 @@ try {
             $path = substr($path, 1);
         }
 
-        GLOBAL $DB;
-        $items = $DB->get_records('block_sharing_cart', array('tree' => $path));
+        GLOBAL $DB, $USER;
+        $items = $DB->get_records('block_sharing_cart', array('tree' => $path, 'userid' => $USER->id));
         $items_count = count($items);
 
         if ($use_sc_section < 0) {
