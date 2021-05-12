@@ -13,6 +13,14 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 3.9, release 5   2021.04.26
+  * Fix issues with capabilities and user data during backup.
+* 3.9, release 4   2021.03.25
+  * Minor css and javascript changes
+  * Fixed "Copy section button" title
+  * If a module in the sharing cart is uninstalled it now:
+    * Is marked by a warning icon with a tooltip and light red background color
+    * Is unable to be restored until reinstalled
 * 3.9, release 3   2021.03.13
   * Added more support for moodle 3.9 and fixed some minor issues #84.
   * Merged pull request about metadata table #89.

@@ -696,7 +696,7 @@ require(['jquery', 'core/modal_factory', 'core/modal_events'], function($, Modal
                     }
                 } else {
                     var $container = $('.course-content');
-                    $container.one('*').before($clipboard);
+                    $container.prepend($clipboard);
                     $container.find(M.course.format.get_section_wrapper(null)).each(function(index, sectionDOM) {
                         var $section = $(sectionDOM);
                         var section = $section.attr('id').match(/(\d+)$/)[1];

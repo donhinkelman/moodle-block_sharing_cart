@@ -146,7 +146,7 @@ class block_sharing_cart extends block_base {
 		        <select class='custom-select section-dropdown'>
 		            $sections_dropdown
 		        </select>
-		        <a href='javascript:void(0)' class='copy_section' title='get_string('sectionname', \"format_$COURSE->format\") . ' ' . $section->section)'>
+		        <a href='javascript:void(0)' class='copy_section' title='".get_string('copy_section_title', __CLASS__)."'>
 		            <input id='copy' type='button' class='btn btn-primary' value='" . get_string('copy_section', __CLASS__) . "'>
 		        </a>
             </form>
