@@ -1,7 +1,7 @@
 Sharing Cart
 ============
 
-Version 3.9, release 3 - 2021.03.13
+Version 3.9, release 5 - 2021.04.26
 
 The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
