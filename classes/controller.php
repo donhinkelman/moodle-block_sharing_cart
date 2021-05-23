@@ -288,6 +288,30 @@ class controller {
     }
 
     /**
+     * Backup an empty section
+     * 
+     * @param int $courseid
+     * @param int $sectionid
+     * @return int New item ID
+     */
+    public function backup_emptysection($courseid, $sectionid) {
+        global $DB, $USER;
+        $newitem = new stdClass();
+        $newitem->id = 0;
+        $newitem->userid = $USER->id;
+        $newitem->modname = '';
+        $newitem->modicon = '';
+        $newitem->modtext = '';
+        $newitem->ctime = time();
+        $newitem->filename = '';
+        $newitem->tree = '';
+        $newitem->weight = 0;
+        $newitem->course = $courseid;
+        $newitem->section = $sectionid;
+        return $DB->insert_record('block_sharing_cart', $newitem);
+    }
+
+    /**
      * Backup a section into Sharing Cart
      *
      * @param int $sectionid
@@ -358,18 +382,24 @@ class controller {
             }
 
             // Fixed ISSUE-12 - https://github.com/donhinkelman/moodle-block_sharing_cart/issues/12
-            foreach ($modules as $module) {
-                if ((isset($module->deletioninprogress)
-                        && $module->deletioninprogress) === 1
-                        || module::has_backup($module->id) === false) {
-                    continue;
+            // Issue-83 (solution) copying empty section: create an empty module in cart to make the folder path to be visible in cart
+            //    so an empty folder can be rendered.
+            if (count($modules)) {
+                foreach ($modules as $module) {
+                    if ((isset($module->deletioninprogress)
+                            && $module->deletioninprogress) === 1
+                            || module::has_backup($module->id) === false) {
+                        continue;
+                    }
+    
+                    if ($userdata && $this->is_userdata_copyable($module->id)) {
+                        $itemids[] = $this->backup($module->id, true, $course, $sc_section_id);
+                    } else {
+                        $itemids[] = $this->backup($module->id, false, $course, $sc_section_id);
+                    }
                 }
-
-                if ($userdata && $this->is_userdata_copyable($module->id)) {
-                    $itemids[] = $this->backup($module->id, true, $course, $sc_section_id);
-                } else {
-                    $itemids[] = $this->backup($module->id, false, $course, $sc_section_id);
-                }
+            } else {
+                $itemids[] = $this->backup_emptysection($course, $sc_section_id);
             }
 
             // Check empty folder name
@@ -527,8 +557,11 @@ class controller {
     public function restore_directory($path, $courseid, $sectionnumber, $overwritesectionid) {
         global $DB, $USER;
 
-        $cart_items = $DB->get_records("block_sharing_cart", ['tree' => $path, 'userid' => $USER->id], "weight ASC", "id");
+        $cart_items = $DB->get_records('block_sharing_cart', ['tree' => $path, 'userid' => $USER->id], 'weight ASC');
         foreach ($cart_items as $cart_item) {
+            if (!$cart_item->modname) { // issue-83 skip restoring empty item
+                continue;
+            }
             $this->restore($cart_item->id, $courseid, $sectionnumber);
         }
 
