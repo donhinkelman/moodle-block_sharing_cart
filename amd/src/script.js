@@ -66,7 +66,7 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                     if (obj.checkbox) {
                         obj.body +=
                             '<div class="modal-checbox-wrapper">' +
-                            '<input type="checkbox" id="modal-checkbox" class="modal-checkbox" checked>' +
+                            '<input type="checkbox" id="modal-checkbox" class="modal-checkbox">' +
                             '<label for="modal-checkbox">' + str('modal_checkbox') + '</label>' +
                             '</div>';
                     }
