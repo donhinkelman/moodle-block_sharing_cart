@@ -1,7 +1,7 @@
 Sharing Cart
 ============
 
-Version 3.9, release 3 - 2021.03.13
+Version 3.10, release 2 - 2021.05.25
 
 The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
@@ -13,8 +13,13 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 3.10, release 2  2021.05.25
+  * Made the "Do you want to copy user data..." checkbox unchecked by default
+* 3.10, release 1  2021.05.07
+  * Made the sharing cart Moodle 3.10 compatible
 * 3.9, release 5   2021.04.26
-  * Fix issues with capabilities and user data during backup.
+  * Fixed issues with capabilities and user data during backup.
+  * Fixed Error when different users create folders with the same name #95 
 * 3.9, release 4   2021.03.25
   * Minor css and javascript changes
   * Fixed "Copy section button" title
