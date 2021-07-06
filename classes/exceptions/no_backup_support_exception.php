@@ -12,10 +12,10 @@ class no_backup_support_exception extends \moodle_exception {
     /**
      *  Constructor
      *
-     * @param $errorcode
-     * @param null $debuginfo
+     * @param string $errorcode
+     * @param string|null $debuginfo
      */
-    public function __construct($errorcode, $debuginfo = null) {
+    public function __construct(string $errorcode, string $debuginfo = null) {
         parent::__construct($errorcode, 'block_sharing_cart', '', null, $debuginfo);
     }
 }

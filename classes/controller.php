@@ -56,17 +56,17 @@ class controller {
         \require_login(null, false, null, false, true);
     }
 
-	/**
-	 *  Render an item tree
-	 *
-	 * @param null $userid = $USER->id
-	 * @return string HTML
-	 * @throws \coding_exception
-	 * @throws \dml_exception
-	 * @global \moodle_database $DB
-	 * @global object $USER
-	 */
-    public function render_tree($userid = null) {
+    /**
+     *  Render an item tree
+     *
+     * @param int|null $userid = $USER->id
+     * @return string HTML
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @global \moodle_database $DB
+     * @global object $USER
+     */
+    public function render_tree(int $userid = null): string {
         global $DB, $USER;
 
         require_once __DIR__ . '/renderer.php';
@@ -135,7 +135,7 @@ class controller {
 	 * @throws \coding_exception
 	 * @throws \dml_exception
 	 */
-    public function is_userdata_copyable($cmid) {
+    public function is_userdata_copyable(int $cmid): bool {
         $cm = \get_coursemodule_from_id(null, $cmid, 0, false, MUST_EXIST);
         $modtypes = \get_config('block_sharing_cart', 'userdata_copyable_modtypes');
         $context = \context_module::instance($cm->id);
@@ -153,12 +153,13 @@ class controller {
 	 * @throws \coding_exception
 	 * @throws \dml_exception
 	 */
-    public function is_userdata_copyable_section($sectionid) {
+    public function is_userdata_copyable_section(int $sectionid): bool {
         GLOBAL $DB;
 
         $modules = $DB->get_records('course_modules', array('section' => $sectionid), '', 'id');
+
         foreach ($modules as $module) {
-            if ($this->is_userdata_copyable($module->id)) {
+            if ($this->is_userdata_copyable((int)$module->id)) {
                 return true;
             }
         }
@@ -166,11 +167,11 @@ class controller {
         return false;
     }
 
-	/**
-	 * @param $modtext
-	 * @return string
-	 */
-    protected function get_unique_filename($modtext): string{
+    /**
+     * @param string $modtext
+     * @return string
+     */
+    protected function get_unique_filename(string $modtext): string{
 	    $cleanname = \clean_filename(strip_tags($modtext));
 	    if ($this->get_string_length($cleanname) > self::MAX_FILENAME) {
 		    $cleanname = $this->get_sub_string($cleanname, 0, self::MAX_FILENAME) . '_';
@@ -192,14 +193,15 @@ class controller {
      * @global \moodle_database $DB
      * @global object $USER
      */
-    public function backup($cmid, $has_userdata, $course, $section = 0) {
-        global $CFG, $DB, $USER;
+    public function backup(int $cmid, bool $has_userdata, int $course, int $section = 0): int {
+        global $USER, $CFG; //$CFG IS USED, DO NOT REMOVE IT
 
         if (module::has_backup($cmid, $course) === false) {
             throw new no_backup_support_exception('No backup in module',
                     'Module not implementing: https://docs.moodle.org/dev/Backup_API');
         }
 
+        // THIS FILE REQUIRES $CFG, DO NOT REMOVE IT
         require_once __DIR__ . '/../../../backup/util/includes/backup_includes.php';
 
         // validate parameters and capabilities
@@ -289,12 +291,13 @@ class controller {
 
     /**
      * Backup an empty section
-     * 
+     *
      * @param int $courseid
      * @param int $sectionid
      * @return int New item ID
+     * @throws \dml_exception
      */
-    public function backup_emptysection($courseid, $sectionid) {
+    public function backup_emptysection(int $courseid, int $sectionid): int {
         global $DB, $USER;
         $newitem = new stdClass();
         $newitem->id = 0;
@@ -320,7 +323,7 @@ class controller {
      * @param int $course
      * @throws \moodle_exception
      */
-    public function backup_section($sectionid, $sectionname, $userdata, $course) {
+    public function backup_section(int $sectionid, ?string $sectionname, bool $userdata, int $course): void {
         global $DB, $USER;
 
         $itemids = array();
@@ -335,7 +338,7 @@ class controller {
             $sharing_cart_section->summaryformat = $section->summaryformat;
             $sharing_cart_section->availability = $section->availability;
             $sc_section_id = $DB->insert_record('block_sharing_cart_sections', $sharing_cart_section);
-            $sc_section_id = $sc_section_id ? $sc_section_id : 0;
+            $sc_section_id = $sc_section_id ?: 0;
 
             // Save section files
             if ($sc_section_id > 0) {
@@ -345,7 +348,7 @@ class controller {
 
                 $files = $fs->get_area_files($course_context->id, 'course', 'section', $sectionid);
                 foreach ($files as $file) {
-                    if ($file->get_filename() != '.') {
+                    if ($file->get_filename() !== '.') {
                         $filerecord = array(
                                 'contextid' => $user_context->id,
                                 'component' => 'user',
@@ -388,14 +391,14 @@ class controller {
                 foreach ($modules as $module) {
                     if ((isset($module->deletioninprogress)
                             && $module->deletioninprogress) === 1
-                            || module::has_backup($module->id) === false) {
+                            || module::has_backup((int)$module->id) === false) {
                         continue;
                     }
     
-                    if ($userdata && $this->is_userdata_copyable($module->id)) {
-                        $itemids[] = $this->backup($module->id, true, $course, $sc_section_id);
+                    if ($userdata && $this->is_userdata_copyable((int)$module->id)) {
+                        $itemids[] = $this->backup((int)$module->id, true, $course, $sc_section_id);
                     } else {
-                        $itemids[] = $this->backup($module->id, false, $course, $sc_section_id);
+                        $itemids[] = $this->backup((int)$module->id, false, $course, $sc_section_id);
                     }
                 }
             } else {
@@ -437,7 +440,7 @@ class controller {
      * @param string $text input string
      * @return int number of characters
      */
-    private function get_string_length($text) {
+    private function get_string_length(string $text): int {
         $textlength = 0;
         if (method_exists('textlib', 'strlen')) {
             $textlength = \textlib::strlen($text);
@@ -452,7 +455,7 @@ class controller {
      *
      * @param string $text string to truncate
      * @param int $start negative value means from end
-     * @param int $len maximum length of characters beginning from start
+     * @param int $length maximum length of characters beginning from start
      * @return string portion of string specified by the $start and $len
      */
     private function get_sub_string($text, $start, $length) {
@@ -476,7 +479,7 @@ class controller {
      * @global object $USER
      * @global object $CFG
      */
-    public function restore($id, $courseid, $sectionnumber) {
+    public function restore($id, $courseid, $sectionnumber): void {
         global $CFG, $DB, $USER;
 
         require_once __DIR__ . '/../../../backup/util/includes/restore_includes.php';
@@ -553,8 +556,13 @@ class controller {
      * @param int $courseid
      * @param int $sectionnumber
      * @param int $overwritesectionid
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \file_exception
+     * @throws \moodle_exception
+     * @throws \stored_file_creation_exception
      */
-    public function restore_directory($path, $courseid, $sectionnumber, $overwritesectionid) {
+    public function restore_directory($path, $courseid, $sectionnumber, $overwritesectionid): void {
         global $DB, $USER;
 
         $cart_items = $DB->get_records('block_sharing_cart', ['tree' => $path, 'userid' => $USER->id], 'weight ASC');
@@ -606,9 +614,10 @@ class controller {
      *
      * @param int $id
      * @param string $path
+     * @throws exception
      * @global object $USER
      */
-    public function movedir($id, $path) {
+    public function movedir($id, $path): void {
         global $USER;
 
         $record = record::from_id($id);
@@ -631,10 +640,12 @@ class controller {
      *
      * @param int $id The record ID to move
      * @param int $to The record ID of the desired position or zero for move to bottom
+     * @throws \dml_exception
+     * @throws exception
      * @global \moodle_database $DB
      * @global object $USER
      */
-    public function move($id, $to) {
+    public function move($id, $to): void {
         global $DB, $USER;
 
         $record = record::from_id($id);
@@ -665,7 +676,7 @@ class controller {
      * @throws \moodle_exception
      * @global object $USER
      */
-    public function delete($id) {
+    public function delete($id): void {
         global $USER;
 
         $record = record::from_id($id);
@@ -684,9 +695,11 @@ class controller {
      * Delete a directory
      *
      * @param $path
+     * @throws \coding_exception
      * @throws \dml_exception
+     * @throws \moodle_exception
      */
-    public function delete_directory($path) {
+    public function delete_directory($path): void {
         global $DB, $USER;
 
         if ($path[0] == '/') {
@@ -751,8 +764,9 @@ class controller {
      *
      * @param string $path
      * @return array
+     * @throws \dml_exception
      */
-    public function get_path_sections($path) {
+    public function get_path_sections(string $path): array {
         global $DB;
 
         $section_ids = array();
@@ -764,8 +778,7 @@ class controller {
         }
 
         $section_ids = array_unique($section_ids);
-        $sections = $DB->get_records_list('block_sharing_cart_sections', 'id', $section_ids);
-        return $sections;
+        return $DB->get_records_list('block_sharing_cart_sections', 'id', $section_ids);
     }
 
     /**
@@ -775,7 +788,7 @@ class controller {
      * @throws exception
      * @global object $CFG
      */
-    public static function get_tempdir() {
+    public static function get_tempdir(): string {
         global $CFG;
         $tempdir = $CFG->tempdir . '/backup';
         if (!\check_dir_exists($tempdir, true, true)) {
@@ -787,10 +800,10 @@ class controller {
     /**
      *  Check if the given session key is valid
      *
-     * @param string $sesskey = \required_param('sesskey', PARAM_RAW)
+     * @param string|null $sesskey = \required_param('sesskey', PARAM_RAW)
      * @throws exception
      */
-    public static function validate_sesskey($sesskey = null) {
+    public static function validate_sesskey(string $sesskey = null): void {
         try {
             if (\confirm_sesskey($sesskey)) {
                 return;
@@ -804,11 +817,12 @@ class controller {
     /**
      *  Get the intro HTML of the course module
      *
-     * @param object $cm
+     * @param stdClass $cm
      * @return string
+     * @throws \dml_exception
      * @global \moodle_database $DB
      */
-    public static function get_cm_intro($cm) {
+    public static function get_cm_intro(stdClass $cm): string {
         global $DB;
         if (!property_exists($cm, 'extra')) {
             $mod = $DB->get_record_sql(
@@ -825,11 +839,11 @@ class controller {
     /**
      *  Get the icon for the course module
      *
-     * @param object $cm
+     * @param stdClass $cm
      * @return string
      * @global object $CFG
      */
-    public static function get_cm_icon($cm) {
+    public static function get_cm_icon(stdClass $cm): string {
         global $CFG;
         if (file_exists("$CFG->dirroot/mod/$cm->modname/lib.php")) {
             include_once "$CFG->dirroot/mod/$cm->modname/lib.php";
@@ -845,12 +859,12 @@ class controller {
     }
 
     /**
-     * @param $cmid
-     * @param $courseid
-     * @return array
+     * @param int $cmid
+     * @param int $courseid
+     * @return false|string
      * @throws \moodle_exception
      */
-    public function ensure_backup_in_module($cmid, $courseid) {
+    public function ensure_backup_in_module(int $cmid, int $courseid) {
         return json_encode(array(
                 'http_response' => 200,
                 'message' => '',
@@ -863,9 +877,9 @@ class controller {
     /**
      * @param stdClass[] $records
      * @return stdClass[]
-     * @throws \ddl_exception
+     * @throws \dml_exception
      */
-    public function attach_uninstall_attribute($records) {
+    public function attach_uninstall_attribute(array $records): array {
         global $DB;
 
         foreach ($records as $record) {

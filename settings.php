@@ -26,6 +26,11 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once __DIR__ . '/lib/settingslib.php';
 
+/**
+ * @global admin_root $ADMIN
+ * @global admin_settingpage $settings
+ */
+
 if ($ADMIN->fulltree) {
     $settings->add(
             new admin_setting_configmulticheckboxmodtypes(
