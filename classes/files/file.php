@@ -39,7 +39,7 @@ class file
     /**
      * @return int
      */
-    public function get_id() {
+    public function get_id(): int {
         return (int)$this->file->id;
     }
 
@@ -53,21 +53,21 @@ class file
     /**
      * @return string
      */
-    public function get_area() {
+    public function get_area(): string {
         return $this->file->filearea ?? '';
     }
 
     /**
      * @return string
      */
-    public function get_name() {
+    public function get_name(): string {
         return $this->file->filename ?? '';
     }
 
     /**
      * @return bool
      */
-    public function is_backup_file() {
+    public function is_backup_file(): bool {
         return $this->get_area() === 'backup';
     }
 }
