@@ -1,7 +1,7 @@
 Sharing Cart
 ============
 
-Version 3.10, release 2 - 2021.05.25
+Version 3.10, release 3 - 2021.06.26
 
 The "master" branch is no longer compatible with Moodle 3.2 or earlier.
 
@@ -13,6 +13,8 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 3.10, release 3  2021.06.26
+  * Merged several pull requests by Frederik and improved copying of empty sections by Ponlawat
 * 3.10, release 2  2021.05.25
   * Made the "Do you want to copy user data..." checkbox unchecked by default
 * 3.10, release 1  2021.05.07

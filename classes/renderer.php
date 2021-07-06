@@ -88,6 +88,9 @@ class renderer {
                 $html .= self::render_dir_close();
             } else {
                 foreach ($leaf as $item) {
+                    if (!$item->modname) { // issue-83: skip rendering empty item in empty section (wnat to render only the folder)
+                        continue;
+                    }
                     $html .= self::render_item($path, $item);
                 }
             }
