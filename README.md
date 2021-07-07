@@ -1,7 +1,7 @@
 Sharing Cart
 ============
 
-Version 3.10, release 4 - 2021.07.06
+Version 3.10, release 5 - 2021.07.07
 
 The "master" branch requires Moodle 3.6 or newer.
 
@@ -13,6 +13,8 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 3.10, release 5  2021.07.07
+  * Fixed a bug where you could import stuff from other users sharing cart
 * 3.10, release 4  2021.07.06
   * Fixed a minor PHP notice
   * Cleaned code

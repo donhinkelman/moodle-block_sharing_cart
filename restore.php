@@ -77,7 +77,7 @@ try {
         $items_count = count($items);
 
         if ($use_sc_section < 0) {
-            $sections = $controller->get_path_sections($path, $courseid, $sectionnumber);
+            $sections = $controller->get_path_sections($path);
             if (count($sections) > 0) {
                 $dest_section = $DB->get_record('course_sections', array('course' => $courseid, 'section' => $sectionnumber));
 
