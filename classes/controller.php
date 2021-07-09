@@ -767,10 +767,10 @@ class controller {
      * @throws \dml_exception
      */
     public function get_path_sections(string $path): array {
-        global $DB;
+        global $DB, $USER;
 
         $section_ids = array();
-        $items = $DB->get_records('block_sharing_cart', array('tree' => $path));
+        $items = $DB->get_records('block_sharing_cart', array('tree' => $path, 'userid' => $USER->id));
         foreach ($items as $item) {
             if ($item->section) {
                 $section_ids[] = $item->section;
