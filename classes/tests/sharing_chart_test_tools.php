@@ -25,7 +25,7 @@ trait sharing_chart_test_tools {
      * @return object
      * @throws \dml_exception
      */
-    private function get_course_section($course, int $section) {
+    private function get_course_section($course, int $section): object {
         $record = self::db()->get_record('course_sections', [
             'course' => $course->id,
             'section' => $section
@@ -56,41 +56,12 @@ trait sharing_chart_test_tools {
     }
 
     /**
-     * Get course section entities with name
-     * @param $course
-     * @param int $section
-     * @return array
-     * @throws \dml_exception
-     */
-    private function get_course_sections($course, int $section = -1): array {
-        $conditions = [
-            'course' => $course->id,
-        ];
-
-        if ($section > -1) {
-            $conditions['section'] = $section;
-        }
-
-        $section_records = self::db()->get_recordset('course_sections', $conditions);
-        $sections = [];
-
-        foreach ($section_records as $record) {
-            $record->name = get_section_name($course->id, $record->section);
-            $sections[$record->id] = $record;
-        }
-
-        $section_records->close();
-
-        return $sections;
-    }
-
-    /**
      * Get a single sharing cart entity
      * @param array $conditions
      * @return object
      * @throws \dml_exception
      */
-    private function get_sharing_cart_entity(array $conditions = []) {
+    private function get_sharing_cart_entity(array $conditions = []): object {
         return self::db()->get_record('block_sharing_cart', $conditions);
     }
 
@@ -110,7 +81,7 @@ trait sharing_chart_test_tools {
      * @param string $role
      * @param object[] $users
      */
-    private function enrol_users($course, array $users = null, string $role = 'editingteacher') {
+    private function enrol_users($course, array $users = null, string $role = 'editingteacher'): void {
         global $USER;
 
         // Add current user to enrollment
@@ -119,7 +90,7 @@ trait sharing_chart_test_tools {
         }
 
         foreach ($users as $user) {
-            $this->getDataGenerator()->enrol_user($user->id, $course->id, $role);
+            self::getDataGenerator()->enrol_user($user->id, $course->id, $role);
         }
     }
 
@@ -127,7 +98,7 @@ trait sharing_chart_test_tools {
      * Set session via GET method
      * @param object $user
      */
-    private function set_session_key($user): void {
+    private function set_session_key(object $user): void {
         // Set current user
         self::setUser($user);
 
@@ -144,7 +115,7 @@ trait sharing_chart_test_tools {
      * @param array|null $options
      * @return object
      */
-    private function create_assignment($course, int $section = 0, array $properties = [], array $options = null) {
+    private function create_assignment($course, int $section = 0, array $properties = [], array $options = null): object {
         return $this->create_module('assign', $course, $section, $properties, $options);
     }
 
@@ -156,14 +127,14 @@ trait sharing_chart_test_tools {
      * @param array|null $options
      * @return object
      */
-    private function create_module(string $name, $course, int $section = 0, array $properties = [], array $options = null) {
+    private function create_module(string $name, $course, int $section = 0, array $properties = [], array $options = null): object {
         $properties['course'] = $course->id;
 
         if (!isset($properties['section'])) {
             $properties['section'] = $section;
         }
 
-        return $this->getDataGenerator()->create_module($name, $properties, $options);
+        return self::getDataGenerator()->create_module($name, $properties, $options);
     }
 
     /**
@@ -171,8 +142,8 @@ trait sharing_chart_test_tools {
      * @param array|null $properties
      * @return object
      */
-    private function create_user(array $properties = null) {
-        return $this->getDataGenerator()->create_user($properties);
+    private function create_user(array $properties = null): object {
+        return self::getDataGenerator()->create_user($properties);
     }
 
     /**
@@ -180,8 +151,8 @@ trait sharing_chart_test_tools {
      * @param array $properties
      * @return object
      */
-    private function create_course(array $properties = ['section' => 4]) {
-        return $this->getDataGenerator()->create_course($properties);
+    private function create_course(array $properties = ['section' => 4]): object {
+        return self::getDataGenerator()->create_course($properties);
     }
 
     /**
@@ -192,8 +163,7 @@ trait sharing_chart_test_tools {
      * @return object
      * @throws \dml_exception
      */
-    private function create_sharing_chart_record($user, $course, $section = 0, $filename = null) {
-
+    private function create_sharing_chart_record($user, $course, $section = 0, $filename = null): object {
         $filename = $filename ?? md5(random_bytes(16));
         $modname = md5(random_bytes(16));
         $modicon = md5(random_bytes(16));
@@ -212,7 +182,7 @@ trait sharing_chart_test_tools {
             'tree' => '',
         ];
 
-        $id = $this->db()->insert_record('block_sharing_cart', (object)$params);
+        $id = self::db()->insert_record('block_sharing_cart', (object)$params);
         $params['id'] = $id;
         return (object)$params;
     }

@@ -21,7 +21,7 @@ class block_sharing_cart_course_repository_testcase extends advanced_testcase
     /**
      * This method is called before each test.
      */
-    protected function setUp() {
+    protected function setUp(): void {
         $this->resetAfterTest();
     }
 

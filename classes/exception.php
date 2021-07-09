@@ -36,7 +36,7 @@ class exception extends \moodle_exception {
      * @param string $errcode The error string ID
      * @param mixed $a (Optional) Additional parameter
      */
-    public function __construct($errcode, $a = null) {
+    public function __construct(string $errcode, $a = null) {
         parent::__construct($errcode, 'block_sharing_cart', '', $a);
     }
 }

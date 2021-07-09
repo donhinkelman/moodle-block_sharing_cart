@@ -29,6 +29,8 @@ use block_sharing_cart\storage;
 
 require_once '../../config.php';
 
+global $PAGE, $DB, $USER, $OUTPUT;
+
 $PAGE->requires->css('/blocks/sharing_cart/custom.css');
 $PAGE->requires->js_call_amd('block_sharing_cart/bulkdelete', 'init');
 $PAGE->requires->strings_for_js(

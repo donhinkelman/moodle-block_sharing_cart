@@ -39,7 +39,7 @@ class provider implements
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public static function export_user_data(approved_contextlist $contextlist) {
+    public static function export_user_data(approved_contextlist $contextlist): void {
         $user = $contextlist->get_user();
         // Data structure
         $root = get_string('pluginname', 'block_sharing_cart');
@@ -55,8 +55,7 @@ class provider implements
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public static function delete_data_for_all_users_in_context(\context $context) {
-
+    public static function delete_data_for_all_users_in_context(\context $context): void {
         // No data need to be delete other than user context
         if ($context->contextlevel !== CONTEXT_USER) {
             return;
@@ -71,7 +70,7 @@ class provider implements
      * @param approved_contextlist $contextlist The approved contexts and user information to delete information for.
      * @throws \dml_exception
      */
-    public static function delete_data_for_user(approved_contextlist $contextlist) {
+    public static function delete_data_for_user(approved_contextlist $contextlist): void {
         global $DB;
 
         if (empty($contextlist->count())) {
@@ -96,8 +95,9 @@ class provider implements
      * Get the list of users who have data within a context.
      *
      * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
+     * @throws \dml_exception
      */
-    public static function get_users_in_context(userlist $userlist) {
+    public static function get_users_in_context(userlist $userlist): void {
         global $DB;
 
         $context = $userlist->get_context();
@@ -122,7 +122,7 @@ class provider implements
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public static function delete_data_for_users(approved_userlist $userlist) {
+    public static function delete_data_for_users(approved_userlist $userlist): void {
         $users = $userlist->get_userids();
 
         if (!empty($users)) {
@@ -162,7 +162,7 @@ class provider implements
      * @param string $root_data_path
      * @throws \dml_exception
      */
-    private static function export_user_sharing_cart(object $user, \context $context, string $root_data_path) {
+    private static function export_user_sharing_cart(object $user, \context $context, string $root_data_path): void {
         global $DB;
 
         // Mapping
@@ -205,7 +205,7 @@ class provider implements
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    private static function delete_user_sharing_cart_entities(int $userid) {
+    private static function delete_user_sharing_cart_entities(int $userid): void {
         self::delete_users_sharing_cart_entities([$userid]);
     }
 
@@ -215,7 +215,7 @@ class provider implements
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    private static function delete_users_sharing_cart_entities(array $users) {
+    private static function delete_users_sharing_cart_entities(array $users): void {
         global $DB;
 
         // Exit if given user is empty
