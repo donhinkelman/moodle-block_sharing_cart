@@ -32,9 +32,9 @@ use block_sharing_cart\exception as sharing_cart_exception;
  *  Sharing Cart record manager
  */
 class record {
-    const TABLE = 'block_sharing_cart';
+    public const TABLE = 'block_sharing_cart';
 
-    const WEIGHT_BOTTOM = 9999;
+    public const WEIGHT_BOTTOM = 9999;
 
     public $id = null;
     public $userid = null;
@@ -69,9 +69,9 @@ class record {
      *
      * @param int $id
      * @return record
-     * @throws exception
+     * @throws exception|\dml_exception
      */
-    public static function from_id($id) {
+    public static function from_id($id): record {
         global $DB;
         $record = $DB->get_record(self::TABLE, array('id' => $id));
         if (!$record) {
@@ -84,9 +84,9 @@ class record {
      *  Insert record
      *
      * @return int
-     * @throws exception
+     * @throws exception|\dml_exception
      */
-    public function insert() {
+    public function insert(): int {
         global $DB;
         if (!$this->weight) {
             $this->weight = self::WEIGHT_BOTTOM;
@@ -103,9 +103,9 @@ class record {
     /**
      *  Update record
      *
-     * @throws exception
+     * @throws exception|\dml_exception
      */
-    public function update() {
+    public function update(): void {
         global $DB;
         if (!$DB->update_record(self::TABLE, $this)) {
             throw new sharing_cart_exception('unexpectederror');
@@ -116,9 +116,9 @@ class record {
     /**
      *  Delete record
      *
-     * @throws exception
+     * @throws exception|\dml_exception
      */
-    public function delete() {
+    public function delete(): void {
         global $DB;
         $DB->delete_records(self::TABLE, array('id' => $this->id));
         self::renumber($this->userid);
@@ -127,12 +127,12 @@ class record {
     /**
      *  Renumber all items sequentially
      *
-     * @param int $userid = $USER->id
-     * @throws exception
+     * @param int|null $userid = $USER->id
+     * @throws exception|\dml_exception
      * @global \moodle_database $DB
      * @global \stdClass $USER
      */
-    public static function renumber($userid = null) {
+    public static function renumber(int $userid = null): void {
         global $DB, $USER;
         if ($items = $DB->get_records(self::TABLE, array('userid' => $userid ?: $USER->id))) {
             $tree = array();
@@ -143,7 +143,7 @@ class record {
                 $tree[$it->tree][] = $it;
             }
             foreach ($tree as $items) {
-                usort($items, function($lhs, $rhs) {
+                usort($items, static function($lhs, $rhs) {
                     // keep their order if already weighted
                     if ($lhs->weight < $rhs->weight) {
                         return -1;

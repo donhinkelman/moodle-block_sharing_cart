@@ -29,6 +29,8 @@ use block_sharing_cart\section;
 
 require_once __DIR__ . '/../../config.php';
 
+global $PAGE, $USER;
+
 try {
     $controller = new controller();
 
@@ -51,7 +53,7 @@ try {
                 $section = section::get($courseid, $sectionnumber);
                 $sectionid = $section->id;
             }
-            echo $controller->is_userdata_copyable_section($sectionid);
+            echo $controller->is_userdata_copyable_section((int)$sectionid);
             exit;
         case 'backup':
             $cmid = required_param('cmid', PARAM_INT);
@@ -71,7 +73,7 @@ try {
             }
             $userdata = required_param('userdata', PARAM_BOOL);
             $courseid = required_param('courseid', PARAM_INT);
-            $controller->backup_section($sectionid, $sectionname, $userdata, $courseid);
+            $controller->backup_section((int)$sectionid, $sectionname, $userdata, $courseid);
             exit;
         case 'movedir':
             $item_id = required_param('item_id', PARAM_INT);
