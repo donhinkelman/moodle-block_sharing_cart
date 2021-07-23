@@ -96,7 +96,7 @@ $string['conflict_submit'] = 'Continue';
 
 $string['folder_string'] = 'Folder:';
 $string['activity_string'] = 'Activity:';
-$string['delete_folder'] = ' and all it\'s content';
+$string['delete_folder'] = ' and all its content';
 $string['modal_checkbox'] = 'Do you want to copy user data? (Eg. glossary/wiki/database entries)';
 $string['modal_confirm_backup'] = 'Confirm';
 $string['modal_confirm_delete'] = 'Delete';
