@@ -1,7 +1,7 @@
 Sharing Cart
 ============
 
-Version 3.10, release 5 - 2021.07.07
+Version 3.10, release 6 - 2021.07.23
 
 The "master" branch requires Moodle 3.6 or newer.
 
@@ -13,13 +13,15 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 3.10, release 6  2021.07.23
+  * Added improvements to section copy, added backuptempdir support and fixed multiple bugs
 * 3.10, release 5  2021.07.07
-  * Fixed a bug where you could import stuff from other users sharing cart
+  * Fixed a bug where you could import from another user's sharing cart
 * 3.10, release 4  2021.07.06
   * Fixed a minor PHP notice
   * Cleaned code
 * 3.10, release 3  2021.06.26
-  * Merged several pull requests by Frederik and improved copying of empty sections by Ponlawat
+  * Merged several pull requests and improved copying of empty sections
 * 3.10, release 2  2021.05.25
   * Made the "Do you want to copy user data..." checkbox unchecked by default
 * 3.10, release 1  2021.05.07
@@ -204,7 +206,7 @@ Change Log
 * 2.4, release 1 patch 1
     * Set instance_can_be_docked to false
 * 2.4, release 1
-    * Support Moodle 2.4
+    * Supports Moodle 2.4
 * 2.3, release 2
     * New feature: Workaround for question bank restore issue (error_question_match_sub_missing_in_db)
 * 2.3, release 1
