@@ -29,15 +29,13 @@ defined('MOODLE_INTERNAL') || die();
 
 class cleaner
 {
-    /** @var \moodle_database */
-    private $db;
-    /** @var file */
-    private $file;
+    private \moodle_database $db;
+    private file $file;
 
     /**
      * cleaner constructor.
      * @param \moodle_database $database
-     * @param $file
+     * @param object|file $file
      */
     public function __construct(\moodle_database $database, $file){
         $this->db = $database;
@@ -48,7 +46,6 @@ class cleaner
      * @throws \dml_exception
      */
     public function remove_related_sharing_cart_entity(): void {
-
         // Exit if deleted file was not from backup area
         if (!$this->file->is_backup_file()) {
             return;
@@ -70,25 +67,24 @@ class cleaner
      * @return bool
      * @throws \dml_exception
      */
-    private function can_delete() {
+    private function can_delete(): bool {
         return $this->db->record_exists($this->get_table_name(), $this->get_sharing_cart_file_parameters());
     }
 
     /**
      * @return array
      */
-    private function get_sharing_cart_file_parameters() {
-        $params = [
+    private function get_sharing_cart_file_parameters(): array {
+        return [
             'userid' => $this->file->get_user_id(),
             'filename' => $this->file->get_name()
         ];
-        return $params;
     }
 
     /**
      * @return string
      */
-    private function get_table_name() {
+    private function get_table_name(): string {
         return 'block_sharing_cart';
     }
 }
