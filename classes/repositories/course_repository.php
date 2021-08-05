@@ -36,7 +36,8 @@ defined('MOODLE_INTERNAL') || die();
  */
 class course_repository
 {
-    private moodle_database $db;
+    /** @var moodle_database */
+    private $db;
 
     /**
      * course_repository constructor.

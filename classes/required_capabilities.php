@@ -17,13 +17,17 @@ defined('MOODLE_INTERNAL') || die();
  */
 class required_capabilities
 {
-	protected array $required_capabilities = [];
+    /** @var array */
+	protected $required_capabilities = [];
 
-	protected array $missing_capabilities = [];
+	/** @var array */
+	protected $missing_capabilities = [];
 
-	protected int $total_capabilities_missing = 0;
+	/** @var int */
+	protected $total_capabilities_missing = 0;
 
-	protected array $disallowed_actions = [];
+	/** @var array */
+	protected $disallowed_actions = [];
 
 	/**
 	 * Constructor

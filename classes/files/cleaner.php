@@ -29,8 +29,11 @@ defined('MOODLE_INTERNAL') || die();
 
 class cleaner
 {
-    private \moodle_database $db;
-    private file $file;
+    /** @var \moodle_database */
+    private $db;
+
+    /** @var file */
+    private $file;
 
     /**
      * cleaner constructor.

@@ -15,6 +15,7 @@ Change Log
 ----------
 * 3.10, release 7  2021.08.05
   * Fixed a bug that prevent user from delete an empty section, because plugin try to delete the file that does not exist.
+  * Replaced class property type with PHPDoc annotation to support PHP 7.2+ or above.
 * 3.10, release 6  2021.07.23
   * Added improvements to section copy, added backuptempdir support and fixed multiple bugs
 * 3.10, release 5  2021.07.07

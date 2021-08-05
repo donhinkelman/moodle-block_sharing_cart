@@ -7,18 +7,23 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/../../../lib/formslib.php');
 
 class section_title_form extends \moodleform {
+    /** @var array */
+    private $sections;
 
-    private array $sections;
+    /** @var bool */
+    private $directory;
 
-    private bool $directory;
+    /** @var string */
+    private $path;
 
-    private string $path;
+    /** @var int */
+    private $courseid;
 
-    private int $courseid;
+    /** @var int */
+    private $sectionnumber;
 
-    private int $sectionnumber;
-
-    private int $items_count;
+    /** @var int */
+    private $items_count;
 
     /**
      * section_title_form constructor.
