@@ -24,6 +24,15 @@
 
 namespace block_sharing_cart;
 
+use block_sharing_cart\exceptions\cannot_find_file_exception;
+use context;
+use context_user;
+use file_exception;
+use file_storage;
+use stored_file;
+use stored_file_creation_exception;
+use function get_file_storage;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -32,12 +41,12 @@ defined('MOODLE_INTERNAL') || die();
 class storage {
     public const COMPONENT = 'user';
     public const FILEAREA = 'backup';
-    private const ITEMID = 0;
-    private const FILEPATH = '/';
+    public const ITEMID = 0;
+    public const FILEPATH = '/';
 
-    /** @var \file_storage */
+    /** @var file_storage */
     private $storage;
-    /** @var \context */
+    /** @var context */
     private $context;
 
     /**
@@ -47,18 +56,18 @@ class storage {
      */
     public function __construct($userid = null) {
         global $USER;
-        $this->storage = \get_file_storage();
-        $this->context = \context_user::instance($userid ?: $USER->id);
+        $this->storage = get_file_storage();
+        $this->context = context_user::instance($userid ?: $USER->id);
     }
 
     /**
      *  Copy a stored file into storage
      *
-     * @param \stored_file $file
-     * @throws \file_exception
-     * @throws \stored_file_creation_exception
+     * @param stored_file $file
+     * @throws file_exception
+     * @throws stored_file_creation_exception
      */
-    public function copy_from(\stored_file $file): void {
+    public function copy_from(stored_file $file): void {
         $filerecord = (object) array(
                 'contextid' => $this->context->id,
                 'component' => self::COMPONENT,
@@ -73,12 +82,26 @@ class storage {
      *  Get a stored_file instance by filename
      *
      * @param string $filename
-     * @return \stored_file
+     * @return stored_file
+     * @throws cannot_find_file_exception
      */
-    public function get(string $filename): \stored_file {
-        return $this->storage->get_file($this->context->id,
-                self::COMPONENT, self::FILEAREA, self::ITEMID, self::FILEPATH,
-                $filename);
+    public function get(string $filename): stored_file {
+        $file = $this->storage->get_file($this->context->id,
+            self::COMPONENT, self::FILEAREA, self::ITEMID, self::FILEPATH,
+            $filename);
+
+        if ($file === false) {
+            throw new cannot_find_file_exception(
+                $filename,
+                $this->context->id,
+                self::ITEMID,
+                self::COMPONENT,
+                self::FILEAREA,
+                self::FILEPATH
+            );
+        }
+
+        return $file;
     }
 
     /**
@@ -88,7 +111,13 @@ class storage {
      * @return boolean
      */
     public function delete(string $filename): bool {
-        $file = $this->get($filename);
-        return $file && $file->delete();
+        try {
+            $file = $this->get($filename);
+            return $file && $file->delete();
+        }
+        catch (\Exception $exception) {
+        }
+
+        return false;
     }
 }
