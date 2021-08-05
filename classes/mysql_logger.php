@@ -7,10 +7,11 @@ namespace block_sharing_cart;
  * @package block_sharing_cart
  */
 class mysql_logger{
+    /** @var bool */
+	protected static $checked = false;
 
-	protected static bool $checked = false;
-
-	protected string $table;
+	/** @var string */
+	protected $table;
 
 	/**
 	 * logger constructor.
