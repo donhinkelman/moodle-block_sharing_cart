@@ -13,6 +13,8 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 3.10, release 7  2021.08.05
+  * Fixed a bug that prevent user from delete an empty section, because plugin try to delete the file that does not exist.
 * 3.10, release 6  2021.07.23
   * Added improvements to section copy, added backuptempdir support and fixed multiple bugs
 * 3.10, release 5  2021.07.07
