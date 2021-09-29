@@ -13,6 +13,8 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 3.10, release 8 2021.09.29
+  * Tested and passed a fix for Issue #106
 * 3.10, release 7  2021.08.05
   * Fixed a bug that prevent user from delete an empty section, because plugin try to delete the file that does not exist.
   * Replaced class property type with PHPDoc annotation to support PHP 7.2+ or above.
