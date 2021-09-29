@@ -1,7 +1,7 @@
 Sharing Cart
 ============
 
-Version 3.10, release 7 - 2021.08.05
+Version 3.10, release 8 - 2021.09.29
 
 The "master" branch requires Moodle 3.6 or newer.
 
@@ -14,7 +14,7 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 Change Log
 ----------
 * 3.10, release 8 2021.09.29
-  * Tested and passed a fix for Issue #106
+  * Tested and passed a fix for Issue #101: Exception Call to a member function get_tasks() on null
 * 3.10, release 7  2021.08.05
   * Fixed a bug that prevent user from delete an empty section, because plugin try to delete the file that does not exist.
   * Replaced class property type with PHPDoc annotation to support PHP 7.2+ or above.
@@ -236,6 +236,7 @@ Requirements
 ------------
 New Versions:  Moodle 3.3 or later
 Older Versions: Moodle 2.3.1 or later, with AJAX enabled
+PHP version 7.2 required, PHP version 7.4 recommended to cover future upgrades
 * Capabilities
     - moodle/restore:restoreactivity
     - moodle/restore:restorecourse
