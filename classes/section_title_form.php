@@ -7,37 +7,35 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/../../../lib/formslib.php');
 
 class section_title_form extends \moodleform {
-    /**
-     * @var array $sections
-     */
+    /** @var array */
     private $sections;
-    /**
-     * @var string $directory
-     */
+
+    /** @var bool */
     private $directory;
-    /**
-     * @var string $path
-     */
+
+    /** @var string */
     private $path;
-    /**
-     * @var string $courseid
-     */
+
+    /** @var int */
     private $courseid;
-    /**
-     * @var string $sectionnumber
-     */
+
+    /** @var int */
     private $sectionnumber;
-    /**
-     * @var string $sectionnumber
-     */
+
+    /** @var int */
     private $items_count;
 
     /**
      * section_title_form constructor.
      *
+     * @param bool $directory
+     * @param string $path
+     * @param int $courseid
+     * @param int $sectionnumber
      * @param array $eligible_sections
+     * @param int $items_count
      */
-    public function __construct($directory, $path, $courseid, $sectionnumber, $eligible_sections, $items_count = 0) {
+    public function __construct(bool $directory, string $path, int $courseid, int $sectionnumber, array $eligible_sections, int $items_count = 0) {
         $this->directory = $directory;
         $this->path = $path;
         $this->courseid = $courseid;
@@ -47,9 +45,7 @@ class section_title_form extends \moodleform {
         parent::__construct();
     }
 
-    public function definition() {
-        global $PAGE, $USER, $DB;
-
+    public function definition(): void {
         $current_section_name = get_section_name($this->courseid, $this->sectionnumber);
 
         $mform =& $this->_form;

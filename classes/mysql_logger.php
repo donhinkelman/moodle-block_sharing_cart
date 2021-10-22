@@ -7,15 +7,10 @@ namespace block_sharing_cart;
  * @package block_sharing_cart
  */
 class mysql_logger{
-
-	/**
-	 * @var bool
-	 */
+    /** @var bool */
 	protected static $checked = false;
 
-	/**
-	 * @var null
-	 */
+	/** @var string */
 	protected $table;
 
 	/**
@@ -23,7 +18,7 @@ class mysql_logger{
 	 * @param string $table
 	 * @throws \ddl_exception
 	 */
-	public function __construct($table = 'block_sharing_cart_log'){
+	public function __construct(string $table = 'block_sharing_cart_log'){
 
 		$this->table = $table;
 
