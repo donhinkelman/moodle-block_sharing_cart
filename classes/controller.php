@@ -394,7 +394,7 @@ class controller {
                             || module::has_backup((int)$module->id) === false) {
                         continue;
                     }
-    
+
                     if ($userdata && $this->is_userdata_copyable((int)$module->id)) {
                         $itemids[] = $this->backup((int)$module->id, true, $course, $sc_section_id);
                     } else {
@@ -542,6 +542,9 @@ class controller {
                 $cmid = $task->get_moduleid();
                 $cm = \get_coursemodule_from_id(null, $cmid, 0, false, MUST_EXIST);
                 \moveto_module($cm, $section);
+                // Fire event.
+                $event = \core\event\course_module_created::create_from_cm($cm);
+                $event->trigger();
             }
         }
         \rebuild_course_cache($course->id);
