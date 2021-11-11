@@ -1,9 +1,9 @@
 Sharing Cart
 ============
 
-Version 3.9, release 3 - 2021.03.13
+Version 3.9, release 6 - 2021.10.22
 
-The "master" branch is no longer compatible with Moodle 3.2 or earlier.
+The "master" branch requires Moodle 3.6 or newer.
 
 * Moodle 3.2 => "MOODLE_32_STABLE" branch
 * Moodle 2.2 => "MOODLE_22_STABLE" branch
@@ -13,8 +13,20 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 3.9, release 6   2021.10.22
+  * Tested and passed a fix for Issue #101: Exception Call to a member function get_tasks() on null
+  * Fixed a bug that prevent user from delete an empty section, because plugin try to delete the file that does not exist.
+  * Replaced class property type with PHPDoc annotation to support PHP 7.2+ or above.
+  * Added improvements to section copy, added backuptempdir support and fixed multiple bugs
+  * Fixed a bug where you could import from another user's sharing cart
+  * Fixed a minor PHP notice
+  * Cleaned code
+  * Merged several pull requests and improved copying of empty sections
+  * Made the "Do you want to copy user data..." checkbox unchecked by default
+  * Made the sharing cart Moodle 3.10 compatible
 * 3.9, release 5   2021.04.26
-  * Fix issues with capabilities and user data during backup.
+  * Fixed issues with capabilities and user data during backup.
+  * Fixed Error when different users create folders with the same name #95 
 * 3.9, release 4   2021.03.25
   * Minor css and javascript changes
   * Fixed "Copy section button" title
@@ -192,7 +204,7 @@ Change Log
 * 2.4, release 1 patch 1
     * Set instance_can_be_docked to false
 * 2.4, release 1
-    * Support Moodle 2.4
+    * Supports Moodle 2.4
 * 2.3, release 2
     * New feature: Workaround for question bank restore issue (error_question_match_sub_missing_in_db)
 * 2.3, release 1
@@ -217,6 +229,7 @@ Requirements
 ------------
 New Versions:  Moodle 3.3 or later
 Older Versions: Moodle 2.3.1 or later, with AJAX enabled
+PHP version 7.2 required, PHP version 7.4 recommended to cover future upgrades
 * Capabilities
     - moodle/restore:restoreactivity
     - moodle/restore:restorecourse
