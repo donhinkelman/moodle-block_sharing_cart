@@ -53,7 +53,7 @@ class course_repository
      * @throws coding_exception
      * @throws dml_exception
      */
-    public function get_course_fullnames_by_sharing_carts(array $entities) {
+    public function get_course_fullnames_by_sharing_carts(array $entities): array {
          $course_ids = $this->extract_course_ids($entities);
          return $this->get_course_fullnames($course_ids);
     }
@@ -65,7 +65,7 @@ class course_repository
      * @throws coding_exception
      * @throws dml_exception
      */
-    public function get_course_fullnames(array $ids, string $default_name = '') {
+    public function get_course_fullnames(array $ids, string $default_name = ''): array {
 
         if (empty($ids)) {
             return [];
@@ -87,7 +87,7 @@ class course_repository
      * @param array $entities
      * @return array
      */
-    private function extract_course_ids(array $entities){
+    private function extract_course_ids(array $entities): array {
         $ids = [];
         foreach ($entities as $entity) {
             $ids[] = (int)$entity->course;
