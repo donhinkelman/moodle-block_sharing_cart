@@ -13,6 +13,8 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 3.10, release 9 2022.02.25
+  * Fixed plugin unintended copy badges from a course, when user copy an activity and a section.
 * 3.10, release 8 2021.09.29
   * Tested and passed a fix for Issue #101: Exception Call to a member function get_tasks() on null
 * 3.10, release 7  2021.08.05

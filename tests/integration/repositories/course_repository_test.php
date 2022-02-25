@@ -5,8 +5,13 @@
  * @companyinfo https://praxis.dk
  */
 
+namespace block_sharing_cart\integration\repositories;
+
 use block_sharing_cart\repositories\course_repository;
-use block_sharing_cart\tests\sharing_chart_test_tools;
+use block_sharing_cart\tests\sharing_chart_testcase;
+use coding_exception;
+use dml_exception;
+use moodle_database;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -14,17 +19,8 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class block_sharing_cart_course_repository_testcase
  */
-class block_sharing_cart_course_repository_testcase extends advanced_testcase
+class course_repository_test extends sharing_chart_testcase
 {
-    use sharing_chart_test_tools;
-
-    /**
-     * This method is called before each test.
-     */
-    protected function setUp(): void {
-        $this->resetAfterTest();
-    }
-
     /**
      * @throws coding_exception
      * @throws dml_exception
@@ -72,13 +68,5 @@ class block_sharing_cart_course_repository_testcase extends advanced_testcase
         $actual_course_fullnames = $repo->get_course_fullnames_by_sharing_carts([]);
 
         $this->assertEmpty($actual_course_fullnames);
-    }
-
-    /**
-     * @return moodle_database|null
-     */
-    private function db() {
-        global $DB;
-        return $DB;
     }
 }

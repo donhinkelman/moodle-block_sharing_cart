@@ -1,13 +1,20 @@
 <?php
 
+namespace block_sharing_cart\integration\controller;
+
+use block_sharing_cart\controller;
+use block_sharing_cart\exception;
+use block_sharing_cart\record;
+use block_sharing_cart\tests\sharing_chart_testcase;
+use dml_exception;
+use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
  * Testing controller functionality
  */
-class block_sharing_cart_controller_testcase extends advanced_testcase {
-    use \block_sharing_cart\tests\sharing_chart_test_tools;
+class controller_test extends sharing_chart_testcase {
 
     /**
      * This method is called before each test.
@@ -40,7 +47,7 @@ class block_sharing_cart_controller_testcase extends advanced_testcase {
         $entities = $this->get_sharing_cart_entities(['userid' => $user->id]);
         $this->assertCount(0, $entities);
 
-        $controller = new \block_sharing_cart\controller();
+        $controller = new controller();
         $controller->backup($assignment->cmid, false, $course->id);
         $controller->backup($label->cmid, false, $course->id);
         $controller->backup($forum->cmid, false, $course->id);
@@ -94,7 +101,7 @@ class block_sharing_cart_controller_testcase extends advanced_testcase {
         $entities = $this->get_sharing_cart_entities(['userid' => $user->id]);
         $this->assertCount(0, $entities);
 
-        $controller = new \block_sharing_cart\controller();
+        $controller = new controller();
         $controller->backup_section($section1->id, $section1->name, false, $course->id);
         $controller->backup_section($section2->id, $section2->name, false, $course->id);
 
@@ -139,7 +146,7 @@ class block_sharing_cart_controller_testcase extends advanced_testcase {
         $entities = $this->get_sharing_cart_entities(['userid' => $user->id]);
         $this->assertCount(0, $entities);
 
-        $controller = new \block_sharing_cart\controller();
+        $controller = new controller();
         $controller->backup_section($section2->id, $section2->name, false, $course->id);
         $controller->backup($assignment1->cmid, false, $course->id);
         $controller->backup($assignment2->cmid, false, $course->id);
@@ -148,8 +155,8 @@ class block_sharing_cart_controller_testcase extends advanced_testcase {
         $entities = $this->get_sharing_cart_entities(['userid' => $user->id]);
         $this->assertCount(3, $entities);
 
-        $copied_labels = self::db()->get_records(\block_sharing_cart\record::TABLE, ['modname' => 'label']);
-        $copied_assignments = self::db()->get_records(\block_sharing_cart\record::TABLE, ['modname' => 'assign']);
+        $copied_labels = self::db()->get_records(record::TABLE, ['modname' => 'label']);
+        $copied_assignments = self::db()->get_records(record::TABLE, ['modname' => 'assign']);
     }
 
     public function test_restore_modules_from_sharing_cart() {
@@ -166,7 +173,7 @@ class block_sharing_cart_controller_testcase extends advanced_testcase {
         $this->enrol_users($course, [$user]);
         $this->set_session_key($user);
 
-        $controller = new \block_sharing_cart\controller();
+        $controller = new controller();
         $controller->backup($assignment->cmid, false, $course->id);
         $controller->backup($forum->cmid, false, $course->id);
         $controller->backup($label->cmid, false, $course->id);
@@ -226,7 +233,7 @@ class block_sharing_cart_controller_testcase extends advanced_testcase {
     /**
      * Test moving item in sharing cart to a new position
      *
-     * @throws \block_sharing_cart\exception
+     * @throws exception
      * @throws dml_exception
      * @throws moodle_exception
      */
@@ -244,7 +251,7 @@ class block_sharing_cart_controller_testcase extends advanced_testcase {
         $this->set_session_key($user);
 
         // Copy modules to the sharing cart
-        $controller = new \block_sharing_cart\controller();
+        $controller = new controller();
         $controller->backup($forum->cmid, false, $course->id);
         $controller->backup($assignment->cmid, false, $course->id);
         $controller->backup($label->cmid, false, $course->id);
@@ -314,7 +321,7 @@ class block_sharing_cart_controller_testcase extends advanced_testcase {
         $this->enrol_users($course, [$user]);
         $this->set_session_key($user);
 
-        $controller = new \block_sharing_cart\controller();
+        $controller = new controller();
         $controller->backup($assignment->cmid, false, $course->id);
         $controller->backup($label->cmid, false, $course->id);
         $controller->backup_section($section1->id, $section1->name, false, $course->id);

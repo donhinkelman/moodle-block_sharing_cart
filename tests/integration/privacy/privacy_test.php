@@ -1,17 +1,29 @@
 <?php
 
+namespace block_sharing_cart\integration\privacy;
+
 defined('MOODLE_INTERNAL') || die();
 
-use \block_sharing_cart\privacy\provider;
-use \core_privacy\tests\request\approved_contextlist;
-use \core_privacy\local\request\approved_userlist;
-use \core_privacy\local\request\userlist;
+use block_sharing_cart\controller;
+use block_sharing_cart\privacy\provider;
+use coding_exception;
+use context_course;
+use context_system;
+use context_user;
+use core_privacy\local\request\writer;
+use core_privacy\tests\provider_testcase;
+use core_privacy\tests\request\approved_contextlist;
+use core_privacy\local\request\approved_userlist;
+use core_privacy\local\request\userlist;
+use dml_exception;
+use InvalidArgumentException;
+use moodle_exception;
 
 /**
  *
  * Sharing cart privacy testing class
  */
-class block_sharing_cart_privacy_testcase extends \core_privacy\tests\provider_testcase {
+class privacy_test extends provider_testcase {
 
     /**
      * This method is called before each test.
@@ -25,11 +37,11 @@ class block_sharing_cart_privacy_testcase extends \core_privacy\tests\provider_t
      * @test
      */
     public function get_contexts_for_user(): void {
-        $course = $this->getDataGenerator()->create_course();
-        $user = $this->getDataGenerator()->create_user();
+        $course = self::getDataGenerator()->create_course();
+        $user = self::getDataGenerator()->create_user();
         $assign = $this->create_assignment($course, 1);
 
-        $this->getDataGenerator()->enrol_user($user->id, $course->id, 'editingteacher');
+        self::getDataGenerator()->enrol_user($user->id, $course->id, 'editingteacher');
 
         $this->set_session_key($user);
         $this->add_sharing_cart_activity($course, $assign);
@@ -37,7 +49,12 @@ class block_sharing_cart_privacy_testcase extends \core_privacy\tests\provider_t
         $context = context_user::instance($user->id);
         $contextlist = provider::get_contexts_for_userid($user->id);
 
-        $this->assertContains($context->id, $contextlist->get_contextids());
+        $actual_contexts = $contextlist->get_contexts();
+
+        $this->assertContains(
+            $context,
+            $actual_contexts
+        );
     }
 
     /**
@@ -46,7 +63,7 @@ class block_sharing_cart_privacy_testcase extends \core_privacy\tests\provider_t
     public function get_users_in_context(): void {
         $component = 'block_sharing_cart';
 
-        $generator = $this->getDataGenerator();
+        $generator = self::getDataGenerator();
 
         // Prepare user, course and assignments
         $user1 = $generator->create_user();
@@ -64,7 +81,7 @@ class block_sharing_cart_privacy_testcase extends \core_privacy\tests\provider_t
 
         $this->set_session_key($user1);
 
-        $userlist1 = new \core_privacy\local\request\userlist($user1_context, $component);
+        $userlist1 = new userlist($user1_context, $component);
         provider::get_users_in_context($userlist1);
         $this->assertCount(0, $userlist1);
 
@@ -77,7 +94,7 @@ class block_sharing_cart_privacy_testcase extends \core_privacy\tests\provider_t
 
         $this->set_session_key($user2);
 
-        $userlist2 = new \core_privacy\local\request\userlist($user2_context, $component);
+        $userlist2 = new userlist($user2_context, $component);
         provider::get_users_in_context($userlist2);
 
         // Expect user2 to have 0 data
@@ -85,7 +102,7 @@ class block_sharing_cart_privacy_testcase extends \core_privacy\tests\provider_t
 
         // Validate in system context
         $systemcontext = context_system::instance();
-        $userlist3 = new \core_privacy\local\request\userlist($systemcontext, $component);
+        $userlist3 = new userlist($systemcontext, $component);
         provider::get_users_in_context($userlist3);
         $this->assertCount(0, $userlist3);
     }
@@ -99,7 +116,7 @@ class block_sharing_cart_privacy_testcase extends \core_privacy\tests\provider_t
      * @throws moodle_exception
      */
     public function export_user_data(): void {
-        $generator = $this->getDataGenerator();
+        $generator = self::getDataGenerator();
 
         // Prepare user, course and assignments
         $user = $generator->create_user();
@@ -137,7 +154,7 @@ class block_sharing_cart_privacy_testcase extends \core_privacy\tests\provider_t
         $root_name = get_string('pluginname', $component);
 
         // Privacy data writer
-        $writer = \core_privacy\local\request\writer::with_context($context);
+        $writer = writer::with_context($context);
         $this->assertFalse($writer->has_any_data());
 
         // Export user data
@@ -187,7 +204,7 @@ class block_sharing_cart_privacy_testcase extends \core_privacy\tests\provider_t
      * @throws moodle_exception
      */
     public function delete_data_for_all_users_in_context(): void {
-        $generator = $this->getDataGenerator();
+        $generator = self::getDataGenerator();
         $course = $generator->create_course();
         $assign = $this->create_assignment($course, 1);
         $user = $generator->create_user();
@@ -214,7 +231,7 @@ class block_sharing_cart_privacy_testcase extends \core_privacy\tests\provider_t
     public function delete_data_for_users() {
         global $DB;
 
-        $generator = $this->getDataGenerator();
+        $generator = self::getDataGenerator();
         $component = 'block_sharing_cart';
         $rolename = 'editingteacher';
 
@@ -333,7 +350,7 @@ class block_sharing_cart_privacy_testcase extends \core_privacy\tests\provider_t
     public function delete_data_for_user(): void {
         global $DB;
 
-        $generator = $this->getDataGenerator();
+        $generator = self::getDataGenerator();
         $user = $generator->create_user();
         $user2 = $generator->create_user();
         $course = $generator->create_course(['numsections' => 4]);
@@ -376,7 +393,7 @@ class block_sharing_cart_privacy_testcase extends \core_privacy\tests\provider_t
 
         // Request data deletion for the user
         $context = context_user::instance($user->id);
-        $contextlist = new \core_privacy\tests\request\approved_contextlist($user, 'block_sharing_cart', [$context->id]);
+        $contextlist = new approved_contextlist($user, 'block_sharing_cart', [$context->id]);
         provider::delete_data_for_user($contextlist);
 
         // Expect 0 item in this assertion
@@ -405,7 +422,7 @@ class block_sharing_cart_privacy_testcase extends \core_privacy\tests\provider_t
      */
     private function add_sharing_cart_activity(object $course, object $module): void {
         // Creating sharing cart item
-        $controller = new \block_sharing_cart\controller();
+        $controller = new controller();
         $controller->backup($module->cmid, false, $course->id);
     }
 
@@ -433,7 +450,7 @@ class block_sharing_cart_privacy_testcase extends \core_privacy\tests\provider_t
         $section_name = get_section_name($course, $section);
 
         // Backup section for sharing cart
-        $controller = new \block_sharing_cart\controller();
+        $controller = new controller();
         $controller->backup_section($section_record->id, $section_name, false, $course->id);
 
         return $section_name;
@@ -467,6 +484,6 @@ class block_sharing_cart_privacy_testcase extends \core_privacy\tests\provider_t
     private function create_assignment(object $course, int $section = 0, array $properties = [], array $options = []): object {
         $properties['course'] = $course->id;
         $properties['section'] = $section;
-        return $this->getDataGenerator()->create_module('assign', $properties, $options);
+        return self::getDataGenerator()->create_module('assign', $properties, $options);
     }
 }
