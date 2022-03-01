@@ -1,0 +1,79 @@
+name: Integration & Unit test
+
+on:
+  pull_request:
+    branches:
+      - master
+
+env:
+  php: 7.4
+
+jobs:
+  PHPUnit:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-18.04
+            php: 7.2
+            db: mysqli
+            moodle: MOODLE_39_STABLE
+            plugin_branch: MOODLE_39_STABLE
+          - os: ubuntu-18.04
+            php: 7.3
+            db: mysqli
+            moodle: MOODLE_310_STABLE
+            plugin_branch: MOODLE_310_STABLE
+          - os: ubuntu-20.04
+            php: 7.4
+            db: mysqli
+            moodle: MOODLE_311_STABLE
+            plugin_branch: MOODLE_311_STABLE
+
+    steps:
+      - name: Setting up DB mysql
+        if: ${{ matrix.db == 'mysqli' }}
+        uses: johanmeiring/mysql-action@tmpfs-patch
+        with:
+          collation server: utf8mb4_unicode_ci
+          mysql version: 5.7
+          mysql database: test
+          mysql user: test
+          mysql password: test
+          use tmpfs: true
+
+      - name: Setting up PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
+      - name: Checking out code from moodle/moodle
+        uses: actions/checkout@v2
+        with:
+          repository: moodle/moodle
+          ref: ${{ matrix.moodle }}
+
+      - name: Check out code from ${{ github.repository }}
+        uses: actions/checkout@v2
+        with:
+          path: ${{ github.workspace }}/blocks/sharing_cart
+          ref: ${{ github.ref }}
+
+      - name: Lint module code
+        run:
+          find $GITHUB_WORKSPACE/blocks/sharing_cart -type f -name '*.php' -print0 | xargs -0 -n1 -P4 php -l -n | (! grep -v "No syntax errors detected" )
+
+      - name: Setting up PHPUnit
+        env:
+          dbtype: ${{ matrix.db }}
+        run: |
+          echo "pathtophp=$(which php)" >> $GITHUB_ENV # Inject installed pathtophp to env. The template config needs it.
+          cp $GITHUB_WORKSPACE/.github/workflows/config-template.php $GITHUB_WORKSPACE/config.php
+          mkdir $GITHUB_WORKSPACE/../moodledata
+          sudo locale-gen en_AU.UTF-8
+          php $GITHUB_WORKSPACE/admin/tool/phpunit/cli/init.php --no-composer-self-update
+      - name: Running PHPUnit tests
+        env:
+          dbtype: ${{ matrix.db }}
+        run: $GITHUB_WORKSPACE/vendor/bin/phpunit -c $GITHUB_WORKSPACE/phpunit.xml --testsuite=block_sharing_cart_testsuite -v --testdox

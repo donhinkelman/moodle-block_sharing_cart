@@ -4,12 +4,18 @@
  * @author      Sam Møller (https://github.com/sampraxis)
  */
 
+namespace block_sharing_cart\integration\storage;
+
+use advanced_testcase;
 use block_sharing_cart\exceptions\cannot_find_file_exception;
 use block_sharing_cart\storage;
+use context_user;
+use dml_exception;
+use moodle_database;
 
 defined('MOODLE_INTERNAL') || die();
 
-class block_sharing_cart_storage_testcase extends advanced_testcase
+class storage_test extends advanced_testcase
 {
     /**
      * @inheridoc
