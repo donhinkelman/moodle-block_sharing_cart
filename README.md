@@ -13,10 +13,9 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
-* 3.11, release 2 2022.05.03
-  * Fixed sharing cart looking at invisible modules, where error (invalid id for course module) would occur.
 * 3.11, release 1 2022.05.03
   * Made the sharing cart Moodle 3.11 compatible
+  * Fixed sharing cart looking at invisible modules, where error (invalid id for course module) would occur.
 * 3.10, release 9 2022.02.25
   * Fixed plugin unintended copy badges from a course, when user copy an activity and a section.
 * 3.10, release 8 2021.09.29
