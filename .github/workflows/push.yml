@@ -3,7 +3,7 @@ name: Integration & Unit test
 on:
   pull_request:
     branches:
-      - master
+      - MOODLE_311_STABLE
 
 env:
   php: 7.4
@@ -14,16 +14,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-18.04
-            php: 7.2
-            db: mysqli
-            moodle: MOODLE_39_STABLE
-            plugin_branch: MOODLE_39_STABLE
-          - os: ubuntu-18.04
-            php: 7.3
-            db: mysqli
-            moodle: MOODLE_310_STABLE
-            plugin_branch: MOODLE_310_STABLE
           - os: ubuntu-20.04
             php: 7.4
             db: mysqli
