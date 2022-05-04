@@ -130,6 +130,22 @@ abstract class sharing_chart_testcase extends advanced_testcase {
         return $this->create_module('assign', $course, $section, $properties, $options);
     }
 
+    protected function disable_assign(): void {
+        $this->db()->update_record('modules', (object)['id' => 1, 'visible' => 0]);
+    }
+
+    /**
+     * Create an url
+     * @param $course
+     * @param int $section
+     * @param array $properties
+     * @param array|null $options
+     * @return object
+     */
+    protected function create_url($course, int $section = 0, array $properties = [], array $options = null): object {
+        return $this->create_module('url', $course, $section, $properties, $options);
+    }
+
     /**
      * @param string $name
      * @param $course
