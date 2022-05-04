@@ -13,7 +13,7 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
-* 3.11, release 1 2022.05.03
+* 3.11, release 1 2022.05.04
   * Made the sharing cart Moodle 3.11 compatible
   * Fixed sharing cart looking at invisible modules, where error (invalid id for course module) would occur.
 * 3.10, release 9 2022.02.25
