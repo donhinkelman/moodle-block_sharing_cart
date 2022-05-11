@@ -367,7 +367,7 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                 function backup_section(sectionId, sectionNumber, courseId, userdata) {
                     var $commands = $('span.inplaceeditable[data-itemtype=sectionname][data-itemid=' + sectionId + ']');
                     var $section = $commands.closest("li.section.main");
-                    var sectionName = $section.attr('aria-label');
+                    var sectionName = $section.attr('aria-label') || $section.find('.sectionname').text().trim();
 
                     if (sectionName === null) {
                         sectionName = String($('#region-main .section_action_menu[data-sectionid=\'' + sectionId + '\']')
@@ -1148,7 +1148,7 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
 
                         var sectionId = $section.find('.section_action_menu').data('sectionid');
                         var sectionNumber = parseInt(String($section.attr('id')).match(/\d+/)[0]);
-                        var sectionName = $section.attr('aria-label');
+                        var sectionName = $section.attr('aria-label') || $section.find('.sectionname').text().trim();
 
                         var isFlexibleCourseFormat = $('body[id$=flexsections]').length;
 
