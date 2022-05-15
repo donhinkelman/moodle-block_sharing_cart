@@ -1,5 +1,16 @@
 <?php
 
+namespace block_sharing_cart\integration\controller;
+
+use advanced_testcase;
+use coding_exception;
+use ddl_exception;
+use ddl_field_missing_exception;
+use ddl_table_missing_exception;
+use moodle_database;
+use xmldb_field;
+use xmldb_table;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -8,7 +19,7 @@ defined('MOODLE_INTERNAL') || die();
  * Purpose of test to see if upgrade script is working correctly
  * @package block_sharing_cart\tests
  */
-class block_sharing_cart_db_testcase extends advanced_testcase {
+class upgrade_database_test extends advanced_testcase {
     private $junk_tables = [];
 
     /**
@@ -46,7 +57,7 @@ class block_sharing_cart_db_testcase extends advanced_testcase {
             $this->assertContains($field->getName(), $old_column_names);
         }
 
-        $dbman = self::db()->get_manager();
+        $dbman = $this->db()->get_manager();
 
         // Change column names
         foreach ($fields as $name => $field) {
@@ -98,7 +109,7 @@ class block_sharing_cart_db_testcase extends advanced_testcase {
      * @test
      */
     public function change_default_value_for_section_table() {
-        $dbman = self::db()->get_manager();
+        $dbman = $this->db()->get_manager();
         $table = $this->create_section_table();
 
         $field_name = new xmldb_field('name', XMLDB_TYPE_CHAR, 255, null, XMLDB_NOTNULL);
@@ -168,7 +179,7 @@ class block_sharing_cart_db_testcase extends advanced_testcase {
             }
         }
 
-        $dbman = self::db()->get_manager();
+        $dbman = $this->db()->get_manager();
         $dbman->create_table($table);
         $this->junk_tables[$table->getName()] = $table;
         return $table;
@@ -203,7 +214,7 @@ class block_sharing_cart_db_testcase extends advanced_testcase {
      * @throws ddl_table_missing_exception
      */
     private function drop_tables(...$tables) {
-        $dbman = self::db()->get_manager();
+        $dbman = $this->db()->get_manager();
 
         foreach ($tables as $table) {
             if (is_string($table)) {
@@ -224,8 +235,8 @@ class block_sharing_cart_db_testcase extends advanced_testcase {
      */
     private function random_name($length = 16) {
         $chars = 'abcdefghijklmnopqrstuvwxyz';
-        $position = mt_rand(0, strlen($chars) - 1);
-        $first_letter = substr($chars, $position, 1);
+        $position = random_int(0, strlen($chars) - 1);
+        $first_letter = $chars[$position];
 
         return $first_letter . substr(
             bin2hex(random_bytes($length)),
@@ -239,7 +250,7 @@ class block_sharing_cart_db_testcase extends advanced_testcase {
      * @return string[]
      */
     private function get_column_names(xmldb_table $table) {
-        $columns = self::db()->get_columns($table->getName());
+        $columns = $this->db()->get_columns($table->getName());
 
         if (empty($columns)) {
             return [];
@@ -254,7 +265,7 @@ class block_sharing_cart_db_testcase extends advanced_testcase {
      * Get moodle database
      * @return moodle_database
      */
-    private static function db() {
+    private function db(): moodle_database {
         global $DB;
         return $DB;
     }

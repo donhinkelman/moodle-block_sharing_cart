@@ -118,16 +118,5 @@ try {
         );
     }
 
-	/**
-	 * If logger exists - we log some stuff
-	 */
-    if(class_exists(mysql_logger::class)){
-    	try{
-		    $logger = new mysql_logger();
-		    $logger->log($ex->getMessage(), $ex);
-	    }
-	    catch(\Exception $e){}
-    }
-
     echo json_encode($json);
 }
