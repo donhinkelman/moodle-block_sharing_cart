@@ -13,6 +13,9 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 3.11, release 1 2022.05.15
+  * Fixed issue #61: section copy exception call due to improper name copying
+  * Initial testing in Moodle 3.11 and 4.0 with no apparent issues
 * 3.10, release 9 2022.02.25
   * Fixed plugin unintended copy badges from a course, when user copy an activity and a section.
 * 3.10, release 8 2021.09.29
