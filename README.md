@@ -241,7 +241,7 @@ Requirements
 ------------
 New Versions:  Moodle 3.3 or later
 Older Versions: Moodle 2.3.1 or later, with AJAX enabled
-PHP version 7.2 required, PHP version 7.4 recommended to cover future upgrades
+PHP version 7.2 deprecated, PHP version 7.4 or above recommended to cover future upgrades
 * Capabilities
     - moodle/restore:restoreactivity
     - moodle/restore:restorecourse
