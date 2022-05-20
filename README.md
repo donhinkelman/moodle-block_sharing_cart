@@ -1,7 +1,7 @@
 Sharing Cart
 ============
 
-Version 3.10, release 8 - 2021.09.29
+Version 3.11, release 1 - 2022.05.15
 
 The "master" branch requires Moodle 3.6 or newer.
 
