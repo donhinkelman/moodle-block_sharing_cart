@@ -27,6 +27,7 @@ namespace block_sharing_cart;
 use backup_controller;
 use block_sharing_cart\exceptions\no_backup_support_exception;
 use block_sharing_cart\repositories\course_repository;
+use cache_helper;
 use restore_controller;
 use stdClass;
 use base_setting;
@@ -601,6 +602,7 @@ class controller {
                 $restored_section->summaryformat = $overwrite_section->summaryformat;
                 $restored_section->availability = $overwrite_section->availability;
 
+                cache_helper::purge_by_event('changesincourse');
                 course_update_section($courseid, $original_restored_section, $restored_section);
             }
 
