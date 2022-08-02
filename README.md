@@ -1,7 +1,7 @@
 Sharing Cart
 ============
 
-Version 3.11, release 1 - 2022.05.15
+Version 3.11, release 2 - 2022.08.02
 
 The "master" branch requires Moodle 3.6 or newer.
 
@@ -13,6 +13,9 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 3.11, release 2 2022.08.02
+  * Sharing cart now purges all cache hooked on the 'changesincourse' event when overwriting a section
+  * Fixed sharing cart looking at invisible modules, where error (invalid id for course module) would occur.
 * 3.11, release 1 2022.05.15
   * Fixed issue #61: section copy exception call due to improper name copying
   * Initial testing in Moodle 3.11 and 4.0 with no apparent issues

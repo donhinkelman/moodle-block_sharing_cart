@@ -27,6 +27,7 @@ namespace block_sharing_cart;
 use backup_controller;
 use block_sharing_cart\exceptions\no_backup_support_exception;
 use block_sharing_cart\repositories\course_repository;
+use cache_helper;
 use restore_controller;
 use stdClass;
 use base_setting;
@@ -372,22 +373,26 @@ class controller {
 
             // Backup all
             $modulesequence = explode(',', $section->sequence);
-            $modulecount = $DB->count_records('course_modules', [
-                'section' => $sectionid,
-                'deletioninprogress' => 0
+
+            $modulecount = $DB->count_records_sql('SELECT COUNT(*) FROM {course_modules} as cm
+                                                         INNER JOIN {modules} as m ON m.id = cm.module
+                                                         WHERE m.visible = 1 AND cm.section = :sectionid AND cm.deletioninprogress = 0', [
+                        'sectionid' => $sectionid
             ]);
 
             if (count($modulesequence) != $modulecount) {
-                $modules = $DB->get_records('course_modules', [
-                    'section' => $sectionid,
-                    'deletioninprogress' => 0
+                $modules = $DB->get_records_sql('SELECT cm.* FROM {course_modules} as cm
+                                                       INNER JOIN {modules} as m ON m.id = cm.module
+                                                       WHERE m.visible = 1 AND cm.section = :sectionid AND cm.deletioninprogress = 0', [
+                        'sectionid' => $sectionid
                 ]);
             } else {
                 $modules = [];
                 foreach ($modulesequence as $modid) {
-                    $modules[] = $DB->get_record('course_modules', [
-                        'id' => $modid,
-                        'deletioninprogress' => 0
+                    $modules[] = $DB->get_record_sql('SELECT cm.* FROM {course_modules} as cm
+                                                       INNER JOIN {modules} as m ON m.id = cm.module
+                                                       WHERE m.visible = 1 AND cm.id = :moduleid AND cm.deletioninprogress = 0', [
+                        'moduleid' => $modid
                     ]);
                 }
             }
@@ -597,6 +602,7 @@ class controller {
                 $restored_section->summaryformat = $overwrite_section->summaryformat;
                 $restored_section->availability = $overwrite_section->availability;
 
+                cache_helper::purge_by_event('changesincourse');
                 course_update_section($courseid, $original_restored_section, $restored_section);
             }
 
