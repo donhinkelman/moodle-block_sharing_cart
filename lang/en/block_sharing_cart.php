@@ -63,6 +63,7 @@ $string['copy_section'] = 'Copy section';
 $string['copy_section_title'] = 'Copy selected section';
 $string['label_image_replaced_text'] = ' (Label: Image)';
 $string['uninstalled_plugin_warning_title'] = 'This plugin is uninstalled. Trying to recover this without reinstalling the plugin: {$a} will cause errors. Restoration is disabled';
+$string['drop_here'] = 'Drop here..';
 
 $string['settings:userdata_copyable_modtypes'] = 'User data copyable module types';
 $string['settings:userdata_copyable_modtypes_desc'] = 'While copying an activity into the Sharing Cart,
@@ -75,6 +76,8 @@ $string['settings:workaround_qtypes_desc'] = 'The workaround for question restor
 When the questions to be restored already exist, however, those data look like inconsistent,
 this workaround will try to make another duplicates instead of reusing existing data.
 It may be useful for avoiding some restore errors, such as <i>error_question_match_sub_missing_in_db</i>.';
+$string['settings:add_to_sharing_cart'] = 'Add to sharing cart';
+$string['settings:add_to_sharing_cart_desc'] = 'Choose between drag and drop or click to add method for adding modules and sections to the sharing cart.';
 
 $string['invalidoperation'] = 'An invalid operation detected';
 $string['unexpectederror'] = 'An unexpected error occurred';

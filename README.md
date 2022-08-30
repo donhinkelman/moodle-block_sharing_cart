@@ -13,8 +13,9 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
-* 4.0, release 1  2022.08.25
+* 4.0, release 1  2022.08.30
   * Made the sharing cart Moodle 4.0 compatible
+  * Added the ability to drag and drop items/sections into the cart and the basket icon
 * 3.11, release 2 2022.08.02
   * Sharing cart now purges all cache hooked on the 'changesincourse' event when overwriting a section
   * Fixed sharing cart looking at invisible modules, where error (invalid id for course module) would occur.
