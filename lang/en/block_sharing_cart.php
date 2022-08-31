@@ -78,6 +78,8 @@ this workaround will try to make another duplicates instead of reusing existing 
 It may be useful for avoiding some restore errors, such as <i>error_question_match_sub_missing_in_db</i>.';
 $string['settings:add_to_sharing_cart'] = 'Add to sharing cart';
 $string['settings:add_to_sharing_cart_desc'] = 'Choose between drag and drop or click to add method for adding modules and sections to the sharing cart.';
+$string['settings:drag_and_drop'] = 'Drag and drop';
+$string['settings:click_to_add'] = 'Click to add';
 
 $string['invalidoperation'] = 'An invalid operation detected';
 $string['unexpectederror'] = 'An unexpected error occurred';

@@ -23,8 +23,7 @@
 
 define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalFactory, ModalEvents) {
     return {
-        init: function(_addMethod) {
-            const addMethod = _addMethod;
+        init: function(addMethod) {
 
             $(document).ready(function() {
 
@@ -1213,8 +1212,8 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                  */
                 function init_footer_basket() {
                     let currentDragging;
-                    const activities = document.getElementsByClassName("activity activity-wrapper");
-                    const sections = document.getElementsByClassName("course-section-header");
+                    const activities = document.querySelectorAll(".activity.activity-wrapper");
+                    const sections = document.querySelectorAll(".course-section-header");
                     const sharingCartBlock = document.querySelector('section[data-block="sharing_cart"]');
 
                     add_draggable_to_first_section();
@@ -1275,7 +1274,7 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                         });
 
                         dropzone.addEventListener("drop", () => {
-                            if (typeof currentDragging === 'object') {
+                            if (currentDragging instanceof HTMLElement) {
                                 currentDragging.querySelector('.add-to-sharing-cart').click();
                             }
 
@@ -1288,8 +1287,12 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                  *  Make the first section (General) draggable
                  */
                 function add_draggable_to_first_section() {
-                    document.getElementsByClassName("course-section-header")[0].classList.add('draggable');
-                    document.getElementsByClassName("course-section-header")[0].setAttribute('draggable', true);
+                    const courseSectionHeader = document.getElementsByClassName("course-section-header")[0] ?? null;
+
+                    if (courseSectionHeader instanceof HTMLElement) {
+                        courseSectionHeader.classList.add('draggable');
+                        courseSectionHeader.setAttribute('draggable', true);
+                    }
                 }
 
                 /**
