@@ -1252,14 +1252,14 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                      */
                     function drag_event_listeners(draggable) {
                         draggable.addEventListener('dragstart', (e) => {
-                            footerIconContainer.prepend(basketButton);
+                            footerIconContainer?.prepend(basketButton);
                             sharingCartBlock.children[0].classList.add('dragging_item');
                             sharingCartBlock.append(dropArea);
                             currentDragging = e.target;
                         });
 
                         draggable.addEventListener('dragend', () => {
-                            footerIconContainer.removeChild(basketButton);
+                            footerIconContainer?.removeChild(basketButton);
                             sharingCartBlock.children[0].classList.remove('dragging_item');
                             sharingCartBlock.removeChild(dropArea);
                         });
