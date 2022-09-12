@@ -25,6 +25,9 @@
 namespace block_sharing_cart;
 
 use backup_controller;
+use block_sharing_cart\event\section_backedup;
+use block_sharing_cart\event\section_deleted;
+use block_sharing_cart\event\section_restored;
 use block_sharing_cart\exceptions\no_backup_support_exception;
 use block_sharing_cart\repositories\course_repository;
 use cache_helper;
@@ -437,6 +440,14 @@ class controller {
             foreach ($itemids as $itemid) {
                 $this->movedir($itemid, $foldername);
             }
+
+            // Trigger event
+            $event = section_backedup::create([
+                'context' => \context_course::instance($course),
+                'objectid' => $sc_section_id,
+                'other' => $sectionid
+            ]);
+            $event->trigger();
         } catch (\moodle_exception $ex) {
             if ($ex->errorcode == "storedfilenotcreated") {
                 foreach ($itemids as $itemid) {
@@ -590,10 +601,13 @@ class controller {
             $this->restore($cart_item->id, $courseid, $sectionnumber);
         }
 
+        $course_context = \context_course::instance($courseid);
+
+        $restored_section = $DB->get_record('course_sections', array('course' => $courseid, 'section' => $sectionnumber));
+
         if ($overwritesectionid > 0) {
             $overwrite_section = $DB->get_record('block_sharing_cart_sections', array('id' => $overwritesectionid));
 
-            $restored_section = $DB->get_record('course_sections', array('course' => $courseid, 'section' => $sectionnumber));
             $original_restored_section = clone($restored_section);
 
             if ($overwrite_section && $restored_section) {
@@ -608,11 +622,10 @@ class controller {
 
             // Copy section files
             $user_context = \context_user::instance($USER->id);
-            $course_context = \context_course::instance($courseid);
             $fs = get_file_storage();
             $files = $fs->get_area_files($user_context->id, 'user', 'sharing_cart_section', $overwritesectionid);
             foreach ($files as $file) {
-                if ($file->get_filename() != '.') {
+                if ($file->get_filename() !== '.') {
                     $filerecord = array(
                             'contextid' => $course_context->id,
                             'component' => 'course',
@@ -625,6 +638,17 @@ class controller {
                 }
             }
         }
+
+        // Trigger event
+        $event = section_restored::create([
+            'context' => $course_context,
+            'objectid' => $overwritesectionid,
+            'other' => [
+                'restored_section_id' => $restored_section->id,
+                'overwrite_section_settings' => $overwritesectionid > 0
+            ]
+        ]);
+        $event->trigger();
     }
 
     /**
@@ -753,7 +777,7 @@ class controller {
     */
     public function delete_unused_sections(int $course_id = 0) : void {
 
-        global $DB;
+        global $DB, $USER;
 
         $sql_params = [];
 
@@ -773,6 +797,13 @@ class controller {
         foreach ($sections as $section) {
             if ((int)$DB->count_records('block_sharing_cart', ['section' => $section->id]) === 0) {
                 $DB->delete_records('block_sharing_cart_sections', ['id' => $section->id]);
+
+                // Trigger event
+                $event = section_deleted::create([
+                    'context' => \context_user::instance($USER->id),
+                    'objectid' => $section->id
+                ]);
+                $event->trigger();
             }
         }
     }
