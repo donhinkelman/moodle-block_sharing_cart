@@ -1,7 +1,7 @@
 Sharing Cart
 ============
 
-Version 3.11, release 2 - 2022.08.02
+Version 3.11, release 3 - 2022.09.13
 
 The "master" branch requires Moodle 3.6 or newer.
 
@@ -13,6 +13,8 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 3.11, release 3 2022.09.13
+  * Fixed bug where the basket icon does not appear in the flexible sections course format.
 * 3.11, release 2 2022.08.02
   * Sharing cart now purges all cache hooked on the 'changesincourse' event when overwriting a section
   * Fixed sharing cart looking at invisible modules, where error (invalid id for course module) would occur.
