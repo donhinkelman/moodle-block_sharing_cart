@@ -1136,7 +1136,9 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
 
                         var $actionMenuItem = $activity.find('.action-menu.section-cm-edit-actions').parent('.actions');
 
-                        $actionMenuItem.append($backupIcon);
+                        if (!$actionMenuItem.find('.add-to-sharing-cart').length) {
+                            $actionMenuItem.append($backupIcon);
+                        }
                     }
 
                     /**
@@ -1185,10 +1187,6 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                         }
 
                         var activitySelector = 'li.activity';
-
-                        if (isFlexibleCourseFormat) {
-                            activitySelector = 'li.activity.activity-section-' + sectionId;
-                        }
 
                         var $activities = $section.find(activitySelector);
 
