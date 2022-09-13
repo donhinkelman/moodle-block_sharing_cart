@@ -103,17 +103,31 @@ class block_sharing_cart extends block_base {
         $this->page->requires->jquery();
 		$this->page->requires->js_call_amd('block_sharing_cart/script', 'init');
         $this->page->requires->strings_for_js(
-                array('yes', 'no', 'ok', 'cancel', 'error', 'edit', 'move', 'delete', 'movehere'),
-                'moodle'
+            ['yes', 'no', 'ok', 'cancel', 'error', 'edit', 'move', 'delete', 'movehere'],
+            'moodle'
         );
         $this->page->requires->strings_for_js(
-                array('copyhere', 'notarget', 'backup', 'restore', 'movedir', 'clipboard',
-                        'confirm_backup', 'confirm_backup_section', 'confirm_userdata',
-                        'confirm_userdata', 'confirm_delete', 'clicktomove', 'folder_string',
-                        'activity_string', 'delete_folder', 'modal_checkbox',
-                        'modal_confirm_backup', 'modal_confirm_delete', 'backup_heavy_load_warning_message'
-                ),
-                __CLASS__
+            [
+                'copyhere',
+                'notarget',
+                'backup',
+                'restore',
+                'movedir',
+                'clipboard',
+                'confirm_backup',
+                'confirm_backup_section',
+                'confirm_userdata',
+                'confirm_delete',
+                'clicktomove',
+                'folder_string',
+                'activity_string',
+                'delete_folder',
+                'modal_checkbox',
+                'modal_confirm_backup',
+                'modal_confirm_delete',
+                'backup_heavy_load_warning_message',
+            ],
+            __CLASS__
         );
 
         $footer = '';
@@ -206,5 +220,4 @@ class block_sharing_cart extends block_base {
     private function is_special_version(): bool {
         return version_compare(moodle_major_version(), '3.2') === 1;
     }
-
 }
