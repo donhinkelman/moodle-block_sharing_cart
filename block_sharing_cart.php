@@ -101,7 +101,7 @@ class block_sharing_cart extends block_base {
             $this->page->requires->css('/blocks/sharing_cart/custom.css');
         }
         $this->page->requires->jquery();
-		$this->page->requires->js_call_amd('block_sharing_cart/script', 'init');
+		$this->page->requires->js_call_amd('block_sharing_cart/script', 'init', ['add_method' => get_config('block_sharing_cart', 'add_to_sharing_cart')]);
         $this->page->requires->strings_for_js(
             ['yes', 'no', 'ok', 'cancel', 'error', 'edit', 'move', 'delete', 'movehere'],
             'moodle'
@@ -126,6 +126,7 @@ class block_sharing_cart extends block_base {
                 'modal_confirm_backup',
                 'modal_confirm_delete',
                 'backup_heavy_load_warning_message',
+                'drop_here',
             ],
             __CLASS__
         );
