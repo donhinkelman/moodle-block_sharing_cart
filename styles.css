@@ -123,3 +123,14 @@
 .editing.format-grid .course-content h3.sectionname .add-to-sharing-cart {
     padding-top: 15px;
 }
+
+.block_sharing_cart div.dragging_item {
+    animation: drop_area ease-in-out .5s forwards;
+    filter: blur(2px);
+}
+
+@keyframes drop_area {
+    100% {
+        background-color: lightslategrey;
+    }
+}
