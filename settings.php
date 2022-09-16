@@ -48,4 +48,13 @@ if ($ADMIN->fulltree) {
                     array()
             )
     );
+    $settings->add(
+        new admin_setting_configselect(
+            'block_sharing_cart/add_to_sharing_cart',
+            get_string('settings:add_to_sharing_cart', 'block_sharing_cart'),
+            get_string('settings:add_to_sharing_cart_desc', 'block_sharing_cart'),
+            'drag_and_drop',
+            ['drag_and_drop' => get_string('settings:drag_and_drop', 'block_sharing_cart'), 'click_to_add' => get_string('settings:click_to_add', 'block_sharing_cart')]
+        )
+    );
 }

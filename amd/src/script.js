@@ -23,7 +23,8 @@
 
 define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalFactory, ModalEvents) {
     return {
-        init: function() {
+        init: function(addMethod) {
+
             $(document).ready(function() {
 
                 /**
@@ -1102,6 +1103,10 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                             .append($('<i class="fa fa-shopping-basket icon"></i>'))
                             .attr('title', str('backup'));
 
+                        if (addMethod !== 'click_to_add') {
+                            $backupIcon.addClass('d-none');
+                        }
+
                         return $backupIcon;
                     }
 
@@ -1201,6 +1206,94 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                 };
 
                 /**
+                 *  Initialize the Sharing Cart footer basket for 4.0+.
+                 */
+                function init_footer_basket() {
+                    let currentDragging;
+                    const activities = document.querySelectorAll(".activity.activity-wrapper");
+                    const sections = document.querySelectorAll(".course-section-header");
+                    const sharingCartBlock = document.querySelector('section[data-block="sharing_cart"]');
+
+                    add_draggable_to_first_section();
+
+                    const footer = document.getElementById('page-footer');
+                    const footerIconContainer = footer.querySelector('div[data-region="footer-container-popover"]');
+
+                    var basket = document.createElement('i');
+                    basket.setAttribute('class', 'fa fa-shopping-basket');
+
+                    var basketButton = document.createElement('button');
+                    basketButton.setAttribute('class', 'btn btn-icon bg-secondary icon-no-margin btn-footer-popover');
+                    basketButton.setAttribute('style', 'z-index: 1001;');
+                    basketButton.append(basket);
+
+                    var dropAreaText = document.createElement('p');
+                    dropAreaText.setAttribute('class', 'font-weight-bold text-white');
+                    dropAreaText.innerText = str('drop_here');
+
+                    var dropArea = document.createElement('div');
+                    dropArea.setAttribute('class',
+                        'h-100 w-100 position-absolute d-flex justify-content-center align-items-center');
+                    dropArea.append(dropAreaText);
+
+                    sections.forEach(section => {
+                        drag_event_listeners(section);
+                    });
+
+                    activities.forEach(activity => {
+                        drag_event_listeners(activity);
+                    });
+
+                    /**
+                     *  Initialize events for dragging
+                     * @param {object} draggable
+                     */
+                    function drag_event_listeners(draggable) {
+                        draggable.addEventListener('dragstart', (e) => {
+                            footerIconContainer?.prepend(basketButton);
+                            sharingCartBlock.children[0].classList.add('dragging_item');
+                            sharingCartBlock.append(dropArea);
+                            currentDragging = e.target;
+                        });
+
+                        draggable.addEventListener('dragend', () => {
+                            footerIconContainer?.removeChild(basketButton);
+                            sharingCartBlock.children[0].classList.remove('dragging_item');
+                            sharingCartBlock.removeChild(dropArea);
+                        });
+                    }
+
+                    [basketButton, sharingCartBlock].forEach((dropzone) => {
+                        dropzone.addEventListener("dragover", (e) => {
+                            e.preventDefault();
+                        });
+                        dropzone.addEventListener("dragenter", (e) => {
+                            e.preventDefault();
+                        });
+
+                        dropzone.addEventListener("drop", () => {
+                            if (currentDragging instanceof HTMLElement) {
+                                currentDragging.querySelector('.add-to-sharing-cart').click();
+                            }
+
+                            currentDragging = undefined;
+                        });
+                    });
+                }
+
+                /**
+                 *  Make the first section (General) draggable
+                 */
+                function add_draggable_to_first_section() {
+                    const courseSectionHeader = document.getElementsByClassName("course-section-header")[0] ?? null;
+
+                    if (courseSectionHeader instanceof HTMLElement) {
+                        courseSectionHeader.classList.add('draggable');
+                        courseSectionHeader.setAttribute('draggable', true);
+                    }
+                }
+
+                /**
                  * Initialize the Sharing Cart block
                  */
                 $.init = function() {
@@ -1210,6 +1303,10 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                     $.init_block_header();
                     $.init_item_tree();
                     $.init_activity_commands();
+
+                    if (addMethod === 'drag_and_drop') {
+                        init_footer_basket();
+                    }
                 };
                 var $spinner = $('<i/>').addClass('spinner fa fa-3x fa-circle-o-notch fa-spin');
                 $('div#sharing-cart-spinner-modal div.spinner-container').prepend($spinner);
