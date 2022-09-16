@@ -13,7 +13,9 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
-* 4.0, release 1  2022.09.14
+* 3.11, release 5 2022.09.16
+  * Added 3 new events to add custom section backup/restore functionality
+* 3.11, release 4 2022.09.14
   * Made the sharing cart Moodle 4.0 compatible
   * Added the ability to drag and drop items/sections into the cart and the basket icon
 * 3.11, release 3 2022.09.13
