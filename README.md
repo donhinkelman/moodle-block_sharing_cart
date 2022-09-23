@@ -1,7 +1,7 @@
 Sharing Cart
 ============
 
-Version 4.0, release 1 - 2022.09.14
+Version 4.0, release 1 - 2022.09.23
 
 The "master" branch requires Moodle 3.6 or newer.
 
@@ -13,6 +13,8 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 4.0, release 1 2022.09.23
+  * Confirmed compatibility with Moodle 4.0
 * 3.11, release 4 2022.09.16
   * Added 3 new events to add custom section backup/restore functionality
   * Added the ability to drag and drop items/sections into the cart and the basket icon
