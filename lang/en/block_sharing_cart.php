@@ -77,7 +77,9 @@ When the questions to be restored already exist, however, those data look like i
 this workaround will try to make another duplicates instead of reusing existing data.
 It may be useful for avoiding some restore errors, such as <i>error_question_match_sub_missing_in_db</i>.';
 $string['settings:add_to_sharing_cart'] = 'Add to sharing cart';
-$string['settings:add_to_sharing_cart_desc'] = 'Choose between drag and drop or click to add method for adding modules and sections to the sharing cart.';
+$string['settings:add_to_sharing_cart_desc'] = 'Choose between drag and drop or click to add method for adding modules and sections to the sharing cart. -
+The \'Click to add\' method is the standard in the sharing cart, where you need to click on the basket icon, before it will be added into the sharing cart. -
+The \'Drag and drop\' allows you to drag and drop modules/activities and sections into the sharing cart block or into the basket icon in the footer. Please note that this is only supported for Moodle 4.0+';
 $string['settings:drag_and_drop'] = 'Drag and drop';
 $string['settings:click_to_add'] = 'Click to add';
 
