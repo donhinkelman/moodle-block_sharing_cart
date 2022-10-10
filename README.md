@@ -1,6 +1,8 @@
 Sharing Cart
 ============
 
+**Sharing cart basket icon now hidden**  Drag item directly into your cart. Or change settings to prefer old way of clicking basket.
+
 Version 4.0, release 2 - 2022.09.26
 
 The "master" branch requires Moodle 3.6 or newer.
