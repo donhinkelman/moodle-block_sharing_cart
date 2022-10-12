@@ -26,6 +26,7 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
         init: function(addMethod) {
 
             $(document).ready(function() {
+                let isDragging = false;
 
                 /**
                  *  Returns a localized string
@@ -57,6 +58,32 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                 }
 
                 /**
+                 *  Shake the basket to indicate cancel/submit
+                 */
+                function shake_basket() {
+                    if (addMethod === 'drag_and_drop') {
+                        const sharingCartBasket = document.querySelector('button.sharing_cart_basket');
+                        sharingCartBasket?.classList.add('shake_basket');
+                    }
+                }
+
+                /**
+                 *  Remove the shake effect and basket icon
+                 */
+                function remove_basket() {
+                    if (addMethod === 'drag_and_drop' && !isDragging) {
+                        const footer = document.getElementById('page-footer');
+                        const footerIconContainer = footer.querySelector('div[data-region="footer-container-popover"]');
+                        const sharingCartBasket = document.querySelector('button.sharing_cart_basket');
+
+                        if (sharingCartBasket) {
+                            footerIconContainer?.removeChild(sharingCartBasket);
+                            sharingCartBasket.classList.remove('shake_basket');
+                        }
+                    }
+                }
+
+                /**
                  * Modal called when confirming an action.
                  *
                  * @param obj
@@ -78,6 +105,7 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                         title: obj.title,
                         body: obj.body,
                     }).done(function(modal) {
+                        let is_submitted = false;
                         modal.setSaveButtonText(obj.save_button);
 
                         // On save save check - if checkbox is checked.
@@ -88,11 +116,20 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                             };
 
                             obj.next(response);
+                            is_submitted = true;
+                        });
+
+                        modal.getRoot().on(ModalEvents.cancel, function() {
+                            remove_basket();
                         });
 
                         // Remove modal from html.
                         modal.getRoot().on(ModalEvents.hidden, function() {
                             $('body').removeClass('modal-open');
+
+                            if (!is_submitted) {
+                                remove_basket();
+                            }
                         });
 
                         modal.show();
@@ -149,6 +186,8 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                                 } else {
                                     backup(post_data.cmid, data.checkbox);
                                 }
+
+                                shake_basket();
                             }
                         });
                     });
@@ -283,7 +322,7 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                  * @returns {*|jQuery}
                  */
                 function add_spinner() {
-                    var $spinner = ($('<div class="block_spinner"><i class="fa fa-circle-o-notch fa-spin fa-2x"></i></div>'));
+                    var $spinner = ($('<div class="block_spinner"><i class="fa fa-shopping-basket sharing_cart_basket shake_basket fa-2x"></i></div>'));
                     $('section.block_sharing_cart').append($spinner);
                     return $spinner;
                 }
@@ -354,6 +393,7 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                         .always(function() {
                             $node_spinner.hide();
                             $spinner.hide();
+                            remove_basket();
                         });
                 }
 
@@ -400,6 +440,7 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                         .always(function() {
                             $spinner.hide();
                             $node_spinner.hide();
+                            remove_basket();
                         });
                 }
 
@@ -1223,7 +1264,7 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                     basket.setAttribute('class', 'fa fa-shopping-basket');
 
                     var basketButton = document.createElement('button');
-                    basketButton.setAttribute('class', 'btn btn-icon bg-secondary icon-no-margin btn-footer-popover');
+                    basketButton.setAttribute('class', 'btn btn-icon bg-secondary icon-no-margin btn-footer-popover sharing_cart_basket');
                     basketButton.setAttribute('style', 'z-index: 1001;');
                     basketButton.append(basket);
 
@@ -1250,25 +1291,39 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                      */
                     function drag_event_listeners(draggable) {
                         draggable.addEventListener('dragstart', (e) => {
+                            basketButton.classList.remove('shake_basket');
+
                             footerIconContainer?.prepend(basketButton);
                             sharingCartBlock.children[0].classList.add('dragging_item');
                             sharingCartBlock.append(dropArea);
                             currentDragging = e.target;
+                            isDragging = true;
                         });
 
                         draggable.addEventListener('dragend', () => {
-                            footerIconContainer?.removeChild(basketButton);
+                            if (currentDragging instanceof HTMLElement) {
+                                footerIconContainer?.removeChild(basketButton);
+                            }
+
                             sharingCartBlock.children[0].classList.remove('dragging_item');
                             sharingCartBlock.removeChild(dropArea);
+                            isDragging = false;
                         });
                     }
 
                     [basketButton, sharingCartBlock].forEach((dropzone) => {
                         dropzone.addEventListener("dragover", (e) => {
                             e.preventDefault();
+                            dropzone.classList.add('drag_over');
                         });
+
                         dropzone.addEventListener("dragenter", (e) => {
                             e.preventDefault();
+                            dropzone.classList.add('drag_over');
+                        });
+
+                        dropzone.addEventListener("dragleave", () => {
+                            dropzone.classList.remove('drag_over');
                         });
 
                         dropzone.addEventListener("drop", () => {
@@ -1276,7 +1331,9 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                                 currentDragging.querySelector('.add-to-sharing-cart').click();
                             }
 
+                            dropzone.classList.remove('drag_over');
                             currentDragging = undefined;
+                            isDragging = false;
                         });
                     });
                 }

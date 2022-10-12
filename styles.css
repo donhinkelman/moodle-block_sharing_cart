@@ -134,3 +134,26 @@
         background-color: lightslategrey;
     }
 }
+
+.sharing_cart_basket.drag_over {
+    filter: brightness(.8);
+}
+
+.sharing_cart_basket.shake_basket {
+    animation: shake_basket infinite 3s linear !important;
+}
+
+@keyframes shake_basket {
+    0% {
+        transform: rotate(0deg);
+    }
+    10% {
+        transform: rotate(-30deg);
+    }
+    20% {
+        transform: rotate(30deg);
+    }
+    30%, 100% {
+        transform: rotate(0deg);
+    }
+}
