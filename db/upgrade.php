@@ -159,5 +159,17 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
         upgrade_block_savepoint(true, 2020112001, 'sharing_cart');
     }
 
+    if ($oldversion < 2022111100) {
+
+        // Remove redundant table, if it was created.
+        $table = new xmldb_table('block_sharing_cart_log');
+
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+
+        upgrade_block_savepoint(true, 2022111100, 'sharing_cart');
+    }
+
     return true;
 }
