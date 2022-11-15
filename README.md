@@ -13,6 +13,8 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 3.11, release 4 2022.11.15
+  * Fixed issue where userdata would not backup/restore correctly
 * 3.11, release 3 2022.09.12
   * Added 3 new events to add custom section backup/restore functionality
 * 3.11, release 2 2022.08.02
