@@ -15,6 +15,8 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 4.0, release 3 2022.11.15
+  * Fixed issue where userdata would not backup/restore correctly
 * 4.0, release 2 2022.09.26
   * Added indication on basket icon when hovering and cancelling/submitting activities/sections
   * Changed spinner to shaking basket icon
