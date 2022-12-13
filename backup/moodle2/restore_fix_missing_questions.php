@@ -49,7 +49,7 @@ class restore_fix_missing_questions extends restore_execution_step {
         // @see /backup/util/dbops/restore_dbops.class.php#prechek_precheck_qbanks_by_level
         $contexts = restore_dbops::restore_get_question_banks($restoreid);
         foreach ($contexts as $contextid => $contextlevel) {
-            $categories = restore_dbops::restore_get_question_categories($restoreid, $contextid);
+            $categories = restore_dbops::restore_get_question_categories($restoreid, $contextid, $contextlevel);
             $canadd = false;
             if ($targetcontext = restore_dbops::restore_find_best_target_context($categories, $courseid, $contextlevel)) {
                 $canadd = has_capability('moodle/question:add', $targetcontext, $userid);
