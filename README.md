@@ -3,9 +3,9 @@ Sharing Cart
 
 **Sharing cart basket icon now hidden**  Drag item directly into your cart. Or change settings to prefer old way of clicking basket.
 
-Version 4.0, release 2 - 2022.09.26
+Version 4.0, release 3 - 2022.12.13
 
-The "master" branch requires Moodle 3.6 or newer.
+The "master" branch requires Moodle 3.11.4 or newer.
 
 * Moodle 3.2 => "MOODLE_32_STABLE" branch
 * Moodle 2.2 => "MOODLE_22_STABLE" branch
@@ -15,6 +15,9 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 4.0, release 3 2022.12.13
+  * Fix issue #118
+  * This version and up now requires Moodle 3.11.4
 * 4.0, release 2 2022.09.26
   * Added indication on basket icon when hovering and cancelling/submitting activities/sections
   * Changed spinner to shaking basket icon
