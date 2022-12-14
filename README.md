@@ -1,7 +1,8 @@
 Sharing Cart
 ============
 
-**Sharing cart basket icon now hidden**  Drag item directly into your cart. Or change settings to prefer old way of clicking basket.
+**Sharing cart basket icon now visible by default**  To drag item directly into your sharing cart, change the settings. 
+The old way of clicking the basket icon is now default. - Users who have already upgraded to 4.0, release 1 will need to manually change it back to the old way in settings.
 
 Version 4.0, release 3 - 2022.12.13
 
@@ -18,7 +19,8 @@ Change Log
 * 4.0, release 3 2022.12.13
   * Fix issue #118
   * This version and up now requires Moodle 3.11.4
-* 4.0, release 2 2022.09.26
+* 4.0, release 2 2022.10.14
+  * Old way of clicking on basket icon is restored. New way of direct drag-and-drop is optional, and changeable in settings.
   * Added indication on basket icon when hovering and cancelling/submitting activities/sections
   * Changed spinner to shaking basket icon
 * 4.0, release 1 2022.09.23
