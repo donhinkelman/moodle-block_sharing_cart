@@ -133,6 +133,10 @@ echo $OUTPUT->header();
         echo '
 		<ul class="bulk-delete-list">';
         foreach ($items as $id => $item) {
+            if ($item->modname === 'label') {
+                $item->modtext = renderer::strip_label($item->modtext);
+                $item->modtext = renderer::replace_image_with_string($item->modtext);
+            }
             echo '
 			<li class="bulk-delete-item">
 				<input type="checkbox" name="delete[' . $id . ']" checked="checked" id="delete_' . $id . '" />

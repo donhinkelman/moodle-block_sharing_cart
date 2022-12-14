@@ -214,7 +214,7 @@ class renderer {
      * @param string $modtext
      * @return string
      */
-    private static function strip_label(string $modtext): string {
+    public static function strip_label(string $modtext): string {
         return strip_tags($modtext, '<img>');
     }
 
@@ -223,7 +223,7 @@ class renderer {
      * @return string
      * @throws \coding_exception
      */
-    private static function replace_image_with_string(string $modtext): string {
+    public static function replace_image_with_string(string $modtext): string {
         if (strpos($modtext, '<img') !== false) {
             $modtext = preg_replace('/<img[^>]+>/i', get_string('label_image_replaced_text', 'block_sharing_cart'), $modtext);
         }
