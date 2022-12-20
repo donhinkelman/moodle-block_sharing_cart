@@ -249,9 +249,6 @@ class controller {
         if ($has_userdata && \has_capability('moodle/backup:userinfo', $context)) {
             $settings['users'] = true;
         }
-        if (\has_capability('moodle/backup:anonymise', $context)) {
-            $settings['anonymize'] = true;
-        }
         $controller = new backup_controller(
                 \backup::TYPE_1ACTIVITY,
                 $cm->id,
