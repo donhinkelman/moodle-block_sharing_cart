@@ -1,9 +1,9 @@
 Sharing Cart
 ============
 
-Version 3.11, release 2 - 2022.08.02
+Version 3.11, release 5 - 2022.12.20
 
-The "master" branch requires Moodle 3.6 or newer.
+The "MOODLE_311_STABLE" branch requires Moodle 3.11.4 or newer.
 
 * Moodle 3.2 => "MOODLE_32_STABLE" branch
 * Moodle 2.2 => "MOODLE_22_STABLE" branch
@@ -13,6 +13,8 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 3.11, release 5 2022.12.20
+  * Fixed issue where userdata would not backup/restore correctly
 * 3.11, release 4 2022.12.13
   * Fix issue #118
   * This version and up now requires Moodle 3.11.4
