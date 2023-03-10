@@ -16,6 +16,8 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 4.0, release 5 2023.03.09
+  * Fixed CSS issue where the rules were unintentionally applied to the elements outside the scope in "special version".  
 * 4.0, release 4 2022.12.20
   * Fixed issue where userdata would not backup/restore correctly
 * 4.0, release 3 2022.12.13

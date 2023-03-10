@@ -93,7 +93,7 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                     // Checkbox for copying userdata confirmation.
                     if (obj.checkbox) {
                         obj.body +=
-                            '<div class="modal-checbox-wrapper">' +
+                            '<div class="modal-checbox-wrapper modal-sharing_cart">' +
                             '<input type="checkbox" id="modal-checkbox" class="modal-checkbox">' +
                             '<label for="modal-checkbox">' + str('modal_checkbox') + '</label>' +
                             '</div>';
@@ -333,7 +333,7 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                  * @returns {jQuery.fn.init}
                  */
                 function add_node_spinner($node) {
-                    var $node_spinner = $('<i class="fa fa-circle-o-notch fa-spin node_spinner"></i>');
+                    var $node_spinner = $('<i class="fa fa-circle-o-notch fa-spin node_spinner node_spinner-sharing_cart"></i>');
                     $node.append($node_spinner);
                     return $node_spinner;
                 }

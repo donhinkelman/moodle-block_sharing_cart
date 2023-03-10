@@ -108,7 +108,7 @@ echo $OUTPUT->header();
     echo $OUTPUT->heading($title);
 
     echo '
-	    <div style="width:100%; text-align:center;">
+	    <div class="block_sharing_cart" style="width:100%; text-align:center;">
 	';
     if (empty($items)) {
         echo '

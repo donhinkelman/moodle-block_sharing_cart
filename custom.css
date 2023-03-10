@@ -1,36 +1,36 @@
 /* SHARING CART TREE START */
 
-div.card-text ul.tree li:hover {
+.block_sharing_cart div.card-text ul.tree li:hover {
     background-color: rgba(0, 0, 0, .03);
 }
 
-div.card-text ul.tree li.directory > div {
+.block_sharing_cart div.card-text ul.tree li.directory > div {
     padding: 5px;
 }
 
-div.card-text ul.tree li.activity {
+.block_sharing_cart div.card-text ul.tree li.activity {
     padding: 5px;
 }
 
-div.card-text ul.tree li.activity > div {
+.block_sharing_cart div.card-text ul.tree li.activity > div {
     padding: 0;
 }
 
-ul.tree li.disabled {
+.block_sharing_cart ul.tree li.disabled {
     background-color: #f2dede;
 }
 
-ul.tree li > div {
+.block_sharing_cart ul.tree li > div {
     display: flex;
 }
 
-ul.tree li > div form {
+.block_sharing_cart ul.tree li > div form {
     display: flex;
     flex-wrap: nowrap;
 }
 
-ul.tree li > div .instancename,
-ul.tree li > div .instancename .no-overflow p {
+.block_sharing_cart ul.tree li > div .instancename,
+.block_sharing_cart ul.tree li > div .instancename .no-overflow p {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
@@ -39,24 +39,24 @@ ul.tree li > div .instancename .no-overflow p {
     width: 100%;
 }
 
-ul.tree li img.activityicon {
+.block_sharing_cart ul.tree li img.activityicon {
     height: 16px;
     width: 16px;
     margin: auto 5px auto 0;
 }
 
-span.commands {
+.block_sharing_cart span.commands {
     margin-left: auto;
     display: flex;
     align-items: center;
 }
 
-span.commands form {
+.block_sharing_cart span.commands form {
     margin-bottom: 0;
 }
 
-span.commands form select,
-span.commands form input {
+.block_sharing_cart span.commands form select,
+.block_sharing_cart span.commands form input {
     line-height: 20px;
     height: auto;
     border: 1px solid #b1b1b1;
@@ -66,21 +66,21 @@ span.commands form input {
     margin-left: 5px;
 }
 
-span.commands form input:focus {
+.block_sharing_cart span.commands form input:focus {
     box-shadow: none;
 }
 
-span.commands i.fa {
+.block_sharing_cart span.commands i.fa {
     margin: 0;
     padding: 0 0.3em;
     height: 20px;
 }
 
-span.commands i.fa:hover {
+.block_sharing_cart span.commands i.fa:hover {
     cursor: pointer;
 }
 
-span.commands a {
+.block_sharing_cart span.commands a {
     margin: auto;
 }
 
@@ -99,49 +99,49 @@ span.commands a {
     height: auto;
 }
 
-div.card-text ul.list li.move-to {
+.block_sharing_cart div.card-text ul.list li.move-to {
     border: #c9cacb 2px dashed;
     padding: 0;
     margin: 5px;
 }
 
-.move-to a {
+.block_sharing_cart .move-to a {
     display: inline-block;
     height: 100%;
     width: 100%;
     padding: 5px;
 }
 
-.move-to a:hover {
+.block_sharing_cart .move-to a:hover {
     text-decoration: none;
 }
 
-.move-to p {
+.block_sharing_cart .move-to p {
     height: 100%;
     text-align: center;
     margin: 5px;
 }
 
-.toggle-wrapper {
+.block_sharing_cart .toggle-wrapper {
     width: 100%;
     min-width: 0;
     display: flex;
 }
 
-.toggle-wrapper i.fa {
+.block_sharing_cart .toggle-wrapper i.fa {
     margin: auto 5px auto 0;
 }
 
-.footer {
+.block_sharing_cart .footer {
     margin-top: 10px;
 }
 
-.footer form {
+.block_sharing_cart .footer form {
     display: flex;
     justify-content: space-between;
 }
 
-.footer .header-commands {
+.block_sharing_cart .footer .header-commands {
     display: flex;
     justify-content: flex-end;
     margin-top: 14px;
@@ -149,13 +149,13 @@ div.card-text ul.list li.move-to {
     border-top: 1px solid rgba(0, 0, 0, .125);
 }
 
-.footer form select {
+.block_sharing_cart .footer form select {
     min-width: 0;
     width: 100%;
     margin-right: 10px;
 }
 
-.block_spinner {
+.block_sharing_cart .block_spinner {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -170,23 +170,23 @@ div.card-text ul.list li.move-to {
 /* SHARING CART TREE END */
 
 /* MODAL START */
-.modal-checbox-wrapper {
+.modal-checbox-wrapper.modal-sharing_cart {
     display: flex;
     margin-top: 20px;
 }
 
-.modal-checbox-wrapper input {
+.modal-checbox-wrapper.modal-sharing_cart input {
     margin: auto 0;
 }
 
-.modal-checbox-wrapper label {
+.modal-checbox-wrapper.modal-sharing_cart label {
     margin: auto 0 auto 5px;
 }
 
 /* MODAL END */
 
 /* ACTIVITIES & SECTION STYLING START */
-.node_spinner {
+.node_spinner.node_spinner-sharing_cart {
     height: 100%;
     margin: auto;
     font-size: 16px;
@@ -195,44 +195,44 @@ div.card-text ul.list li.move-to {
 /* ACTIVITIES & SECTION STYLING END */
 
 /* BULK VIEW START */
-.bulk-delete-list {
+.block_sharing_cart .bulk-delete-list {
     list-style: none;
     padding-left: 10px;
 }
 
-.bulk-delete-select-all {
+.block_sharing_cart .bulk-delete-select-all {
     display: flex;
     padding-left: 20px;
     margin-right: 10px;
 }
 
-.bulk-delete-item {
+.block_sharing_cart .bulk-delete-item {
     display: flex;
     border-top: 1px solid rgba(0, 0, 0, 0.125);
     padding: 5px 10px;
 }
 
-.bulk-delete-item label {
+.block_sharing_cart .bulk-delete-item label {
     text-align: left;
 }
 
-.bulk-delete-item:last-of-type {
+.block_sharing_cart .bulk-delete-item:last-of-type {
     border-bottom: 1px solid rgba(0, 0, 0, 0.125);
 }
 
-.bulk-delete-item:hover {
+.block_sharing_cart .bulk-delete-item:hover {
     background-color: rgba(0, 0, 0, .03);
 }
 
-.bulk-delete-item input {
+.block_sharing_cart .bulk-delete-item input {
     margin: auto 10px auto 0;
 }
 
-.bulk-delete-item label {
+.block_sharing_cart .bulk-delete-item label {
     margin: auto 0 auto 5px;
 }
 
-.bulk-delete-item img {
+.block_sharing_cart .bulk-delete-item img {
     height: 15px;
     width: 15px;
     margin: auto 0;
@@ -241,6 +241,6 @@ div.card-text ul.list li.move-to {
 /* BULK VIEW END */
 
 /* IKKE VORES - RYD OP */
-.header-commands img {
+.block_sharing_cart .header-commands img {
     margin-left: 0 !important;
 }
