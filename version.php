@@ -24,9 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-/** @var stdClass $plugin */
+/** @var object $plugin */
 $plugin->component = 'block_sharing_cart';
-$plugin->version   = 2022122000;
+$plugin->version   = 2023030900;
 $plugin->requires  = 2021051704; // Moodle 3.11.4
-$plugin->release   = '4.0, release 4';
+$plugin->release   = '4.0, release 5';
 $plugin->maturity  = MATURITY_STABLE;
