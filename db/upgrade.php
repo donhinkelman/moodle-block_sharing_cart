@@ -159,5 +159,22 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
         upgrade_block_savepoint(true, 2020112001, 'sharing_cart');
     }
 
+    if ($oldversion < 2022111100) {
+
+        // Remove redundant table, if it was created.
+        $table = new xmldb_table('block_sharing_cart_log');
+
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+
+        // Fix potential mismatch with name field nullability from previous upgrade step.
+        $table = new xmldb_table('block_sharing_cart_sections');
+        $field = new xmldb_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'id');
+        $dbman->change_field_notnull($table, $field);
+
+        upgrade_block_savepoint(true, 2022111100, 'sharing_cart');
+    }
+
     return true;
 }
