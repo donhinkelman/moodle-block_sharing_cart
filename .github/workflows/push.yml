@@ -6,29 +6,90 @@ on:
       - master
 
 env:
-  php: 7.4
+  php: 8.0
 
 jobs:
   PHPUnit:
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
         include:
+          # Unsupported versions
+          ## Moodle 3.9+ with PHP 7.2
           - os: ubuntu-18.04
             php: 7.2
             db: mysqli
             moodle: MOODLE_39_STABLE
-            plugin_branch: MOODLE_39_STABLE
+            experimental: true
+          ## Moodle 3.10+ with PHP 7.3
           - os: ubuntu-18.04
             php: 7.3
             db: mysqli
             moodle: MOODLE_310_STABLE
-            plugin_branch: MOODLE_310_STABLE
+            experimental: true
+          # Supported versions
+          ## Moodle 3.11+ with PHP 7.4
           - os: ubuntu-20.04
             php: 7.4
             db: mysqli
             moodle: MOODLE_311_STABLE
-            plugin_branch: MOODLE_311_STABLE
+            experimental: false
+          ## Moodle 4.0+ with PHP 7.4
+          - os: ubuntu-20.04
+            php: 7.4
+            db: mysqli
+            moodle: MOODLE_400_STABLE
+            experimental: false
+          ## Moodle 4.0+ with PHP 8.0
+          - os: ubuntu-22.04
+            php: 8.0
+            db: mysqli
+            moodle: MOODLE_400_STABLE
+            experimental: false
+          ## Moodle 4.1+ with PHP 8.0
+          - os: ubuntu-22.04
+            php: 8.0
+            db: mysqli
+            moodle: MOODLE_401_STABLE
+            experimental: false
+          # Future supported versions
+          ## Moodle 4.0+ with PHP 8.1
+          - os: ubuntu-22.04
+            php: 8.1
+            db: mysqli
+            moodle: MOODLE_400_STABLE
+            experimental: true
+          ## Moodle 4.1+ with PHP 8.1
+          - os: ubuntu-22.04
+            php: 8.1
+            db: mysqli
+            moodle: MOODLE_401_STABLE
+            experimental: true
+          ## Moodle development version with PHP 8.1
+          - os: ubuntu-22.04
+            php: 8.1
+            db: mysqli
+            moodle: master
+            experimental: true
+          ## Moodle 4.0+ with PHP 8.2
+          - os: ubuntu-22.04
+            php: 8.2
+            db: mysqli
+            moodle: MOODLE_400_STABLE
+            experimental: true
+          ## Moodle 4.1+ with PHP 8.2
+          - os: ubuntu-22.04
+            php: 8.2
+            db: mysqli
+            moodle: MOODLE_401_STABLE
+            experimental: true
+          ## Moodle development version with PHP 8.2
+          - os: ubuntu-22.04
+            php: 8.2
+            db: mysqli
+            moodle: master
+            experimental: true
 
     steps:
       - name: Setting up DB mysql
@@ -47,6 +108,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           coverage: none
+          ini-values: 'max_input_vars=5000'
 
       - name: Checking out code from moodle/moodle
         uses: actions/checkout@v2
