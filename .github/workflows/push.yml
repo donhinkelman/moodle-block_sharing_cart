@@ -79,7 +79,7 @@ jobs:
         uses: johanmeiring/mysql-action@tmpfs-patch
         with:
           collation server: utf8mb4_unicode_ci
-          mysql version: 5.7
+          mysql version: 8.0
           mysql database: test
           mysql user: test
           mysql password: test
