@@ -8,7 +8,7 @@ on:
       - MOODLE_40_STABLE
 
 env:
-  php: 8.0
+  php: 8.2
 
 jobs:
   PHPUnit:
@@ -17,26 +17,6 @@ jobs:
     strategy:
       matrix:
         include:
-          # Unsupported versions
-          ## Moodle 3.9+ with PHP 7.2
-          - os: ubuntu-18.04
-            php: 7.2
-            db: mysqli
-            moodle: MOODLE_39_STABLE
-            experimental: true
-          ## Moodle 3.10+ with PHP 7.3
-          - os: ubuntu-18.04
-            php: 7.3
-            db: mysqli
-            moodle: MOODLE_310_STABLE
-            experimental: true
-          # Supported versions
-          ## Moodle 3.11+ with PHP 7.4
-          - os: ubuntu-20.04
-            php: 7.4
-            db: mysqli
-            moodle: MOODLE_311_STABLE
-            experimental: false
           ## Moodle 4.0+ with PHP 7.4
           - os: ubuntu-20.04
             php: 7.4
