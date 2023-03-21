@@ -4,9 +4,11 @@ on:
   pull_request:
     branches:
       - master
+      - MOODLE_41_STABLE
+      - MOODLE_40_STABLE
 
 env:
-  php: 8.0
+  php: 8.2
 
 jobs:
   PHPUnit:
@@ -15,26 +17,6 @@ jobs:
     strategy:
       matrix:
         include:
-          # Unsupported versions
-          ## Moodle 3.9+ with PHP 7.2
-          - os: ubuntu-18.04
-            php: 7.2
-            db: mysqli
-            moodle: MOODLE_39_STABLE
-            experimental: true
-          ## Moodle 3.10+ with PHP 7.3
-          - os: ubuntu-18.04
-            php: 7.3
-            db: mysqli
-            moodle: MOODLE_310_STABLE
-            experimental: true
-          # Supported versions
-          ## Moodle 3.11+ with PHP 7.4
-          - os: ubuntu-20.04
-            php: 7.4
-            db: mysqli
-            moodle: MOODLE_311_STABLE
-            experimental: false
           ## Moodle 4.0+ with PHP 7.4
           - os: ubuntu-20.04
             php: 7.4
@@ -54,12 +36,6 @@ jobs:
             moodle: MOODLE_401_STABLE
             experimental: false
           # Future supported versions
-          ## Moodle 4.0+ with PHP 8.1
-          - os: ubuntu-22.04
-            php: 8.1
-            db: mysqli
-            moodle: MOODLE_400_STABLE
-            experimental: true
           ## Moodle 4.1+ with PHP 8.1
           - os: ubuntu-22.04
             php: 8.1
@@ -71,12 +47,6 @@ jobs:
             php: 8.1
             db: mysqli
             moodle: master
-            experimental: true
-          ## Moodle 4.0+ with PHP 8.2
-          - os: ubuntu-22.04
-            php: 8.2
-            db: mysqli
-            moodle: MOODLE_400_STABLE
             experimental: true
           ## Moodle 4.1+ with PHP 8.2
           - os: ubuntu-22.04
@@ -97,7 +67,7 @@ jobs:
         uses: johanmeiring/mysql-action@tmpfs-patch
         with:
           collation server: utf8mb4_unicode_ci
-          mysql version: 5.7
+          mysql version: 8.0
           mysql database: test
           mysql user: test
           mysql password: test
