@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
       - master
+      - MOODLE_41_STABLE
+      - MOODLE_40_STABLE
 
 env:
   php: 8.0
