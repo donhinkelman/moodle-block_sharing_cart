@@ -152,16 +152,18 @@ class block_sharing_cart extends block_base {
                 }
             }
 
-            $footer = "
-		    <form id=\"copy-section-form\" data-in-section=\"" . ($section_id ? 1 : 0) . "\">
-		        <select class='custom-select section-dropdown'>
-		            $sections_dropdown
-		        </select>
-		        <a href='javascript:void(0)' class='copy_section' title='".get_string('copy_section_title', __CLASS__)."'>
-		            <input id='copy' type='button' class='btn btn-primary' value='" . get_string('copy_section', __CLASS__) . "'>
-		        </a>
-            </form>
-		";
+            if (get_config('block_sharing_cart', 'show_copy_section_in_block')) {
+                $footer = "
+                    <form id=\"copy-section-form\" data-in-section=\"" . ($section_id ? 1 : 0) . "\">
+                        <select class='custom-select section-dropdown'>
+                            $sections_dropdown
+                        </select>
+                        <a href='javascript:void(0)' class='copy_section' title='" . get_string('copy_section_title', __CLASS__) . "'>
+                            <input id='copy' type='button' class='btn btn-primary' value='" . get_string('copy_section', __CLASS__) . "'>
+                        </a>
+                    </form>
+                ";
+            }
         }
         $footer .= '
                     <div style="display:none;">
