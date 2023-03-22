@@ -4,7 +4,7 @@ Sharing Cart
 **Sharing cart basket icon now visible by default**  To drag item directly into your sharing cart, change the settings. 
 The old way of clicking the basket icon is now default. - Users who have already upgraded to 4.0, release 1 will need to manually change it back to the old way in settings.
 
-Version 4.0, release 5 - 2023.03.09
+Version 4.0, release 6 - 2023.03.21
 
 The "master" branch requires Moodle 3.11.4 or newer.
 
@@ -16,6 +16,9 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 4.0, release 6 2023.03.21
+  * Added new setting to show the "Copy section" in the block underneath modules/activities
+  * Hereto updated the "Copy section" css with more spacing
 * 4.0, release 5 2023.03.09
   * Fixed CSS issue where the rules were unintentionally applied to the elements outside the scope in "special version".  
 * 4.0, release 4 2022.12.20
@@ -269,7 +272,15 @@ PHP version 7.2 deprecated, PHP version 7.4 or above recommended to cover future
 * Capabilities
     - moodle/restore:restoreactivity
     - moodle/restore:restorecourse
-    
+
+Tags
+------------
+When comitting new releases, make sure to add annotated tags with the new release and moodle version, example:
+
+Moodle 4.0 Release 1 => v4.0r1
+
+You can see other tags and their description on GitHub for further clarification
+
 Supports
 ------------
 Supported course formats
