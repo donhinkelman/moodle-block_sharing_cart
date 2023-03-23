@@ -16,6 +16,9 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 4.1, release 1 2023.03.23
+  * Changed section copy button design
+  * Tested in Boost Union theme 
 * 4.0, release 5 2023.03.09
   * Fixed CSS issue where the rules were unintentionally applied to the elements outside the scope in "special version".  
 * 4.0, release 4 2022.12.20
