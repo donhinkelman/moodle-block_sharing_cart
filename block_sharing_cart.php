@@ -152,16 +152,7 @@ class block_sharing_cart extends block_base {
                 }
             }
 
-            $footer = "
-		    <form id=\"copy-section-form\" data-in-section=\"" . ($section_id ? 1 : 0) . "\">
-		        <select class='custom-select section-dropdown'>
-		            $sections_dropdown
-		        </select>
-		        <a href='javascript:void(0)' class='copy_section' title='".get_string('copy_section_title', __CLASS__)."'>
-		            <input id='copy' type='button' class='btn btn-primary' value='" . get_string('copy_section', __CLASS__) . "'>
-		        </a>
-            </form>
-		";
+            $footer = $this->insert_copy_section_in_footer($section_id, $sections_dropdown);
         }
         $footer .= '
                     <div style="display:none;">
@@ -169,6 +160,23 @@ class block_sharing_cart extends block_base {
                     </div>
                 ';
         return $this->content = (object) array('text' => $html, 'footer' => $footer);
+    }
+
+    private function insert_copy_section_in_footer(int $section_id, string $sections_dropdown): string {
+        if (!get_config('block_sharing_cart', 'show_copy_section_in_block')) {
+            return "";
+        }
+
+        return "
+            <form id=\"copy-section-form\" data-in-section=\"" . ($section_id ? 1 : 0) . "\">
+                <select class='custom-select section-dropdown'>
+                    $sections_dropdown
+                </select>
+                <a href='javascript:void(0)' class='copy_section' title='" . get_string('copy_section_title', __CLASS__) . "'>
+                    <input id='copy' type='button' class='btn btn-primary' value='" . get_string('copy_section', __CLASS__) . "'>
+                </a>
+            </form>
+        ";
     }
 
     /**
