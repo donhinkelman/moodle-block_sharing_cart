@@ -273,7 +273,15 @@ PHP version 7.2 deprecated, PHP version 7.4 or above recommended to cover future
 * Capabilities
     - moodle/restore:restoreactivity
     - moodle/restore:restorecourse
-    
+
+Tags
+------------
+When comitting new releases, make sure to add annotated tags with the new release and moodle version, example:
+
+Moodle 4.0 Release 1 => v4.0r1
+
+You can see other tags and their description on GitHub for further clarification
+
 Supports
 ------------
 Supported course formats
