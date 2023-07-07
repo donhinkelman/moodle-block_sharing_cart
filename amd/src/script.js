@@ -647,42 +647,23 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                      * @returns {jQuery}
                      */
 
-
                     function create_target(id, section) {
-                        var href = '';
-
-                        var inSection = $('#copy-section-form').data('in-section');
-                        if (restore_targets.is_directory) {
-                            href = get_action_url('restore', {
-                                'directory': true,
-                                'path': id,
-                                'course': course.id,
-                                'section': section,
-                                'in_section': inSection,
-                                'sesskey': M.cfg.sesskey
-                            });
-                        } else {
-                            href = get_action_url('restore', {
-                                'directory': false,
-                                'id': id,
-                                'course': course.id,
-                                'section': section,
-                                'in_section': inSection,
-                                'sesskey': M.cfg.sesskey
-                            });
-                        }
-
-                        var $target = $('<a/>')
-                            .attr('class', 'restore')
-                            .attr('href', href)
-                            .attr('title', str('copyhere'))
-                            .append(
-                                $('<img class="move_target"/>')
-                                    .attr('alt', str('copyhere'))
-                                    .attr('src', M.util.image_url('dropzone_arrow', 'block_sharing_cart'))
-                            );
-
+                        const href = get_action_url('restore', {
+                            'directory': (restore_targets.is_directory === true),
+                            'target': id,
+                            'course': course.id,
+                            'section': section,
+                            'in_section': $('#copy-section-form').data('in-section'),
+                            'sesskey': M.cfg.sesskey,
+                            'returnurl': document.URL,
+                        });
+        
+                        let $target = $('<a/>').attr('href', href).attr('title', str('copyhere')).append(
+                            $('<img class="move_target"/>').attr('alt', str('copyhere')).attr('src', M.util.image_url('dropzone_arrow', 'block_sharing_cart'))
+                        );
+        
                         targets.push($target);
+        
                         return $target;
                     }
 

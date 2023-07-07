@@ -14,7 +14,10 @@ class section_title_form extends \moodleform {
     private $directory;
 
     /** @var string */
-    private $path;
+    private $target;
+
+    /** @var string */
+    private $returnurl;
 
     /** @var int */
     private $courseid;
@@ -29,18 +32,19 @@ class section_title_form extends \moodleform {
      * section_title_form constructor.
      *
      * @param bool $directory
-     * @param string $path
+     * @param string $target
      * @param int $courseid
      * @param int $sectionnumber
      * @param array $eligible_sections
      * @param int $items_count
      */
-    public function __construct(bool $directory, string $path, int $courseid, int $sectionnumber, array $eligible_sections, int $items_count = 0) {
+    public function __construct(bool $directory, string $target, int $courseid, int $sectionnumber, array $eligible_sections, string $returnurl, int $items_count = 0) {
         $this->directory = $directory;
-        $this->path = $path;
+        $this->target = $target;
         $this->courseid = $courseid;
         $this->sectionnumber = $sectionnumber;
         $this->sections = $eligible_sections;
+        $this->returnurl = $returnurl;
         $this->items_count = $items_count;
         parent::__construct();
     }
@@ -51,39 +55,42 @@ class section_title_form extends \moodleform {
         $mform =& $this->_form;
 
         if ($this->items_count > 9) {
-            $mform->addElement('static', 'restore_heavy_load_warning_message', '',
-                '<p class="alert alert-danger" role="alert">
-                '.
-                get_string('restore_heavy_load_warning_message', 'block_sharing_cart')
-                .'
-                </p>');
+            $mform->addElement(
+                'static', 
+                'restore_heavy_load_warning_message', 
+                '',
+                '<p class="alert alert-danger" role="alert">'.get_string('restore_heavy_load_warning_message', 'block_sharing_cart').'</p>'
+            );
         }
 
         $mform->addElement('static', 'description', '', get_string('conflict_description', 'block_sharing_cart'));
 
-        $mform->addElement('radio', 'sharing_cart_section',
-                get_string('conflict_no_overwrite', 'block_sharing_cart', $current_section_name), null, 0);
+        $mform->addElement('radio', 'overwrite', get_string('conflict_no_overwrite', 'block_sharing_cart', $current_section_name), null, 0);
+
         foreach ($this->sections as $section) {
             $option_title = get_string('conflict_overwrite_title', 'block_sharing_cart', $section->name);
-            if ($section->summary != null) {
-                $option_title .= '<br><div class="small"><strong>' . get_string('summary') . ':</strong> ' .
-                        strip_tags($section->summary) . '</div>';
-            }
-
-            $mform->addElement('radio', 'sharing_cart_section', $option_title, null, $section->id);
+            $option_title .= ($section->summary != null) ? '<br><div class="small"><strong>'.get_string('summary').':</strong> '.strip_tags($section->summary).'</div>' : '';
+            $mform->addElement('radio', 'overwrite', $option_title, null, $section->id);
         }
-        $mform->setDefault('section_title', 0);
+
+        $mform->setDefault('overwrite', 0);
+
         $mform->addElement('hidden', 'directory', $this->directory);
         $mform->setType('directory', PARAM_BOOL);
-        $mform->addElement('hidden', 'path', $this->path);
-        $mform->setType('path', PARAM_TEXT);
+
+        $mform->addElement('hidden', 'target', $this->target);
+        $mform->setType('target', PARAM_TEXT);
+
         $mform->addElement('hidden', 'course', $this->courseid);
         $mform->setType('course', PARAM_INT);
+
         $mform->addElement('hidden', 'section', $this->sectionnumber);
         $mform->setType('section', PARAM_INT);
+        
+        $mform->addElement('hidden', 'returnurl', $this->returnurl);
+        $mform->setType('returnurl', PARAM_TEXT);
 
-        $mform->addElement('static', 'description_note', '',
-                '<div class="small">' . get_string('conflict_description_note', 'block_sharing_cart') . '</div>');
+        $mform->addElement('static', 'description_note', '', '<div class="small">'.get_string('conflict_description_note', 'block_sharing_cart').'</div>');
 
         $this->add_action_buttons(true, get_string('conflict_submit', 'block_sharing_cart'));
     }
