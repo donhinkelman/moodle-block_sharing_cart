@@ -27,105 +27,82 @@ use block_sharing_cart\section_title_form;
 
 require_once '../../config.php';
 
-global $OUTPUT, $PAGE;
+global $CFG, $OUTPUT, $PAGE, $DB, $USER;
 
 $directory = required_param('directory', PARAM_BOOL);
-$id = null;
-$path = null;
-
-if ($directory) {
-    $path = required_param('path', PARAM_TEXT);
-} else {
-    $id = required_param('id', PARAM_INT);
-}
+$target = required_param('target', PARAM_RAW);
 $courseid = required_param('course', PARAM_INT);
 $sectionnumber = required_param('section', PARAM_INT);
-$in_section = optional_param('in_section', 0, PARAM_INT);
+$overwrite = optional_param('overwrite', 0, PARAM_INT);
+$returnurl = optional_param('returnurl', '', PARAM_TEXT);
 
-if ($courseid == SITEID) {
-    $returnurl = new moodle_url('/');
-} else {
-    $returnurl = new moodle_url('/course/view.php', array('id' => $courseid));
-}
-
-if ($in_section) {
-    $returnurl .= '&section=' . $sectionnumber;
-} else {
-    $returnurl .= '#section-' . $sectionnumber;
+if (!$returnurl) {
+    $returnurl = ($courseid == SITEID) ? new moodle_url('/') : new moodle_url('/course/view.php', ['id' => $courseid]);
 }
 
 require_login($courseid);
 
 try {
+
     $controller = new controller();
 
+    // Trying to restore a directory of items
     if ($directory) {
-        $form = new section_title_form($directory, $path, $courseid, $sectionnumber, array());
+
+        $form = new section_title_form($directory, $target, $courseid, $sectionnumber, [], $returnurl, 0);
+
         if ($form->is_cancelled()) {
-            redirect($returnurl);
+            redirect($returnurl); exit;
+        }
+
+        $target = ltrim($target, '/');
+
+        $sections = $controller->get_path_sections($target);
+
+        // Directory contains an entire section of items. Display form to let user resolve conflicts
+        if (count($sections) > 0 && !$form->is_submitted()) {
+
+            $items = $DB->get_records('block_sharing_cart', array('tree' => $target, 'userid' => $USER->id));
+            $items_count = count($items);
+
+            $dest_section = $DB->get_record('course_sections', array('course' => $courseid, 'section' => $sectionnumber));
+
+            $PAGE->set_pagelayout('standard');
+            $PAGE->set_url($returnurl);
+            $PAGE->set_title(get_string('pluginname', 'block_sharing_cart').' - '.get_string('restore', 'block_sharing_cart'));
+            $PAGE->set_heading(get_string('restore', 'block_sharing_cart'));
+
+            $form = new section_title_form($directory, $target, $courseid, $sectionnumber, $sections, $returnurl, $items_count);
+
+            echo $OUTPUT->header();
+            echo $OUTPUT->heading(get_string('section_name_conflict', 'block_sharing_cart'));
+            $form->display();
+            echo $OUTPUT->footer();
             exit;
         }
 
-        $use_sc_section = optional_param('sharing_cart_section', -1, PARAM_INT);
+        // Perform directory restore
+        $controller->restore_directory($target, $courseid, $sectionnumber, $overwrite);
 
-        if ($path[0] == '/') {
-            $path = substr($path, 1);
-        }
-
-        GLOBAL $DB, $USER;
-        $items = $DB->get_records('block_sharing_cart', array('tree' => $path, 'userid' => $USER->id));
-        $items_count = count($items);
-
-        if ($use_sc_section < 0) {
-            $sections = $controller->get_path_sections($path);
-            if (count($sections) > 0) {
-                $dest_section = $DB->get_record('course_sections', array('course' => $courseid, 'section' => $sectionnumber));
-
-                $PAGE->set_pagelayout('standard');
-                $PAGE->set_url('/blocks/sharing_cart/restore.php');
-                $PAGE->set_title(get_string('pluginname', 'block_sharing_cart') . ' - ' .
-                        get_string('restore', 'block_sharing_cart'));
-                $PAGE->set_heading(get_string('restore', 'block_sharing_cart'));
-
-                $urlchunk = '#section-';
-                if ($in_section) {
-                    $urlchunk = '&section=';
-                }
-
-                $PAGE->navbar
-                        ->add(get_section_name($courseid, $sectionnumber),
-                                new moodle_url("/course/view.php?id={$courseid}{$urlchunk}{$sectionnumber}"))
-                        ->add(get_string('pluginname', 'block_sharing_cart'))
-                        ->add(get_string('restore', 'block_sharing_cart'));
-
-                echo $OUTPUT->header();
-                echo $OUTPUT->heading(get_string('section_name_conflict', 'block_sharing_cart'));
-
-                $form = new section_title_form($directory, $path, $courseid, $sectionnumber, $sections, $items_count);
-                $form->display();
-
-                echo $OUTPUT->footer();
-                exit;
-            }
-
-            $use_sc_section = 0;
-        }
-
-        if ($use_sc_section > -1) {
-            $controller->restore_directory($path, $courseid, $sectionnumber, $use_sc_section);
-        }
     } else {
-        $controller->restore($id, $courseid, $sectionnumber);
+
+        // Restore single item
+        $controller->restore($target, $courseid, $sectionnumber);
+
     }
 
     redirect($returnurl);
 
-} catch (sharing_cart\exception $ex) {
+} catch (\block_sharing_cart\exception $ex) {
+
     print_error($ex->errorcode, $ex->module, $returnurl, $ex->a);
+
 } catch (Exception $ex) {
+
     if (!empty($CFG->debug) && $CFG->debug >= DEBUG_DEVELOPER) {
         print_error('notlocalisederrormessage', 'error', '', $ex->__toString());
     } else {
         print_error('unexpectederror', 'block_sharing_cart', $returnurl);
     }
+
 }

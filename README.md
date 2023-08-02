@@ -16,6 +16,8 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 4.0, release 7 2023.07.05
+  * Return to original URL when inserting items & general code cleanup
 * 4.0, release 6 2023.03.21
   * Added new setting to show the "Copy section" in the block underneath modules/activities
   * Hereto updated the "Copy section" css with more spacing
