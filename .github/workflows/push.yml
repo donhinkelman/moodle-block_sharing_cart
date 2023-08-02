@@ -5,7 +5,6 @@ on:
     branches:
       - master
       - MOODLE_41_STABLE
-      - MOODLE_40_STABLE
 
 env:
   php: 8.2
@@ -17,18 +16,6 @@ jobs:
     strategy:
       matrix:
         include:
-          ## Moodle 4.0+ with PHP 7.4
-          - os: ubuntu-20.04
-            php: 7.4
-            db: mysqli
-            moodle: MOODLE_400_STABLE
-            experimental: false
-          ## Moodle 4.0+ with PHP 8.0
-          - os: ubuntu-22.04
-            php: 8.0
-            db: mysqli
-            moodle: MOODLE_400_STABLE
-            experimental: false
           ## Moodle 4.1+ with PHP 8.0
           - os: ubuntu-22.04
             php: 8.0
