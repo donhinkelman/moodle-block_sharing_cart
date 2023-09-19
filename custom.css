@@ -1,5 +1,10 @@
 /* SHARING CART TREE START */
 
+.block_sharing_cart div.card-text ul.tree {
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .block_sharing_cart div.card-text ul.tree li:hover {
     background-color: rgba(0, 0, 0, .03);
 }
