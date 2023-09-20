@@ -162,7 +162,11 @@ class block_sharing_cart extends block_base {
                 $activities_dropdown = '';
                 /** @var \cm_info $activity */
                 foreach ($activities as $activity) {
-                    if ($section_id !== $activity->get_section_info()->section) {
+                    if ($this->is_activity_not_in_section($section_id, $activity)) {
+                        continue;
+                    }
+
+                    if ($this->is_activity_deletion_in_progress($activity)) {
                         continue;
                     }
 
@@ -185,6 +189,14 @@ class block_sharing_cart extends block_base {
                     </div>
                 ';
         return $this->content = (object) array('text' => $html, 'footer' => $footer);
+    }
+
+    private function is_activity_not_in_section(int $section_id, \cm_info $activity): bool {
+        return $section_id !== $activity->get_section_info()->section;
+    }
+
+    private function is_activity_deletion_in_progress(\cm_info $activity): bool {
+        return $activity->deletioninprogress == 1;
     }
 
     private function insert_copy_section_in_footer(int $section_id, string $sections_dropdown): string {
