@@ -16,6 +16,8 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 4.1, release 3 2023.09.20
+  * Added activity copy button, if user has capability to back up activities, but not to manage activities 
 * 4.1, release 2 2023.07.05
   * Return to original URL when inserting items & general code cleanup
 * 4.1, release 1 2023.03.23
