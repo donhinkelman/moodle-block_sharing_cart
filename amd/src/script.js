@@ -766,25 +766,28 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                  *
                  * @param e
                  * @param activityName
+                 * @param {int} cmId
                  */
-                $.on_backup = function(e, activityName) {
-                    var cmid = (function($backup) {
-                        var $activity = $backup.closest('li.activity');
-                        if ($activity.length) {
-                            return $activity.attr('id').match(/(\d+)$/)[1];
-                        }
-                        var $commands = $backup.closest('.commands');
-                        var dataowner = $commands.attr('data-owner');
-                        if (dataowner.length) {
-                            return dataowner.match(/(\d+)$/)[1];
-                        }
-                        return $commands.find('a.editing_delete').attr('href').match(/delete=(\d+)/)[1];
-                    })($(e.target));
+                $.on_backup = function(e, activityName, cmId = 0) {
+                    if (cmId === 0) {
+                        cmId = (function ($backup) {
+                            var $activity = $backup.closest('li.activity');
+                            if ($activity.length) {
+                                return $activity.attr('id').match(/(\d+)$/)[1];
+                            }
+                            var $commands = $backup.closest('.commands');
+                            var dataowner = $commands.attr('data-owner');
+                            if (dataowner.length) {
+                                return dataowner.match(/(\d+)$/)[1];
+                            }
+                            return $commands.find('a.editing_delete').attr('href').match(/delete=(\d+)/)[1];
+                        })($(e.target));
+                    }
 
                     var data =
                         {
                             "action": "is_userdata_copyable",
-                            "cmid": cmid
+                            "cmid": cmId
                         };
 
                     on_backup_modal(data, activityName, str('confirm_backup'), false);
@@ -1361,6 +1364,14 @@ define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalF
                 var sectionName = $section_selected.data('section-name');
 
                 $.on_section_backup(sectionId, sectionNumber, courseId, sectionName);
+            });
+
+            $('.copy_activity').on('click', function(e) {
+                var activitySelected = ($('.activity-dropdown option:selected'));
+                var activityId = activitySelected.data('activity-id');
+                var activityName = activitySelected.data('activity-name');
+
+                $.on_backup(e, activityName, activityId);
             });
         }
     };

@@ -24,6 +24,7 @@
 
 use block_sharing_cart\controller;
 use block_sharing_cart\section;
+use block_sharing_cart\module;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -89,6 +90,9 @@ class block_sharing_cart extends block_base {
         $sectionsHandler = new section();
         $sections = $sectionsHandler->all($COURSE->id);
 
+        $moduleHandler = new module();
+        $activities = $moduleHandler->get_all_from_course($COURSE->id);
+
         /* Place the <noscript> tag to give out an error message if JavaScript is not enabled in the browser.
          * Adding bootstrap classes to show colored info in bootstrap based themes. */
         $noscript = html_writer::tag('noscript',
@@ -152,7 +156,32 @@ class block_sharing_cart extends block_base {
                 }
             }
 
-            $footer = $this->insert_copy_section_in_footer($section_id, $sections_dropdown);
+            $footer .= $this->insert_copy_section_in_footer($section_id, $sections_dropdown);
+
+            if (!has_capability('moodle/course:manageactivities', $context)) {
+                $activities_dropdown = '';
+                /** @var \cm_info $activity */
+                foreach ($activities as $activity) {
+                    if ($this->is_activity_not_in_section($section_id, $activity)) {
+                        continue;
+                    }
+
+                    if ($this->is_activity_deletion_in_progress($activity)) {
+                        continue;
+                    }
+
+                    $activityname = $activity->get_name();
+                        $activities_dropdown .= "
+                            <option data-activity-id='$activity->id' data-activity-name='$activityname'>
+                                $activityname
+                            </option>
+                        ";
+                }
+
+                if ($activities_dropdown !== '') {
+                    $footer .= $this->insert_copy_activity_in_footer($activities_dropdown);
+                }
+            }
         }
         $footer .= '
                     <div style="display:none;">
@@ -160,6 +189,14 @@ class block_sharing_cart extends block_base {
                     </div>
                 ';
         return $this->content = (object) array('text' => $html, 'footer' => $footer);
+    }
+
+    private function is_activity_not_in_section(int $section_id, \cm_info $activity): bool {
+        return $section_id !== $activity->get_section_info()->section;
+    }
+
+    private function is_activity_deletion_in_progress(\cm_info $activity): bool {
+        return $activity->deletioninprogress == 1;
     }
 
     private function insert_copy_section_in_footer(int $section_id, string $sections_dropdown): string {
@@ -174,6 +211,24 @@ class block_sharing_cart extends block_base {
                 </select>
                 <a href='javascript:void(0)' class='copy_section' title='" . get_string('copy_section_title', __CLASS__) . "'>
                     <input id='copy' type='button' class='btn btn-primary' value='" . get_string('copy_section', __CLASS__) . "'>
+                </a>
+            </form>
+        ";
+    }
+
+    private function insert_copy_activity_in_footer(string $activities): string {
+        if (!get_config('block_sharing_cart', 'show_copy_activity_in_block')) {
+            return "";
+        }
+
+        return "
+            <form class='mt-3' id=\"copy-activity-form\"'>
+            <p>" . get_string('copy_activity_reason', __CLASS__) . "</p>
+                <select class='custom-select activity-dropdown'>
+                    $activities
+                </select>
+                <a href='javascript:void(0)' class='copy_activity' title='" . get_string('copy_activity_title', __CLASS__) . "'>
+                    <input id='copy' type='button' class='btn btn-primary' value='" . get_string('copy_activity', __CLASS__) . "'>
                 </a>
             </form>
         ";
