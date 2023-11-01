@@ -1,10 +1,10 @@
 Sharing Cart
 ============
 
-**Sharing cart basket icon now visible by default**  To drag item directly into your sharing cart, change the settings. 
+**Sharing cart basket icon now visible by default since 4.1, release 3 2023.09.20**  To drag item directly into your sharing cart, change the settings. 
 The old way of clicking the basket icon is now default. - Users who have already upgraded to 4.0, release 1 will need to manually change it back to the old way in settings.
 
-Version 4.1, release 3 - 2023.09.20
+Version 4.3, release 1 - 2023.11.01
 
 The "master" branch requires Moodle 3.11.4 or newer.
 
@@ -16,6 +16,9 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 4.3, release 1 2023.11.01
+  * Adapted Sharing Cart to new core Moodle 4.3 Backup feature which allows backup without editing the backup.
+* 4.2, release skipped.
 * 4.1, release 3 2023.09.20
   * Added activity copy button, if user has capability to back up activities, but not to manage activities 
 * 4.1, release 2 2023.07.05
