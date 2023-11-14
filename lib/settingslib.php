@@ -88,7 +88,7 @@ class admin_setting_configmulticheckboxwithicon extends admin_setting_configmult
             //            $options[] = '<input type="checkbox" id="'.$this->get_id().'_'.$key.'" name="'.$this->get_full_name().'['.$key.']" value="1" '.$checked.' />'
             //                .'<label for="'.$this->get_id().'_'.$key.'">'.highlightfast($query, $description).'</label>';
             $options[] = '<input type="checkbox" id="' . $this->get_id() . '_' . $key . '" name="' . $this->get_full_name() . '[' .
-                    $key . ']" value="1" ' . $checked . ' />'
+                    $key . ']" value="1" ' . $checked . ' class="mr-1"/>'
                     . '<label for="' . $this->get_id() . '_' . $key . '">' . $this->icons[$key] .
                     highlightfast($query, $description) . '</label>';
         }
