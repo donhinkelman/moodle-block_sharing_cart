@@ -18,15 +18,27 @@
  *  Sharing Cart
  *
  * @package    block_sharing_cart
- * @copyright  2023 (c) Don Hinkelman, moxis and others
+ * @copyright  2017 (C) VERSION2, INC.
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+namespace block_sharing_cart\event;
 
-/** @var object $plugin */
-$plugin->component = 'block_sharing_cart';
-$plugin->version   = 2023121500;
-$plugin->requires  = 2021051704; // Moodle 3.11.4
-$plugin->release   = '4.3, release 2';
-$plugin->maturity  = MATURITY_STABLE;
+
+// @codeCoverageIgnoreStart
+defined('MOODLE_INTERNAL') || die();
+// @codeCoverageIgnoreEnd
+
+
+class backup_activity_started extends base
+{
+    protected function get_crud(): string
+    {
+        return static::CRUD_READ;
+    }
+
+    public function get_description(): string
+    {
+        return "User with id {$this->userid} started a backup of the activity with course module id {$this->get_course_module_id()}";
+    }
+}

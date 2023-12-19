@@ -16,31 +16,25 @@ jobs:
     strategy:
       matrix:
         include:
-          ## Moodle 4.1+ with PHP 8.0
-          - os: ubuntu-22.04
-            php: 8.0
-            db: mysqli
-            moodle: MOODLE_401_STABLE
-            experimental: false
-          # Future supported versions
           ## Moodle 4.1+ with PHP 8.1
           - os: ubuntu-22.04
             php: 8.1
             db: mysqli
             moodle: MOODLE_401_STABLE
             experimental: true
-          ## Moodle development version with PHP 8.1
-          - os: ubuntu-22.04
-            php: 8.1
-            db: mysqli
-            moodle: master
-            experimental: true
-          ## Moodle 4.1+ with PHP 8.2
+          ## Moodle 4.2+ with PHP 8.2
           - os: ubuntu-22.04
             php: 8.2
             db: mysqli
-            moodle: MOODLE_401_STABLE
+            moodle: MOODLE_402_STABLE
             experimental: true
+          ## Moodle 4.3+ with PHP 8.2
+          - os: ubuntu-22.04
+            php: 8.2
+            db: mysqli
+            moodle: MOODLE_403_STABLE
+            experimental: true
+          # Future supported versions
           ## Moodle development version with PHP 8.2
           - os: ubuntu-22.04
             php: 8.2
@@ -68,13 +62,13 @@ jobs:
           ini-values: 'max_input_vars=5000'
 
       - name: Checking out code from moodle/moodle
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: moodle/moodle
           ref: ${{ matrix.moodle }}
 
       - name: Check out code from ${{ github.repository }}
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: ${{ github.workspace }}/blocks/sharing_cart
           ref: ${{ github.ref }}

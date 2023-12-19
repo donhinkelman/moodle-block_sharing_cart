@@ -25,9 +25,14 @@
 namespace block_sharing_cart;
 
 use backup_controller;
+use block_sharing_cart\event\backup_activity_created;
+use block_sharing_cart\event\backup_activity_started;
+use block_sharing_cart\event\restore_activity_created;
+use block_sharing_cart\event\restore_activity_started;
 use block_sharing_cart\event\section_backedup;
 use block_sharing_cart\event\section_deleted;
 use block_sharing_cart\event\section_restored;
+use block_sharing_cart\event\sharing_cart_item_deleted;
 use block_sharing_cart\exceptions\no_backup_support_exception;
 use block_sharing_cart\repositories\course_repository;
 use cache_helper;
@@ -215,6 +220,11 @@ class controller {
         // THIS FILE REQUIRES $CFG, DO NOT REMOVE IT
         require_once __DIR__ . '/../../../backup/util/includes/backup_includes.php';
 
+        backup_activity_started::create_by_course_module_id(
+            $course,
+            $cmid
+        )->trigger();
+
         // validate parameters and capabilities
         $cm = \get_coursemodule_from_id(null, $cmid, 0, false, MUST_EXIST);
         $context = \context_module::instance($cm->id);
@@ -295,7 +305,15 @@ class controller {
                 'course' => $course,
                 'section' => $section
         ));
-        return $record->insert();
+        $id = $record->insert();
+
+        backup_activity_created::create_by_course_module_id(
+            $course,
+            $cmid,
+            $id
+        )->trigger();
+
+        return $id;
     }
 
     /**
@@ -507,6 +525,8 @@ class controller {
         require_once __DIR__ . '/../../../backup/util/includes/restore_includes.php';
         require_once __DIR__ . '/../backup/util/helper/restore_fix_missings_helper.php';
 
+        restore_activity_started::create_by_sharing_cart_backup_id($id)->trigger();
+
         // cleanup temporary files when we exit this scope
         $tempfiles = array();
         $scope = new scoped(function() use (&$tempfiles) {
@@ -551,6 +571,15 @@ class controller {
             if ($task->setting_exists('overwrite_conf')) {
                 $task->get_setting('overwrite_conf')->set_value(false);
             }
+            if ($task->setting_exists('userscompletion')) {
+                $has_user_data = false;
+                if ($task->setting_exists('user')) {
+                    $has_user_data = (bool)$task->get_setting('userscompletion')->get_value();
+                }
+                if (!$has_user_data) {
+                    $task->get_setting('userscompletion')->set_value(false);
+                }
+            }
         }
         if (\get_config('block_sharing_cart', 'workaround_qtypes')) {
             \restore_fix_missings_helper::fix_plan($controller->get_plan());
@@ -567,6 +596,12 @@ class controller {
                 // Fire event.
                 $event = \core\event\course_module_created::create_from_cm($cm);
                 $event->trigger();
+
+                restore_activity_created::create_by_course_module_id(
+                    $course->id,
+                    $cmid,
+                    $id
+                )->trigger();
             }
         }
         \rebuild_course_cache($course->id);
@@ -726,8 +761,9 @@ class controller {
 
         $storage = new storage();
         $storage->delete($record->filename);
-
         $record->delete();
+
+        sharing_cart_item_deleted::create_by_sharing_cart_item_id($id, $record->course)->trigger();
     }
 
     /**

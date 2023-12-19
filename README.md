@@ -16,6 +16,11 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 4.3, release 2 2023.12.15
+  * Fixed sharing cart restore process.
+  * Added moodle log when a sharing cart item got backup, restored or deleted.
+  When the backup file has user completion data but the backup file has no user data.
+  It causes Moodle try to restore something that does not exist.
 * 4.3, release 1 2023.11.01
   * Adapted Sharing Cart to new core Moodle 4.3 Backup feature which allows backup without editing the backup.
 * 4.2, release skipped.
