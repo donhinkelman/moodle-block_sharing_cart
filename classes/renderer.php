@@ -26,8 +26,10 @@ namespace block_sharing_cart;
 
 defined('MOODLE_INTERNAL') || die();
 
+use coding_exception;
 use core_renderer;
 use html_writer;
+use stdClass;
 
 /**
  *  Sharing Cart item tree renderer
@@ -38,7 +40,7 @@ class renderer {
      *
      * @param array & $tree
      * @return string
-     * @throws \coding_exception
+     * @throws coding_exception
      */
     public static function render_tree(array &$tree): string {
         $html = html_writer::start_tag('ul', ['class' => 'tree list']);
@@ -76,7 +78,7 @@ class renderer {
      * @param array & $node
      * @param string $path
      * @return string
-     * @throws \coding_exception
+     * @throws coding_exception
      */
     private static function render_node(array &$node, string $path): string {
         $html = '';
@@ -104,7 +106,7 @@ class renderer {
      * @param string $path
      * @param array $leaf
      * @return string
-     * @throws \coding_exception
+     * @throws coding_exception
      * @global core_renderer $OUTPUT
      */
     private static function render_dir_open(string $path, array $leaf): string {
@@ -140,14 +142,23 @@ class renderer {
      *  Render an item
      *
      * @param string $path
-     * @param \stdClass $item
+     * @param object $item
      * @return string
-     * @throws \coding_exception
+     * @throws coding_exception
      */
-    private static function render_item(string $path, \stdClass $item): string {
+    private static function render_item(string $path, object $item): string {
         $components = array_filter(explode('/', trim($path, '/')), 'strlen');
         $depth = count($components);
-        $class = $item->modname . ' ' . "modtype_{$item->modname}" . ($item->uninstalled_plugin ? ' disabled' : '');
+        $class = $item->modname . ' ' . "modtype_{$item->modname}";
+        $is_copying = $item->fileid < 1;
+        $disabled = $is_copying || $item->uninstalled_plugin;
+        if ($item->uninstalled_plugin) {
+            $class .= ' disabled';
+        }
+        if ($is_copying) {
+            $class .= ' text-muted';
+            $class .= ' copying';
+        }
 
         $coursename = '';
         if ($item->coursefullname != null) {
@@ -162,7 +173,10 @@ class renderer {
         }
 
         return '
-				<li class="activity ' . $class . '" id="block_sharing_cart-item-' . $item->id . '" data-disable-copy="'. ($item->uninstalled_plugin ?? 0) .'">
+				<li class="activity ' . $class . '" id="block_sharing_cart-item-' . $item->id . '"
+				    data-disable-copy="'. $disabled .'"
+				    data-is-copying="'. (int)$is_copying .'"
+				    >
 					<div class="sc-indent-' . $depth . '" title="' . $title . '">
 						' . self::render_modicon($item) . '
 						<span class="instancename">' . $item->modtext . '</span>
@@ -185,12 +199,12 @@ class renderer {
     /**
      *  Render a module icon
      *
-     * @param \stdClass $item
+     * @param stdClass $item
      * @return string
-     * @throws \coding_exception
+     * @throws coding_exception
      * @global core_renderer $OUTPUT
      */
-    public static function render_modicon(\stdClass $item): string {
+    public static function render_modicon(stdClass $item): string {
         global $OUTPUT;
 
         if(isset($item->uninstalled_plugin) && $item->uninstalled_plugin) {
@@ -221,7 +235,7 @@ class renderer {
     /**
      * @param string $modtext
      * @return string
-     * @throws \coding_exception
+     * @throws coding_exception
      */
     public static function replace_image_with_string(string $modtext): string {
         if (strpos($modtext, '<img') !== false) {

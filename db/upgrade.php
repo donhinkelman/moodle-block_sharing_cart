@@ -111,7 +111,7 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
 
         $table = new xmldb_table('block_sharing_cart_sections');
         if (!$dbman->table_exists($table)) {
-            $table->add_field('id', XMLDB_TYPE_INTEGER, 10, null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+            $table->add_field('id', XMLDB_TYPE_INTEGER, 10, null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
             $table->add_field('name', XMLDB_TYPE_CHAR, 255, null, XMLDB_NOTNULL, null, null, 'id');
             $table->add_field('summary', XMLDB_TYPE_TEXT, null, null, null, null, null, 'name');
             $table->add_field('summaryformat', XMLDB_TYPE_INTEGER, 2, null, XMLDB_NOTNULL, false, 0, 'summary');
@@ -174,6 +174,86 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
         $dbman->change_field_notnull($table, $field);
 
         upgrade_block_savepoint(true, 2022111100, 'sharing_cart');
+    }
+
+    if ($oldversion < 2024010300) {
+        $table = new xmldb_table('block_sharing_cart');
+        $field = new xmldb_field(
+            'fileid',
+            XMLDB_TYPE_INTEGER,
+            '10',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            0
+        );
+
+        // Add file id field to sharing cart table - for accelerating backup file selection.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Add indexes to sharing cart table
+        $index = new xmldb_index('weight', XMLDB_INDEX_NOTUNIQUE, ['weight']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        $index = new xmldb_index('tree', XMLDB_INDEX_NOTUNIQUE, ['tree']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        $index = new xmldb_index('section', XMLDB_INDEX_NOTUNIQUE, ['section']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        $index = new xmldb_index('fileid', XMLDB_INDEX_NOTUNIQUE, ['fileid']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Mapping sharing cart records with user backup files.
+        // This is for accelerating backup file selection and to eliminate uncertainty of the selection.
+        $storage = get_file_storage();
+        $sharing_cart_records = $DB->get_recordset('block_sharing_cart', [
+            'fileid' => 0
+        ], '', 'id, userid, filename');
+        $user_backup_files = [];
+        $deleted_sharing_cart_files = [];
+
+        foreach ($sharing_cart_records as $record) {
+            if (!isset($user_backup_files[$record->userid])) {
+                $files = $storage->get_area_files(
+                    context_user::instance($record->userid)->id,
+                    \block_sharing_cart\storage::COMPONENT,
+                    \block_sharing_cart\storage::FILEAREA,
+                    \block_sharing_cart\storage::ITEMID,
+                    'id',
+                    false
+                );
+                foreach ($files as $file) {
+                    $user_backup_files[$record->userid][$file->get_filename()] = $file->get_id();
+                }
+            }
+
+            if (isset($user_backup_files[$record->userid][$record->filename])) {
+                $record->fileid = $user_backup_files[$record->userid][$record->filename];
+                $DB->update_record('block_sharing_cart', $record);
+            }
+            else {
+                $deleted_sharing_cart_files[] = $record->id;
+            }
+        }
+        $sharing_cart_records->close();
+
+        // Remove sharing cart records that are not mapped with user backup files.
+        if (!empty($deleted_sharing_cart_files)) {
+            $DB->delete_records_list('block_sharing_cart', 'id', $deleted_sharing_cart_files);
+        }
+
+        upgrade_block_savepoint(true, 2024010300, 'sharing_cart');
     }
 
     return true;

@@ -23,6 +23,9 @@
 
 define(['jquery', 'core/modal_factory', 'core/modal_events'], function($, ModalFactory, ModalEvents) {
     return {
+        /**
+         * @param {string} addMethod
+         */
         init: function(addMethod) {
 
             $(document).ready(function() {

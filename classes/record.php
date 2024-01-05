@@ -36,17 +36,17 @@ class record {
 
     public const WEIGHT_BOTTOM = 9999;
 
-    public $id = null;
-    public $userid = null;
-    public $modname = null;
-    public $modicon = '';
-    public $modtext = null;
-    public $ctime = null;
-    public $filename = null;
-    public $tree = '';
-    public $weight = 0;
-    public $course = 0;
-    public $coursefullname = '';
+    public ?int $id = null;
+    public ?int $userid = null;
+    public ?string $modname = null;
+    public string $modicon = '';
+    public ?string $modtext = null;
+    public ?int $ctime = null;
+    public ?string $filename = null;
+    public string $tree = '';
+    public int $weight = 0;
+    public int $course = 0;
+    public string $coursefullname = '';
 
     /**
      *  Constructor

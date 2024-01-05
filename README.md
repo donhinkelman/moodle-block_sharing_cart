@@ -16,6 +16,10 @@ Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
+* 4.4, release 1 2024.01.03
+  * New feature - Added the ability to copy & restore asynchronously. 
+  * Improved backup & restore process.
+  * New upgrade will remove sharing cart items that doesn't have the backup files.
 * 4.3, release 2 2023.12.15
   * Fixed sharing cart restore process.
   * Added moodle log when a sharing cart item got backup, restored or deleted.

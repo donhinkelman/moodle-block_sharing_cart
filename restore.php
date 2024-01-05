@@ -44,6 +44,7 @@ require_login($courseid);
 
 try {
 
+    $is_async = get_config('block_sharing_cart', 'restore_mode') === 'async';
     $controller = new controller();
 
     // Trying to restore a directory of items
@@ -82,13 +83,17 @@ try {
         }
 
         // Perform directory restore
-        $controller->restore_directory($target, $courseid, $sectionnumber, $overwrite);
+        $controller->restore_directory($target, $courseid, $sectionnumber, $overwrite, $is_async);
 
     } else {
 
         // Restore single item
-        $controller->restore($target, $courseid, $sectionnumber);
-
+        if ($is_async) {
+            $controller->restore_async($target, $courseid, $sectionnumber);
+        }
+        else {
+            $controller->restore($target, $courseid, $sectionnumber);
+        }
     }
 
     redirect($returnurl);

@@ -68,14 +68,25 @@ class storage {
      * @throws stored_file_creation_exception
      */
     public function copy_from(stored_file $file): void {
-        $filerecord = (object) array(
-                'contextid' => $this->context->id,
-                'component' => self::COMPONENT,
-                'filearea' => self::FILEAREA,
-                'itemid' => self::ITEMID,
-                'filepath' => self::FILEPATH,
-        );
-        $this->storage->create_file_from_storedfile($filerecord, $file);
+        $this->copy_stored_file($file);
+    }
+
+    /**
+     * Copy a stored file to user backup
+     * @param stored_file $file
+     * @return stored_file
+     * @throws file_exception
+     * @throws stored_file_creation_exception
+     */
+    public function copy_stored_file(stored_file $file): stored_file {
+        $record = (object)[
+            'contextid' => $this->context->id,
+            'component' => self::COMPONENT,
+            'filearea' => self::FILEAREA,
+            'itemid' => self::ITEMID,
+            'filepath' => self::FILEPATH,
+        ];
+        return $this->storage->create_file_from_storedfile($record, $file);
     }
 
     /**

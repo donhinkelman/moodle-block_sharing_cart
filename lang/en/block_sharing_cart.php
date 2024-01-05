@@ -68,6 +68,12 @@ $string['label_image_replaced_text'] = ' (Label: Image)';
 $string['uninstalled_plugin_warning_title'] = 'This plugin is uninstalled. Trying to recover this without reinstalling the plugin: {$a} will cause errors. Restoration is disabled';
 $string['drop_here'] = 'Drop here..';
 
+$string['settings:backup_mode'] = 'Backup mode';
+$string['settings:backup_mode_desc'] = 'Choose between immediate or asynchronous backup process';
+$string['settings:restore_mode'] = 'Restore mode';
+$string['settings:restore_mode_desc'] = 'Choose between immediate or asynchronous restore process';
+$string['settings:backup_restore_mode_immediate'] = 'Immediate';
+$string['settings:backup_restore_mode_async'] = 'Asynchronous';
 $string['settings:userdata_copyable_modtypes'] = 'User data copyable module types';
 $string['settings:userdata_copyable_modtypes_desc'] = 'While copying an activity into the Sharing Cart,
 a dialog shows an option whether a copy of an activity includes its user data or not,

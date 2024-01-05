@@ -22,14 +22,44 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/**
- * Remove sharing cart entity, when related file was removed from the system
- * @param object $file file record
- * @throws dml_exception
- */
-function block_sharing_cart_after_file_deleted($file) {
-    global $DB;
+namespace block_sharing_cart;
 
-    $cleaner = new \block_sharing_cart\files\cleaner($DB, $file);
-    $cleaner->remove_related_sharing_cart_entity();
+
+// @codeCoverageIgnoreStart
+defined('MOODLE_INTERNAL') || die();
+// @codeCoverageIgnoreEnd
+
+class restore_task_options
+{
+    private array $data;
+
+    public function __construct(array $data = [])
+    {
+        $this->data = $data;
+    }
+
+    public function get_sharing_cart_id(): int
+    {
+        return $this->data['sharing_cart_id'] ?? 0;
+    }
+
+    public function get_course_id(): int
+    {
+        return $this->data['course_id'] ?? 0;
+    }
+
+    public function get_section_number(): int
+    {
+        return $this->data['section_number'] ?? 0;
+    }
+
+    public function get_user_id(): int
+    {
+        return $this->data['user_id'] ?? 0;
+    }
+
+    public static function create_by_json(string $json): self
+    {
+        return new self(json_decode($json, true));
+    }
 }
