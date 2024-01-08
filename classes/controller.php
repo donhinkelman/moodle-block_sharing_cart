@@ -720,7 +720,7 @@ class controller {
     /**
      * Resotre a directory into a course section
      *
-     * @param int $path
+     * @param string $path
      * @param int $courseid
      * @param int $sectionnumber
      * @param int $overwritesectionid
@@ -733,7 +733,7 @@ class controller {
      * @throws stored_file_creation_exception
      */
     public function restore_directory(
-        int $path,
+        string $path,
         int $courseid,
         int $sectionnumber,
         int $overwritesectionid,
