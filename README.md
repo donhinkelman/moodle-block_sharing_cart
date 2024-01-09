@@ -12,7 +12,7 @@ The "master" branch requires Moodle 3.11.4 or newer.
 * Moodle 2.2 => "MOODLE_22_STABLE" branch
 * Moodle 1.9 => "MOODLE_19_STABLE" branch
 
-Warning: PHP versions 7.2 and older are deprecated, and will cause problems, unrelated to the Sharing Cart, such as badges.
+Warning: PHP versions 7.3 and older are deprecated, and will cause problems, unrelated to the Sharing Cart, such as badges.
 
 Change Log
 ----------

@@ -43,6 +43,43 @@ class course_module_repository
         $this->db = $db ?? $DB;
     }
 
+    public static function get_course_module_intro(cm_info $cm): string
+    {
+        return $cm->modname === 'label' ? self::get_label_intro($cm) : $cm->name;
+    }
+
+    private static function get_label_intro(cm_info $cm): string
+    {
+        global $DB;
+
+        try {
+            $record = $DB->get_record(
+                'label',
+                ['id' => $cm->instance],
+                'id, intro, introformat',
+                MUST_EXIST
+            );
+            if (!empty($record)) {
+                $intro = format_text(
+                    $record->intro,
+                    $record->introformat,
+                    [
+                        'noclean' => true,
+                        'para' => false,
+                        'filter' => true,
+                        'context' => $cm->context
+                    ]
+                );
+                $intro = trim(strip_tags($intro));
+                $intro = str_replace(["\n", "\r", "\t"], ' ', $intro);
+                return substr($intro, 0, 100);
+            }
+        }
+        catch (\Exception $e) { }
+
+        return $cm->name;
+    }
+
     public function get_course_module(
         int $cm_id,
         int $course_id,
@@ -54,9 +91,7 @@ class course_module_repository
 
     public function get_title(cm_info $cm): string
     {
-        return $cm->modname === 'label'
-            ? $this->get_label_intro($cm)
-            : $cm->name;
+        return self::get_course_module_intro($cm);
     }
 
     public function is_backup_supported(cm_info $cm): bool
@@ -67,32 +102,5 @@ class course_module_repository
             FEATURE_BACKUP_MOODLE2,
             false
         );
-    }
-
-    private function get_label_intro(cm_info $cm): string
-    {
-        try {
-            $record = $this->db->get_record(
-                'label',
-                ['id' => $cm->instance],
-                'id, intro, introformat',
-                MUST_EXIST
-            );
-            if (!empty($record)) {
-                return format_text(
-                    $record->intro,
-                    $record->introformat,
-                    [
-                        'noclean' => true,
-                        'para' => false,
-                        'filter' => false,
-                        'context' => $cm->context
-                    ]
-                );
-            }
-        }
-        catch (\Exception $e) { }
-
-        return $cm->name;
     }
 }

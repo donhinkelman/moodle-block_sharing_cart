@@ -40,9 +40,6 @@ use block_sharing_cart\task\async_backup_course_module;
 use cm_info;
 use coding_exception;
 use context_course;
-use core\task\adhoc_task;
-use core\task\manager as task_manager;
-use core_course\search\section;
 use moodle_database;
 use section_info;
 use stored_file;
@@ -92,6 +89,24 @@ class backup_repository
         return new self(
             new course_module_repository()
         );
+    }
+
+    public static function create_backup_filename(
+        cm_info $cm,
+        ?int $current_time = null
+    ): string
+    {
+        $current_time ??= time();
+        $json = json_encode([
+            'id' => $cm->id,
+            'course' => $cm->course,
+            'section' => $cm->section,
+            'module' => $cm->module,
+            'name' => $cm->name,
+            'added' => $cm->added,
+        ]);
+        $checksum = hash('md5', $json);
+        return "block_sharing_cart-{$cm->id}-{$checksum}-{$current_time}.mbz";
     }
 
     public function backup(
@@ -556,21 +571,6 @@ class backup_repository
 
     private function get_backup_filename(cm_info $cm): string
     {
-        $checksum = $this->get_course_module_checksum($cm);
-        $current_time = time();
-        return "block_sharing_cart-{$checksum}_{$current_time}.mbz";
-    }
-
-    private function get_course_module_checksum(cm_info $cm): string
-    {
-        $json = json_encode([
-            'id' => $cm->id,
-            'course' => $cm->course,
-            'section' => $cm->section,
-            'module' => $cm->module,
-            'name' => $cm->name,
-            'added' => $cm->added,
-        ]);
-        return hash('md5', $json);
+        return self::create_backup_filename($cm);
     }
 }

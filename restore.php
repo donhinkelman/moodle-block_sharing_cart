@@ -99,15 +99,28 @@ try {
     redirect($returnurl);
 
 } catch (\block_sharing_cart\exception $ex) {
-
-    print_error($ex->errorcode, $ex->module, $returnurl, $ex->a);
+    throw new moodle_exception(
+        $ex->errorcode,
+        $ex->module,
+        $returnurl,
+        $ex->a
+    );
 
 } catch (Exception $ex) {
 
     if (!empty($CFG->debug) && $CFG->debug >= DEBUG_DEVELOPER) {
-        print_error('notlocalisederrormessage', 'error', '', $ex->__toString());
+        throw new moodle_exception(
+            'notlocalisederrormessage',
+            'error',
+            '',
+            $ex->__toString()
+        );
     } else {
-        print_error('unexpectederror', 'block_sharing_cart', $returnurl);
+        throw new moodle_exception(
+            'unexpectederror',
+            'block_sharing_cart',
+            $returnurl
+        );
     }
 
 }

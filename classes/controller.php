@@ -37,9 +37,11 @@ use block_sharing_cart\event\sharing_cart_item_deleted;
 use block_sharing_cart\exceptions\no_backup_support_exception;
 use block_sharing_cart\repositories\backup_options;
 use block_sharing_cart\repositories\backup_repository;
+use block_sharing_cart\repositories\course_module_repository;
 use block_sharing_cart\repositories\course_repository;
 use block_sharing_cart\task\async_restore_course_module;
 use cache_helper;
+use cm_info;
 use coding_exception;
 use context_course;
 use context_module;
@@ -211,19 +213,6 @@ class controller {
         return false;
     }
 
-    /**
-     * @param string $modtext
-     * @return string
-     */
-    protected function get_unique_filename(string $modtext): string{
-	    $cleanname = clean_filename(strip_tags($modtext));
-	    if ($this->get_string_length($cleanname) > self::MAX_FILENAME) {
-		    $cleanname = $this->get_sub_string($cleanname, 0, self::MAX_FILENAME) . '_';
-	    }
-	    $cleanname = mb_strtolower($cleanname, 'UTF-8');
-	    return sprintf('%s-%s-%s.mbz', self::PREFIX_FILENAME, $cleanname, microtime(true));
-    }
-
     public function backup_async(
         int $cm_id,
         int $course_id,
@@ -302,24 +291,24 @@ class controller {
         // THIS FILE REQUIRES $CFG, DO NOT REMOVE IT
         require_once __DIR__ . '/../../../backup/util/includes/backup_includes.php';
 
+        $mod_ifo = get_fast_modinfo($course);
+        $cm = $mod_ifo->get_cm($cmid);
+
         backup_activity_started::create_by_course_module_id(
             $course,
-            $cmid
+            $cm->id
         )->trigger();
 
         // validate parameters and capabilities
-        $cm = get_coursemodule_from_id(null, $cmid, 0, false, MUST_EXIST);
-        $context = context_module::instance($cm->id);
+        $context = $cm->context;
         require_capability('moodle/backup:backupactivity', $context);
         if ($has_userdata) {
             require_capability('moodle/backup:userinfo', $context);
         }
-        self::validate_sesskey();
 
         // generate a filename from the module info
-        $modtext = $cm->modname == 'label' ? self::get_cm_intro($cm) : $cm->name;
-
-        $filename = $this->get_unique_filename($modtext);
+        $modtext = $cm->modname === 'label' ? self::get_cm_intro($cm) : $cm->name;
+        $filename = backup_repository::create_backup_filename($cm);
 
         // backup the module into the predefined area
         //    - user/backup ... if userdata not included
@@ -383,7 +372,7 @@ class controller {
         // insert an item record
         $record = new record([
             'modname' => $cm->modname,
-            'modicon' => self::get_cm_icon($cm),
+            'modicon' => $cm->icon,
             'modtext' => $modtext,
             'filename' => $filename,
             'course' => $course,
@@ -1027,45 +1016,11 @@ class controller {
     /**
      *  Get the intro HTML of the course module
      *
-     * @param stdClass $cm
+     * @param cm_info $cm
      * @return string
-     * @throws dml_exception
-     * @global moodle_database $DB
      */
-    public static function get_cm_intro(stdClass $cm): string {
-        global $DB;
-        if (!property_exists($cm, 'extra')) {
-            $mod = $DB->get_record_sql(
-                    'SELECT m.id, m.name, m.intro, m.introformat
-					FROM {' . $cm->modname . '} m, {course_modules} cm
-					WHERE m.id = cm.instance AND cm.id = :cmid',
-                    array('cmid' => $cm->id)
-            );
-            $cm->extra = format_module_intro($cm->modname, $mod, $cm->id, false);
-        }
-        return $cm->extra;
-    }
-
-    /**
-     *  Get the icon for the course module
-     *
-     * @param stdClass $cm
-     * @return string
-     * @global object $CFG
-     */
-    public static function get_cm_icon(stdClass $cm): string {
-        global $CFG;
-        if (file_exists("$CFG->dirroot/mod/$cm->modname/lib.php")) {
-            include_once "$CFG->dirroot/mod/$cm->modname/lib.php";
-            if (function_exists("{$cm->modname}_get_coursemodule_info")) {
-                $info = call_user_func("{$cm->modname}_get_coursemodule_info", $cm);
-                if (!empty($info->icon) && empty($info->iconcomponent)) {
-                    return $info->icon;
-                }
-                // TODO: add a field for iconcomponent to block_sharing_cart table?
-            }
-        }
-        return '';
+    public static function get_cm_intro(cm_info $cm): string {
+        return course_module_repository::get_course_module_intro($cm);
     }
 
     /**
