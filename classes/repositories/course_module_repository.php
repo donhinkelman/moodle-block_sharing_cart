@@ -43,17 +43,15 @@ class course_module_repository
         $this->db = $db ?? $DB;
     }
 
-    public static function get_course_module_intro(cm_info $cm): string
+    public static function create(): self
     {
-        return $cm->modname === 'label' ? self::get_label_intro($cm) : $cm->name;
+        return new self();
     }
 
-    private static function get_label_intro(cm_info $cm): string
+    private function get_label_intro(cm_info $cm): string
     {
-        global $DB;
-
         try {
-            $record = $DB->get_record(
+            $record = $this->db->get_record(
                 'label',
                 ['id' => $cm->instance],
                 'id, intro, introformat',
@@ -70,9 +68,8 @@ class course_module_repository
                         'context' => $cm->context
                     ]
                 );
-                $intro = trim(strip_tags($intro));
-                $intro = str_replace(["\n", "\r", "\t"], ' ', $intro);
-                return substr($intro, 0, 100);
+                $intro = str_replace(["\n", "\r", "\t"], ' ', strip_tags($intro));
+                return trim(mb_substr($intro, 0, 100, 'UTF-8'));
             }
         }
         catch (\Exception $e) { }
@@ -91,7 +88,7 @@ class course_module_repository
 
     public function get_title(cm_info $cm): string
     {
-        return self::get_course_module_intro($cm);
+        return $cm->modname === 'label' ? $this->get_label_intro($cm) : $cm->name;
     }
 
     public function is_backup_supported(cm_info $cm): bool

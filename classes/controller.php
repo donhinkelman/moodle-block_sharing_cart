@@ -1020,7 +1020,7 @@ class controller {
      * @return string
      */
     public static function get_cm_intro(cm_info $cm): string {
-        return course_module_repository::get_course_module_intro($cm);
+        return course_module_repository::create()->get_title($cm);
     }
 
     /**

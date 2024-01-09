@@ -172,6 +172,14 @@ class renderer {
             $item->modtext = self::replace_image_with_string($item->modtext);
         }
 
+        try {
+            $encoding = 'UTF-8';
+            if (mb_strlen($item->modtext, $encoding) >= 97) {
+                $item->modtext = trim(mb_substr($item->modtext, 0, 97, $encoding)) . '...';
+            }
+        }
+        catch (\Exception $e) {}
+
         return '
 				<li class="activity ' . $class . '" id="block_sharing_cart-item-' . $item->id . '"
 				    data-disable-copy="'. $disabled .'"
