@@ -43,30 +43,9 @@ class course_module_repository
         $this->db = $db ?? $DB;
     }
 
-    public function get_course_module(
-        int $cm_id,
-        int $course_id,
-        int $user_id = 0
-    ): cm_info
+    public static function create(): self
     {
-        return get_fast_modinfo($course_id, $user_id)->get_cm($cm_id);
-    }
-
-    public function get_title(cm_info $cm): string
-    {
-        return $cm->modname === 'label'
-            ? $this->get_label_intro($cm)
-            : $cm->name;
-    }
-
-    public function is_backup_supported(cm_info $cm): bool
-    {
-        return (bool)plugin_supports(
-            'mod',
-            $cm->modname,
-            FEATURE_BACKUP_MOODLE2,
-            false
-        );
+        return new self();
     }
 
     private function get_label_intro(cm_info $cm): string
@@ -79,20 +58,46 @@ class course_module_repository
                 MUST_EXIST
             );
             if (!empty($record)) {
-                return format_text(
+                $intro = format_text(
                     $record->intro,
                     $record->introformat,
                     [
                         'noclean' => true,
                         'para' => false,
-                        'filter' => false,
+                        'filter' => true,
                         'context' => $cm->context
                     ]
                 );
+                $intro = str_replace(["\n", "\r", "\t"], ' ', strip_tags($intro));
+                return trim(mb_substr($intro, 0, 100, 'UTF-8'));
             }
         }
         catch (\Exception $e) { }
 
         return $cm->name;
+    }
+
+    public function get_course_module(
+        int $cm_id,
+        int $course_id,
+        int $user_id = 0
+    ): cm_info
+    {
+        return get_fast_modinfo($course_id, $user_id)->get_cm($cm_id);
+    }
+
+    public function get_title(cm_info $cm): string
+    {
+        return $cm->modname === 'label' ? $this->get_label_intro($cm) : $cm->name;
+    }
+
+    public function is_backup_supported(cm_info $cm): bool
+    {
+        return (bool)plugin_supports(
+            'mod',
+            $cm->modname,
+            FEATURE_BACKUP_MOODLE2,
+            false
+        );
     }
 }

@@ -141,8 +141,7 @@ try {
     throw new sharing_cart_exception('invalidoperation');
 
 } catch (Exception $ex) {
-
-	header('HTTP/1.1 400 Bad Request');
+    http_response_code(400);
 
     $json = array(
         'message' => $ex->getMessage(),

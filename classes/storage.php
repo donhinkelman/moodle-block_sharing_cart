@@ -123,8 +123,7 @@ class storage {
      */
     public function delete(string $filename): bool {
         try {
-            $file = $this->get($filename);
-            return $file && $file->delete();
+            return $this->get($filename)->delete();
         }
         catch (\Exception $exception) {
         }
