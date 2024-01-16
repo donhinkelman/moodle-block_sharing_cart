@@ -58,6 +58,11 @@ class restore_task_options
         return $this->data['user_id'] ?? 0;
     }
 
+    public function to_array(): array
+    {
+        return $this->data;
+    }
+
     public static function create_by_json(string $json): self
     {
         return new self(json_decode($json, true));

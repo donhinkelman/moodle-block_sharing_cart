@@ -91,6 +91,32 @@ class backup_repository
         );
     }
 
+    public function get_my_backup_status(array $sharing_cart_ids): array
+    {
+        if (empty($sharing_cart_ids)) {
+            return [];
+        }
+
+        $user_id = $this->get_user()->id;
+        [$in_sql, $params] = $this->db->get_in_or_equal($sharing_cart_ids);
+
+        $params[] = $user_id;
+
+        $sql = "SELECT id, fileid FROM {block_sharing_cart} WHERE id {$in_sql} AND userid = ?";
+        $records = $this->db->get_recordset_sql($sql, $params);
+        $status = [];
+        foreach ($records as $record) {
+            $id = (int)$record->id;
+            $status[$id] = [
+                'id' => $id,
+                'is_ready' => (int)$record->fileid > 0
+            ];
+        }
+        $records->close();
+
+        return $status;
+    }
+
     public static function create_backup_filename(
         cm_info $cm,
         ?int $current_time = null

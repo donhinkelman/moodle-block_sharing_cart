@@ -23,6 +23,7 @@
  */
 
 use block_sharing_cart\controller;
+use block_sharing_cart\repositories\task_repository;
 use block_sharing_cart\section;
 use block_sharing_cart\module;
 
@@ -170,7 +171,7 @@ class block_sharing_cart extends block_base {
 
             if (!has_capability('moodle/course:manageactivities', $context)) {
                 $activities_dropdown = '';
-                /** @var \cm_info $activity */
+                /** @var cm_info $activity */
                 foreach ($activities as $activity) {
                     if ($this->is_activity_not_in_section($section_id, $activity)) {
                         continue;
@@ -198,14 +199,17 @@ class block_sharing_cart extends block_base {
                     <div class="header-commands">' . $this->get_header() . '</div>
                     </div>
                 ';
+
+        $this->notify_restore_in_progress();
+
         return $this->content = (object) array('text' => $html, 'footer' => $footer);
     }
 
-    private function is_activity_not_in_section(int $section_id, \cm_info $activity): bool {
+    private function is_activity_not_in_section(int $section_id, cm_info $activity): bool {
         return $section_id !== $activity->get_section_info()->section;
     }
 
-    private function is_activity_deletion_in_progress(\cm_info $activity): bool {
+    private function is_activity_deletion_in_progress(cm_info $activity): bool {
         return $activity->deletioninprogress == 1;
     }
 
@@ -272,6 +276,16 @@ class block_sharing_cart extends block_base {
 		        <i class="bulk-icon icon fa fa-times-circle" alt="' . s($alt) . '" /></i>
 		        </a>
 		        ';
+    }
+
+    private function notify_restore_in_progress(): void
+    {
+        global $COURSE;
+        if (empty($COURSE->id) && $COURSE->id < 2) {
+            return;
+        }
+
+        task_repository::create()->notify_restore_in_progress_by_course_id($COURSE->id);
     }
 
     /**

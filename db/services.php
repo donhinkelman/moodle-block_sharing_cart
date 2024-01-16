@@ -18,15 +18,20 @@
  *  Sharing Cart
  *
  * @package    block_sharing_cart
- * @copyright  2023 (c) Don Hinkelman, moxis and others
+ * @copyright  2017 (C) VERSION2, INC.
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+// @codeCoverageIgnoreStart
+defined('MOODLE_INTERNAL') || die();
+// @codeCoverageIgnoreEnd
 
-/** @var object $plugin */
-$plugin->component = 'block_sharing_cart';
-$plugin->version   = 2024011600;
-$plugin->requires  = 2021051704; // Moodle 3.11.4
-$plugin->release   = '4.4, release 1';
-$plugin->maturity  = MATURITY_STABLE;
+$functions = [
+    'block_sharing_cart_get_my_sharing_cart_items_status' => [
+        'classname' => \block_sharing_cart\external\get_my_sharing_cart_items_status::class,
+        'methodname' => 'execute',
+        'description' => 'Get my sharing cart items status',
+        'type' => 'read',
+        'ajax' => true,
+    ],
+];

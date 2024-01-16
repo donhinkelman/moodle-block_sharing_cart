@@ -39,6 +39,7 @@ use block_sharing_cart\repositories\backup_options;
 use block_sharing_cart\repositories\backup_repository;
 use block_sharing_cart\repositories\course_module_repository;
 use block_sharing_cart\repositories\course_repository;
+use block_sharing_cart\repositories\task_repository;
 use block_sharing_cart\task\async_restore_course_module;
 use cache_helper;
 use cm_info;
@@ -595,6 +596,12 @@ class controller {
             $section_number,
             $user_id
         );
+        task_repository::create()->set_restore_in_progress(
+            $sharing_cart_id,
+            $course_id,
+            $section_number,
+            $user_id
+        );
     }
 
     /**
@@ -618,6 +625,15 @@ class controller {
 
         $user_id ??= $USER->id;
 
+        // validate parameters and capabilities
+        $record = record::from_id($id);
+        if ($record->userid != $user_id) {
+            throw exception::from_forbidden();
+        }
+        if ($record->fileid < 1) {
+            throw exception::from_backup_not_found();
+        }
+
         // cleanup temporary files when we exit this scope
         $tempfiles = array();
         $scope = new scoped(function() use (&$tempfiles) {
@@ -626,11 +642,6 @@ class controller {
             }
         });
 
-        // validate parameters and capabilities
-        $record = record::from_id($id);
-        if ($record->userid != $user_id) {
-            throw new exception('forbidden');
-        }
         $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
         $section = $DB->get_record('course_sections',
                 array('course' => $course->id, 'section' => $sectionnumber), '*', MUST_EXIST);
@@ -813,7 +824,7 @@ class controller {
 
         $record = record::from_id($id);
         if ($record->userid != $USER->id) {
-            throw new exception('forbidden');
+            throw exception::from_forbidden();
         }
         self::validate_sesskey();
 
@@ -841,7 +852,7 @@ class controller {
 
         $record = record::from_id($id);
         if ($record->userid != $USER->id) {
-            throw new exception('forbidden');
+            throw exception::from_forbidden();
         }
         self::validate_sesskey();
 
@@ -872,7 +883,7 @@ class controller {
 
         $record = record::from_id($id);
         if ($record->userid != $USER->id) {
-            throw new exception('forbidden');
+            throw exception::from_forbidden();
         }
         self::validate_sesskey();
 
@@ -991,7 +1002,7 @@ class controller {
         global $CFG;
         $tempdir = $CFG->backuptempdir;
         if (!check_dir_exists($tempdir, true, true)) {
-            throw new exception('unexpectederror');
+            throw exception::from_unexpected_error();
         }
         return $tempdir;
     }
@@ -1010,7 +1021,7 @@ class controller {
         } catch (moodle_exception $ex) {
             unset($ex);
         }
-        throw new exception('invalidoperation');
+        throw exception::from_invalid_operation();
     }
 
     /**

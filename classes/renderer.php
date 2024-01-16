@@ -113,9 +113,13 @@ class renderer {
         $coursename = '';
 
         $coursefullnames = array();
+        $is_ready = true;
         if (isset($leaf[''])) {
             foreach ($leaf[''] as $item) {
                 $coursefullnames[] = $item->coursefullname;
+                if (!isset($item->fileid) || $item->fileid < 1) {
+                    $is_ready = false;
+                }
             }
         }
         $coursefullnames = array_unique($coursefullnames);
@@ -126,8 +130,14 @@ class renderer {
         }
         $components = explode('/', trim($path, '/'));
         $depth = count($components) - 1;
+
+        $copying = $is_ready ? '0' : '1';
+        $copying_class = $is_ready ? '' : ' copying text-muted';
+
+        $classes = 'directory sharing-cart-item' . $copying_class;
+
         return '
-		<li class="directory" directory-path="' . htmlentities($path) . '">
+		<li class="'. $classes .'" directory-path="' . htmlentities($path) . '" data-is-copying="'. $copying .'">
 			<div class="sc-indent-' . $depth . '" title="' . htmlentities($path . $coursename) . '">
 			    <div class="toggle-wrapper">
                     <i class="icon fa fa-folder-o" alt=""></i>
@@ -160,6 +170,10 @@ class renderer {
             $class .= ' copying';
         }
 
+        if (!$disabled && !$is_copying) {
+            $class .= ' text-dark';
+        }
+
         $coursename = '';
         if ($item->coursefullname != null) {
             $coursename = " [{$item->coursefullname}]";
@@ -181,8 +195,10 @@ class renderer {
         catch (\Exception $e) {}
 
         return '
-				<li class="activity ' . $class . '" id="block_sharing_cart-item-' . $item->id . '"
-				    data-disable-copy="'. $disabled .'"
+				<li class="activity sharing-cart-item' . $class . '"
+				    id="block_sharing_cart-item-' . $item->id . '"
+				    data-id="' . $item->id . '"
+				    data-disable-copy="'. (int)$disabled .'"
 				    data-is-copying="'. (int)$is_copying .'"
 				    >
 					<div class="sc-indent-' . $depth . '" title="' . $title . '">

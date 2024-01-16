@@ -21,6 +21,9 @@ class controller_test extends sharing_chart_testcase {
      */
     protected function setUp(): void {
         $this->resetAfterTest();
+        $component = 'block_sharing_cart';
+        set_config('backup_mode', 'immediate', $component);
+        set_config('restore_mode', 'immediate', $component);
     }
 
     /**
@@ -31,6 +34,7 @@ class controller_test extends sharing_chart_testcase {
     public function test_add_activities_to_sharing_cart(): void {
         // Create course, user and assignments
         $user = $this->create_user();
+        self::setUser($user);
         $course = $this->create_course();
 
         $assignment = $this->create_assignment($course, 1);
@@ -82,6 +86,7 @@ class controller_test extends sharing_chart_testcase {
     public function test_add_sections_to_sharing_cart(): void {
         // Create course, user and assignments
         $user = $this->create_user();
+        self::setUser($user);
         $course = $this->create_course();
         $assignment1 = $this->create_assignment($course, 1);
         $assignment2 = $this->create_assignment($course, 1);
@@ -89,7 +94,7 @@ class controller_test extends sharing_chart_testcase {
         $assignment4 = $this->create_assignment($course, 2);
 
         $section1 = $this->get_course_section($course, 1);
-        $section2 = $this->get_course_section($course, 1);
+        $section2 = $this->get_course_section($course, 2);
 
         // Enrolling user that capable to do backup and restore
         $this->enrol_users($course, [$user]);
@@ -129,6 +134,7 @@ class controller_test extends sharing_chart_testcase {
     public function test_add_sections_to_sharing_cart_when_module_visible_is_false(): void {
         // Create course, user and assignments
         $user = $this->create_user();
+        self::setUser($user);
         $course = $this->create_course();
         $this->create_assignment($course, 1);
         $this->create_assignment($course, 1);
@@ -179,6 +185,7 @@ class controller_test extends sharing_chart_testcase {
     public function test_add_sections_and_modules_to_sharing_cart(): void {
         // Create course, user and assignments
         $user = $this->create_user();
+        self::setUser($user);
         $course = $this->create_course();
         $label = $this->create_module('label', $course, 1);
         $assignment1 = $this->create_assignment($course, 2);
@@ -211,6 +218,7 @@ class controller_test extends sharing_chart_testcase {
 
     public function test_restore_modules_from_sharing_cart() {
         $user = $this->create_user();
+        self::setUser($user);
         $course = $this->create_course();
         $section1 = $this->get_course_section($course, 1);
         $section2 = $this->get_course_section($course, 2);
@@ -219,6 +227,8 @@ class controller_test extends sharing_chart_testcase {
         $assignment = $this->create_assignment($course, 1);
         $label = $this->create_module('label', $course, 2);
         $forum = $this->create_module('forum', $course, 3);
+
+        rebuild_course_cache($course->id);
 
         $this->enrol_users($course, [$user]);
         $this->set_session_key($user);
@@ -289,6 +299,7 @@ class controller_test extends sharing_chart_testcase {
      */
     public function test_move_sharing_cart_position() {
         $user = $this->create_user();
+        self::setUser($user);
         $course = $this->create_course();
         $forum = $this->create_module('forum', $course, 0);
         $assignment = $this->create_assignment($course, 1);
@@ -363,6 +374,7 @@ class controller_test extends sharing_chart_testcase {
 
     public function test_delete_sharing_cart() {
         $user = $this->create_user();
+        self::setUser($user);
         $course = $this->create_course();
         $assignment = $this->create_assignment($course, 1);
         $label = $this->create_module('label', $course, 1);
