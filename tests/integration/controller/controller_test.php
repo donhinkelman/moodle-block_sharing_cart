@@ -21,9 +21,6 @@ class controller_test extends sharing_chart_testcase {
      */
     protected function setUp(): void {
         $this->resetAfterTest();
-        $component = 'block_sharing_cart';
-        set_config('backup_mode', 'immediate', $component);
-        set_config('restore_mode', 'immediate', $component);
     }
 
     /**
@@ -34,7 +31,6 @@ class controller_test extends sharing_chart_testcase {
     public function test_add_activities_to_sharing_cart(): void {
         // Create course, user and assignments
         $user = $this->create_user();
-        self::setUser($user);
         $course = $this->create_course();
 
         $assignment = $this->create_assignment($course, 1);
@@ -46,6 +42,8 @@ class controller_test extends sharing_chart_testcase {
 
         // Set session key and set current user
         $this->set_session_key($user);
+
+        rebuild_course_cache($course->id);
 
         // Test if sharing cart is empty for current user
         $entities = $this->get_sharing_cart_entities(['userid' => $user->id]);
@@ -86,7 +84,6 @@ class controller_test extends sharing_chart_testcase {
     public function test_add_sections_to_sharing_cart(): void {
         // Create course, user and assignments
         $user = $this->create_user();
-        self::setUser($user);
         $course = $this->create_course();
         $assignment1 = $this->create_assignment($course, 1);
         $assignment2 = $this->create_assignment($course, 1);
@@ -101,6 +98,8 @@ class controller_test extends sharing_chart_testcase {
 
         // Set session key and set current user
         $this->set_session_key($user);
+
+        rebuild_course_cache($course->id);
 
         // Test if sharing cart is empty for current user
         $entities = $this->get_sharing_cart_entities(['userid' => $user->id]);
@@ -134,7 +133,6 @@ class controller_test extends sharing_chart_testcase {
     public function test_add_sections_to_sharing_cart_when_module_visible_is_false(): void {
         // Create course, user and assignments
         $user = $this->create_user();
-        self::setUser($user);
         $course = $this->create_course();
         $this->create_assignment($course, 1);
         $this->create_assignment($course, 1);
@@ -155,6 +153,8 @@ class controller_test extends sharing_chart_testcase {
         // Set session key and set current user
         $this->set_session_key($user);
 
+        rebuild_course_cache($course->id);
+
         // Test if sharing cart is empty for current user
         $entities = $this->get_sharing_cart_entities(['userid' => $user->id]);
         $this->assertCount(0, $entities);
@@ -162,6 +162,8 @@ class controller_test extends sharing_chart_testcase {
         $controller = new controller();
         $controller->backup_section($section1->id, $section1->name, false, $course->id);
         $controller->backup_section($section2->id, $section2->name, false, $course->id);
+
+        $this->enable_assign();
 
         // Test if sharing cart have 2 copied urls for current user
         $entities = $this->get_sharing_cart_entities(['userid' => $user->id]);
@@ -185,7 +187,6 @@ class controller_test extends sharing_chart_testcase {
     public function test_add_sections_and_modules_to_sharing_cart(): void {
         // Create course, user and assignments
         $user = $this->create_user();
-        self::setUser($user);
         $course = $this->create_course();
         $label = $this->create_module('label', $course, 1);
         $assignment1 = $this->create_assignment($course, 2);
@@ -198,6 +199,8 @@ class controller_test extends sharing_chart_testcase {
 
         // Set session key and set current user
         $this->set_session_key($user);
+
+        rebuild_course_cache($course->id);
 
         // Test if sharing cart is empty for current user
         $entities = $this->get_sharing_cart_entities(['userid' => $user->id]);
@@ -218,17 +221,14 @@ class controller_test extends sharing_chart_testcase {
 
     public function test_restore_modules_from_sharing_cart() {
         $user = $this->create_user();
-        self::setUser($user);
         $course = $this->create_course();
         $section1 = $this->get_course_section($course, 1);
         $section2 = $this->get_course_section($course, 2);
         $section3 = $this->get_course_section($course, 3);
 
-        $assignment = $this->create_assignment($course, 1);
-        $label = $this->create_module('label', $course, 2);
-        $forum = $this->create_module('forum', $course, 3);
-
-        rebuild_course_cache($course->id);
+        $assignment = $this->create_assignment($course, $section1->section);
+        $label = $this->create_module('label', $course, $section2->section);
+        $forum = $this->create_module('forum', $course, $section3->section);
 
         $this->enrol_users($course, [$user]);
         $this->set_session_key($user);
@@ -241,7 +241,10 @@ class controller_test extends sharing_chart_testcase {
         $controller->backup_section($section2->id, $section2->name, false, $course->id);
         $controller->backup_section($section3->id, $section3->name, false, $course->id);
 
+        rebuild_course_cache($course->id);
+
         $entities = $this->get_sharing_cart_entities(['userid' => $user->id]);
+
         $this->assertCount(6, $entities);
 
         $new_course = $this->create_course();
@@ -299,7 +302,6 @@ class controller_test extends sharing_chart_testcase {
      */
     public function test_move_sharing_cart_position() {
         $user = $this->create_user();
-        self::setUser($user);
         $course = $this->create_course();
         $forum = $this->create_module('forum', $course, 0);
         $assignment = $this->create_assignment($course, 1);
@@ -374,7 +376,6 @@ class controller_test extends sharing_chart_testcase {
 
     public function test_delete_sharing_cart() {
         $user = $this->create_user();
-        self::setUser($user);
         $course = $this->create_course();
         $assignment = $this->create_assignment($course, 1);
         $label = $this->create_module('label', $course, 1);

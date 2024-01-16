@@ -78,15 +78,13 @@ class storage {
      * @throws file_exception
      * @throws stored_file_creation_exception
      */
-    public function copy_stored_file(stored_file $file): stored_file {
-        $record = (object)[
-            'contextid' => $this->context->id,
-            'component' => self::COMPONENT,
-            'filearea' => self::FILEAREA,
-            'itemid' => self::ITEMID,
-            'filepath' => self::FILEPATH,
-        ];
-        return $this->storage->create_file_from_storedfile($record, $file);
+    public function copy_stored_file(stored_file $file, array $record = []): stored_file {
+        $record['contextid'] ??= $this->context->id;
+        $record['component'] ??= self::COMPONENT;
+        $record['filearea'] ??= self::FILEAREA;
+        $record['itemid'] ??= self::ITEMID;
+        $record['filepath'] ??= self::FILEPATH;
+        return $this->storage->create_file_from_storedfile((object)$record, $file);
     }
 
     /**

@@ -279,7 +279,8 @@ class controller {
         bool $has_userdata,
         int $course,
         int $section = 0,
-        bool $include_badges = false
+        bool $include_badges = false,
+        ?int $user_id = null
     ): int {
 
         global $USER, $CFG; //$CFG IS USED, DO NOT REMOVE IT
@@ -294,6 +295,7 @@ class controller {
 
         $mod_ifo = get_fast_modinfo($course);
         $cm = $mod_ifo->get_cm($cmid);
+        $user_id ??= $USER->id;
 
         backup_activity_started::create_by_course_module_id(
             $course,
@@ -337,7 +339,7 @@ class controller {
                 backup::FORMAT_MOODLE,
                 backup::INTERACTIVE_NO,
                 backup::MODE_GENERAL,
-                $USER->id,
+                $user_id,
                 backup::RELEASESESSION_YES
         );
         $plan = $controller->get_plan();
@@ -359,28 +361,34 @@ class controller {
 
         // move the backup file to user/backup area if it is not in there
         $results = $controller->get_results();
+        /** @var \stored_file $file */
         $file = $results['backup_destination'];
         $backup_file = $file;
-        if ($file->get_component() != storage::COMPONENT ||
-                $file->get_filearea() != storage::FILEAREA) {
-            $storage = new storage($USER->id);
-            $backup_file = $storage->copy_stored_file($file);
-            $file->delete();
-        }
-
-        $controller->destroy();
 
         // insert an item record
         $record = new record([
+            'userid' => $user_id,
             'modname' => $cm->modname,
             'modicon' => $cm->icon,
             'modtext' => $modtext,
             'filename' => $filename,
             'course' => $course,
             'section' => $section,
-            'fileid' => $backup_file->get_id()
+            'fileid' => 0
         ]);
         $id = $record->insert();
+
+        $storage = new storage($user_id);
+        $new_backup_file = $storage->copy_stored_file($backup_file, [
+            'itemid' => $id
+        ]);
+
+        $record->filename = $new_backup_file->get_filename();
+        $record->fileid = $new_backup_file->get_id();
+        $record->update();
+
+        $backup_file->delete();
+        $controller->destroy();
 
         backup_activity_created::create_by_course_module_id(
             $course,
@@ -654,8 +662,7 @@ class controller {
         $tempname = restore_controller::get_tempdir_name($course->id, $user_id);
 
         // copy the backup archive into the temporary directory
-        $storage = new storage();
-        $file = $storage->get($record->filename);
+        $file = get_file_storage()->get_file_by_id($record->fileid);
         $file->copy_content_to("$tempdir/$tempname.mbz");
         $tempfiles[] = "$tempdir/$tempname.mbz";
 
