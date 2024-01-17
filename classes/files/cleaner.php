@@ -80,7 +80,7 @@ class cleaner
     private function get_sharing_cart_file_parameters(): array {
         return [
             'userid' => $this->file->get_user_id(),
-            'filename' => $this->file->get_name()
+            'fileid' => $this->file->get_id()
         ];
     }
 

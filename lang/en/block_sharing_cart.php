@@ -67,7 +67,14 @@ $string['copy_activity_reason'] = 'This view is available because you have acces
 $string['label_image_replaced_text'] = ' (Label: Image)';
 $string['uninstalled_plugin_warning_title'] = 'This plugin is uninstalled. Trying to recover this without reinstalling the plugin: {$a} will cause errors. Restoration is disabled';
 $string['drop_here'] = 'Drop here..';
+$string['async_restore_in_progress'] = 'Restoring sharing item "{$a->modtext}" to the section number {$a->section}';
 
+$string['settings:backup_mode'] = 'Backup mode';
+$string['settings:backup_mode_desc'] = 'Choose between immediate or asynchronous backup process';
+$string['settings:restore_mode'] = 'Restore mode';
+$string['settings:restore_mode_desc'] = 'Choose between immediate or asynchronous restore process';
+$string['settings:backup_restore_mode_immediate'] = 'Immediate';
+$string['settings:backup_restore_mode_async'] = 'Asynchronous';
 $string['settings:userdata_copyable_modtypes'] = 'User data copyable module types';
 $string['settings:userdata_copyable_modtypes_desc'] = 'While copying an activity into the Sharing Cart,
 a dialog shows an option whether a copy of an activity includes its user data or not,
@@ -94,6 +101,7 @@ $string['invalidoperation'] = 'An invalid operation detected';
 $string['unexpectederror'] = 'An unexpected error occurred';
 $string['recordnotfound'] = 'Shared item not found';
 $string['forbidden'] = 'You don\'t have any permissions to access this shared item';
+$string['backupnotfound'] = 'Backup file not found';
 $string['requirejs'] = 'Sharing Cart requires JavaScript enabled in your browser';
 $string['requireajax'] = 'Sharing Cart requires AJAX';
 

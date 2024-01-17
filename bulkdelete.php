@@ -78,12 +78,27 @@ if (is_array($delete_param)) {
 
         redirect($returnurl);
     } catch (sharing_cart_exception $ex) {
-        print_error($ex->errorcode, $ex->module, $returnurl, $ex->a);
+        throw new moodle_exception(
+            $ex->errorcode,
+            $ex->module,
+            $ex->link,
+            $ex->a,
+            $ex->debuginfo
+        );
     } catch (Exception $ex) {
         if (!empty($CFG->debug) && $CFG->debug >= DEBUG_DEVELOPER) {
-            print_error('notlocalisederrormessage', 'error', '', $ex->__toString());
+            throw new moodle_exception(
+                'notlocalisederrormessage',
+                'error',
+                '',
+                $ex->__toString()
+            );
         } else {
-            print_error('unexpectederror', 'block_sharing_cart', $returnurl);
+            throw new moodle_exception(
+                'unexpectederror',
+                'block_sharing_cart',
+                $returnurl
+            );
         }
     }
 }

@@ -31,7 +31,16 @@ require_once __DIR__ . '/../../config.php';
 global $PAGE, $USER;
 
 try {
+    require_login(
+        null,
+        false,
+        null,
+        false,
+        true
+    );
+
     $controller = new controller();
+    $is_async = get_config('block_sharing_cart', 'backup_mode') === 'async';
 
     switch (required_param('action', PARAM_TEXT)) {
         case 'render_tree':
@@ -58,7 +67,20 @@ try {
             $cmid = required_param('cmid', PARAM_INT);
             $userdata = required_param('userdata', PARAM_BOOL);
             $courseid = required_param('courseid', PARAM_INT);
-            $controller->backup($cmid, $userdata, $courseid);
+            if ($is_async) {
+                $controller->backup_async(
+                    $cmid,
+                    $courseid,
+                    $userdata
+                );
+            }
+            else {
+                $controller->backup(
+                    $cmid,
+                    $userdata,
+                    $courseid
+                );
+            }
             exit;
         case 'backup_section':
             $sectionid = optional_param('sectionid', null, PARAM_INT);
@@ -72,7 +94,19 @@ try {
             }
             $userdata = required_param('userdata', PARAM_BOOL);
             $courseid = required_param('courseid', PARAM_INT);
-            $controller->backup_section((int)$sectionid, $sectionname, $userdata, $courseid);
+            $section_id = (int)$sectionid;
+
+            if ($is_async) {
+                $controller->backup_section_async(
+                    $section_id,
+                    $courseid,
+                    $sectionname,
+                    $userdata
+                );
+            }
+            else {
+                $controller->backup_section($section_id, $sectionname, $userdata, $courseid);
+            }
             exit;
         case 'movedir':
             $item_id = required_param('item_id', PARAM_INT);
@@ -98,24 +132,20 @@ try {
             $courseid = required_param('courseid', PARAM_INT);
             echo $controller->ensure_backup_in_module($cmid, $courseid);
             exit;
+        case 'is_backup_completed':
+            $cmid = required_param('cmid', PARAM_INT);
+            $courseid = required_param('courseid', PARAM_INT);
+            echo $controller->is_backup_completed($cmid, $courseid);
+            exit;
     }
     throw new sharing_cart_exception('invalidoperation');
 
 } catch (Exception $ex) {
-
-	header('HTTP/1.1 400 Bad Request');
+    http_response_code(400);
 
     $json = array(
         'message' => $ex->getMessage(),
     );
-
-    if (!empty($CFG->debug) && $CFG->debug >= DEBUG_DEVELOPER) {
-        $json += array(
-            'file' => substr($ex->getFile(), strlen($CFG->dirroot)),
-            'line' => $ex->getLine(),
-            'trace' => format_backtrace($ex->getTrace(), true),
-        );
-    }
 
     echo json_encode($json);
 }
