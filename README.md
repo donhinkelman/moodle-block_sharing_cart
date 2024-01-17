@@ -16,7 +16,8 @@ Warning: PHP versions 7.3 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
-* 4.4, release 1 2024.01.16
+* 5.0, release 1 2024.01.16
+  * Add support for Moodle 4.2
   * New feature - Added the ability to copy & restore asynchronously. 
   * Improved backup & restore process.
   * New upgrade will remove sharing cart items that doesn't have the backup files.
