@@ -30,6 +30,11 @@ defined('MOODLE_INTERNAL') || die();
  *  Sharing Cart exception
  */
 class exception extends \moodle_exception {
+    public const CODE_BACKUP_NOT_FOUND = 'backupnotfound';
+    public const CODE_INVALID_OPERATION = 'invalidoperation';
+    public const CODE_FORBIDDEN = 'forbidden';
+    public const CODE_UNEXPECTED_ERROR = 'unexpectederror';
+
     /**
      *  Constructor
      *
@@ -38,5 +43,25 @@ class exception extends \moodle_exception {
      */
     public function __construct(string $errcode, $a = null) {
         parent::__construct($errcode, 'block_sharing_cart', '', $a);
+    }
+
+    public static function from_backup_not_found(): self
+    {
+        return new self(self::CODE_BACKUP_NOT_FOUND);
+    }
+
+    public static function from_forbidden(): self
+    {
+        return new self(self::CODE_FORBIDDEN);
+    }
+
+    public static function from_unexpected_error(): self
+    {
+        return new self(self::CODE_UNEXPECTED_ERROR);
+    }
+
+    public static function from_invalid_operation(): self
+    {
+        return new self(self::CODE_INVALID_OPERATION);
     }
 }

@@ -1,5 +1,10 @@
 /* SHARING CART TREE START */
 
+.block_sharing_cart div.card-text ul.tree {
+    display: flex;
+    flex-direction: column;
+}
+
 .block_sharing_cart div.card-text ul.tree li:hover {
     background-color: rgba(0, 0, 0, .03);
 }
@@ -32,8 +37,10 @@
 .block_sharing_cart ul.tree li > div .instancename,
 .block_sharing_cart ul.tree li > div .instancename .no-overflow p {
     text-overflow: ellipsis;
-    white-space: nowrap;
+    text-align: start;
+    white-space: wrap;
     overflow: hidden;
+    overflow-wrap: anywhere;
     display: inline-block;
     margin: 2px 0 auto 0;
     width: 100%;

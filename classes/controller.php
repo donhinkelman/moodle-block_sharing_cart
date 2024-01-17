@@ -24,16 +24,59 @@
 
 namespace block_sharing_cart;
 
+use backup;
 use backup_controller;
+use block_sharing_cart\event\backup_activity_created;
+use block_sharing_cart\event\backup_activity_started;
+use block_sharing_cart\event\restore_activity_created;
+use block_sharing_cart\event\restore_activity_started;
 use block_sharing_cart\event\section_backedup;
 use block_sharing_cart\event\section_deleted;
 use block_sharing_cart\event\section_restored;
+use block_sharing_cart\event\sharing_cart_item_deleted;
 use block_sharing_cart\exceptions\no_backup_support_exception;
+use block_sharing_cart\repositories\backup_options;
+use block_sharing_cart\repositories\backup_repository;
+use block_sharing_cart\repositories\course_module_repository;
 use block_sharing_cart\repositories\course_repository;
+use block_sharing_cart\repositories\task_repository;
+use block_sharing_cart\task\async_restore_course_module;
 use cache_helper;
+use cm_info;
+use coding_exception;
+use context_course;
+use context_module;
+use context_user;
+use core\event\course_module_created;
+use core_text;
+use dml_exception;
+use file_exception;
+use moodle_database;
+use moodle_exception;
+use require_login_exception;
+use restore_activity_task;
 use restore_controller;
+use restore_fix_missings_helper;
 use stdClass;
 use base_setting;
+
+use stored_file_creation_exception;
+
+use textlib;
+
+use function check_dir_exists;
+use function clean_filename;
+use function confirm_sesskey;
+use function format_module_intro;
+use function fulldelete;
+use function get_config;
+use function get_coursemodule_from_id;
+use function get_file_packer;
+use function has_capability;
+use function moveto_module;
+use function rebuild_course_cache;
+use function require_capability;
+use function require_login;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -52,12 +95,12 @@ class controller {
 	/**
 	 *  Constructor
 	 *
-	 * @throws \coding_exception
-	 * @throws \moodle_exception
-	 * @throws \require_login_exception
+	 * @throws coding_exception
+	 * @throws moodle_exception
+	 * @throws require_login_exception
 	 */
     public function __construct() {
-        \require_login(null, false, null, false, true);
+        require_login(null, false, null, false, true);
     }
 
     /**
@@ -65,9 +108,9 @@ class controller {
      *
      * @param int|null $userid = $USER->id
      * @return string HTML
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @global \moodle_database $DB
+     * @throws coding_exception
+     * @throws dml_exception
+     * @global moodle_database $DB
      * @global object $USER
      */
     public function render_tree(int $userid = null): string {
@@ -136,17 +179,17 @@ class controller {
 	 *
 	 * @param int $cmid
 	 * @return boolean
-	 * @throws \coding_exception
-	 * @throws \dml_exception
+	 * @throws coding_exception
+	 * @throws dml_exception
 	 */
     public function is_userdata_copyable(int $cmid): bool {
-        $cm = \get_coursemodule_from_id(null, $cmid, 0, false, MUST_EXIST);
-        $modtypes = \get_config('block_sharing_cart', 'userdata_copyable_modtypes');
-        $context = \context_module::instance($cm->id);
+        $cm = get_coursemodule_from_id(null, $cmid, 0, false, MUST_EXIST);
+        $modtypes = get_config('block_sharing_cart', 'userdata_copyable_modtypes');
+        $context = context_module::instance($cm->id);
         return in_array($cm->modname, explode(',', $modtypes))
-                && \has_capability('moodle/backup:userinfo', $context)
-                && \has_capability('moodle/backup:anonymise', $context)
-                && \has_capability('moodle/restore:userinfo', $context);
+                && has_capability('moodle/backup:userinfo', $context)
+                && has_capability('moodle/backup:anonymise', $context)
+                && has_capability('moodle/restore:userinfo', $context);
     }
 
 	/**
@@ -154,8 +197,8 @@ class controller {
 	 *
 	 * @param int $sectionid
 	 * @return boolean
-	 * @throws \coding_exception
-	 * @throws \dml_exception
+	 * @throws coding_exception
+	 * @throws dml_exception
 	 */
     public function is_userdata_copyable_section(int $sectionid): bool {
         GLOBAL $DB;
@@ -171,17 +214,51 @@ class controller {
         return false;
     }
 
-    /**
-     * @param string $modtext
-     * @return string
-     */
-    protected function get_unique_filename(string $modtext): string{
-	    $cleanname = \clean_filename(strip_tags($modtext));
-	    if ($this->get_string_length($cleanname) > self::MAX_FILENAME) {
-		    $cleanname = $this->get_sub_string($cleanname, 0, self::MAX_FILENAME) . '_';
-	    }
-	    $cleanname = mb_strtolower($cleanname, 'UTF-8');
-	    return sprintf('%s-%s-%s.mbz', self::PREFIX_FILENAME, $cleanname, microtime(true));
+    public function backup_async(
+        int $cm_id,
+        int $course_id,
+        bool $include_userdata = false,
+        bool $include_badges = false
+    ): void
+    {
+        global $USER;
+
+        $options = new backup_options();
+        $options->set_include_user_data($include_userdata, context_user::instance($USER->id))
+            ->set_include_badge($include_badges);
+
+        $repo = backup_repository::create();
+        $repo->backup_async(
+            $USER->id,
+            $cm_id,
+            $course_id,
+            $USER->id,
+            $options
+        );
+    }
+
+    public function backup_section_async(
+        int $section_id,
+        int $course_id,
+        ?string $section_name = null,
+        bool $include_userdata = false,
+        bool $include_badges = false
+    ): void
+    {
+        global $USER;
+
+        $options = new backup_options();
+        $options->set_include_user_data($include_userdata, context_user::instance($USER->id))
+            ->set_include_badge($include_badges);
+
+        $repo = backup_repository::create();
+        $repo->backup_section_async(
+            $USER->id,
+            $course_id,
+            $section_id,
+            $section_name,
+            $options
+        );
     }
 
     /**
@@ -192,9 +269,9 @@ class controller {
      * @param int $course
      * @param int $section
      * @return int
-     * @throws \moodle_exception
+     * @throws moodle_exception
      * @global object $CFG
-     * @global \moodle_database $DB
+     * @global moodle_database $DB
      * @global object $USER
      */
     public function backup(
@@ -202,7 +279,8 @@ class controller {
         bool $has_userdata,
         int $course,
         int $section = 0,
-        bool $include_badges = false
+        bool $include_badges = false,
+        ?int $user_id = null
     ): int {
 
         global $USER, $CFG; //$CFG IS USED, DO NOT REMOVE IT
@@ -215,19 +293,25 @@ class controller {
         // THIS FILE REQUIRES $CFG, DO NOT REMOVE IT
         require_once __DIR__ . '/../../../backup/util/includes/backup_includes.php';
 
+        $mod_ifo = get_fast_modinfo($course);
+        $cm = $mod_ifo->get_cm($cmid);
+        $user_id ??= $USER->id;
+
+        backup_activity_started::create_by_course_module_id(
+            $course,
+            $cm->id
+        )->trigger();
+
         // validate parameters and capabilities
-        $cm = \get_coursemodule_from_id(null, $cmid, 0, false, MUST_EXIST);
-        $context = \context_module::instance($cm->id);
-        \require_capability('moodle/backup:backupactivity', $context);
+        $context = $cm->context;
+        require_capability('moodle/backup:backupactivity', $context);
         if ($has_userdata) {
-            \require_capability('moodle/backup:userinfo', $context);
+            require_capability('moodle/backup:userinfo', $context);
         }
-        self::validate_sesskey();
 
         // generate a filename from the module info
-        $modtext = $cm->modname == 'label' ? self::get_cm_intro($cm) : $cm->name;
-
-        $filename = $this->get_unique_filename($modtext);
+        $modtext = $cm->modname === 'label' ? self::get_cm_intro($cm) : $cm->name;
+        $filename = backup_repository::create_backup_filename($cm);
 
         // backup the module into the predefined area
         //    - user/backup ... if userdata not included
@@ -246,16 +330,17 @@ class controller {
                 'anonymize' => false,
                 'badges' => $include_badges
         ];
-        if ($has_userdata && \has_capability('moodle/backup:userinfo', $context)) {
+        if ($has_userdata && has_capability('moodle/backup:userinfo', $context)) {
             $settings['users'] = true;
         }
         $controller = new backup_controller(
-                \backup::TYPE_1ACTIVITY,
+                backup::TYPE_1ACTIVITY,
                 $cm->id,
-                \backup::FORMAT_MOODLE,
-                \backup::INTERACTIVE_NO,
-                \backup::MODE_GENERAL,
-                $USER->id
+                backup::FORMAT_MOODLE,
+                backup::INTERACTIVE_NO,
+                backup::MODE_GENERAL,
+                $user_id,
+                backup::RELEASESESSION_YES
         );
         $plan = $controller->get_plan();
         foreach ($settings as $name => $value) {
@@ -271,31 +356,47 @@ class controller {
         $plan->get_setting('filename')->set_value($filename);
 
         set_time_limit(0);
-        $controller->set_status(\backup::STATUS_AWAITING);
+        $controller->set_status(backup::STATUS_AWAITING);
         $controller->execute_plan();
 
         // move the backup file to user/backup area if it is not in there
         $results = $controller->get_results();
+        /** @var \stored_file $file */
         $file = $results['backup_destination'];
-        if ($file->get_component() != storage::COMPONENT ||
-                $file->get_filearea() != storage::FILEAREA) {
-            $storage = new storage($USER->id);
-            $storage->copy_from($file);
-            $file->delete();
-        }
-
-        $controller->destroy();
+        $backup_file = $file;
 
         // insert an item record
-        $record = new record(array(
-                'modname' => $cm->modname,
-                'modicon' => self::get_cm_icon($cm),
-                'modtext' => $modtext,
-                'filename' => $filename,
-                'course' => $course,
-                'section' => $section
-        ));
-        return $record->insert();
+        $record = new record([
+            'userid' => $user_id,
+            'modname' => $cm->modname,
+            'modicon' => $cm->icon,
+            'modtext' => $modtext,
+            'filename' => $filename,
+            'course' => $course,
+            'section' => $section,
+            'fileid' => 0
+        ]);
+        $id = $record->insert();
+
+        $storage = new storage($user_id);
+        $new_backup_file = $storage->copy_stored_file($backup_file, [
+            'itemid' => $id
+        ]);
+
+        $record->filename = $new_backup_file->get_filename();
+        $record->fileid = $new_backup_file->get_id();
+        $record->update();
+
+        $backup_file->delete();
+        $controller->destroy();
+
+        backup_activity_created::create_by_course_module_id(
+            $course,
+            $cmid,
+            $id
+        )->trigger();
+
+        return $id;
     }
 
     /**
@@ -304,7 +405,7 @@ class controller {
      * @param int $courseid
      * @param int $sectionid
      * @return int New item ID
-     * @throws \dml_exception
+     * @throws dml_exception
      */
     public function backup_emptysection(int $courseid, int $sectionid): int {
         global $DB, $USER;
@@ -327,10 +428,10 @@ class controller {
      * Backup a section into Sharing Cart
      *
      * @param int $sectionid
-     * @param string $sectionname
+     * @param string|null $sectionname
      * @param bool $userdata
      * @param int $course
-     * @throws \moodle_exception
+     * @throws moodle_exception
      */
     public function backup_section(int $sectionid, ?string $sectionname, bool $userdata, int $course): void {
         global $DB, $USER;
@@ -351,8 +452,8 @@ class controller {
 
             // Save section files
             if ($sc_section_id > 0) {
-                $course_context = \context_course::instance($course);
-                $user_context = \context_user::instance($USER->id);
+                $course_context = context_course::instance($course);
+                $user_context = context_user::instance($USER->id);
                 $fs = get_file_storage();
 
                 $files = $fs->get_area_files($course_context->id, 'course', 'section', $sectionid);
@@ -440,12 +541,12 @@ class controller {
 
             // Trigger event
             $event = section_backedup::create([
-                'context' => \context_course::instance($course),
+                'context' => context_course::instance($course),
                 'objectid' => $sc_section_id,
                 'other' => $sectionid
             ]);
             $event->trigger();
-        } catch (\moodle_exception $ex) {
+        } catch (moodle_exception $ex) {
             if ($ex->errorcode == "storedfilenotcreated") {
                 foreach ($itemids as $itemid) {
                     $this->delete($itemid);
@@ -465,9 +566,9 @@ class controller {
     private function get_string_length(string $text): int {
         $textlength = 0;
         if (method_exists('textlib', 'strlen')) {
-            $textlength = \textlib::strlen($text);
+            $textlength = textlib::strlen($text);
         } else if (method_exists('core_text', 'strlen')) {
-            $textlength = \core_text::strlen($text);
+            $textlength = core_text::strlen($text);
         }
         return $textlength;
     }
@@ -483,11 +584,32 @@ class controller {
     private function get_sub_string($text, $start, $length) {
         $result = 0;
         if (method_exists('textlib', 'substr')) {
-            $result = \textlib::substr($text, $start, $length);
+            $result = textlib::substr($text, $start, $length);
         } else if (method_exists('core_text', 'substr')) {
-            $result = \core_text::substr($text, $start, $length);
+            $result = core_text::substr($text, $start, $length);
         }
         return $result;
+    }
+
+    public function restore_async(
+        int $sharing_cart_id,
+        int $course_id,
+        int $section_number,
+        ?int $user_id = null
+    ): void
+    {
+        async_restore_course_module::add_to_queue(
+            $sharing_cart_id,
+            $course_id,
+            $section_number,
+            $user_id
+        );
+        task_repository::create()->set_restore_in_progress(
+            $sharing_cart_id,
+            $course_id,
+            $section_number,
+            $user_id
+        );
     }
 
     /**
@@ -496,80 +618,108 @@ class controller {
      * @param int $id
      * @param int $courseid
      * @param int $sectionnumber
-     * @throws \moodle_exception
-     * @global \moodle_database $DB
+     * @throws moodle_exception
+     * @global moodle_database $DB
      * @global object $USER
      * @global object $CFG
      */
-    public function restore($id, $courseid, $sectionnumber): void {
+    public function restore(int $id, int $courseid, int $sectionnumber, ?int $user_id = null): void {
         global $CFG, $DB, $USER;
 
         require_once __DIR__ . '/../../../backup/util/includes/restore_includes.php';
         require_once __DIR__ . '/../backup/util/helper/restore_fix_missings_helper.php';
 
+        restore_activity_started::create_by_sharing_cart_backup_id($id)->trigger();
+
+        $user_id ??= $USER->id;
+
+        // validate parameters and capabilities
+        $record = record::from_id($id);
+        if ($record->userid != $user_id) {
+            throw exception::from_forbidden();
+        }
+        if ($record->fileid < 1) {
+            throw exception::from_backup_not_found();
+        }
+
         // cleanup temporary files when we exit this scope
         $tempfiles = array();
         $scope = new scoped(function() use (&$tempfiles) {
             foreach ($tempfiles as $tempfile) {
-                \fulldelete($tempfile);
+                fulldelete($tempfile);
             }
         });
 
-        // validate parameters and capabilities
-        $record = record::from_id($id);
-        if ($record->userid != $USER->id) {
-            throw new exception('forbidden');
-        }
         $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
         $section = $DB->get_record('course_sections',
                 array('course' => $course->id, 'section' => $sectionnumber), '*', MUST_EXIST);
-        \require_capability('moodle/restore:restorecourse',
-                \context_course::instance($course->id)
+        require_capability('moodle/restore:restorecourse',
+                context_course::instance($course->id)
         );
-        self::validate_sesskey();
 
         // prepare the temporary directory and generate a temporary name
         $tempdir = self::get_tempdir();
-        $tempname = restore_controller::get_tempdir_name($course->id, $USER->id);
+        $tempname = restore_controller::get_tempdir_name($course->id, $user_id);
 
         // copy the backup archive into the temporary directory
-        $storage = new storage();
-        $file = $storage->get($record->filename);
+        $file = get_file_storage()->get_file_by_id($record->fileid);
         $file->copy_content_to("$tempdir/$tempname.mbz");
         $tempfiles[] = "$tempdir/$tempname.mbz";
 
         // extract the archive in the temporary directory
-        $packer = \get_file_packer('application/vnd.moodle.backup');
+        $packer = get_file_packer('application/vnd.moodle.backup');
         $packer->extract_to_pathname("$tempdir/$tempname.mbz", "$tempdir/$tempname");
         $tempfiles[] = "$tempdir/$tempname";
 
         // restore a module from the extracted files
-        $controller = new restore_controller($tempname, $course->id,
-                \backup::INTERACTIVE_NO, \backup::MODE_GENERAL, $USER->id,
-                \backup::TARGET_EXISTING_ADDING);
+        $controller = new restore_controller(
+            $tempname,
+            $course->id,
+            backup::INTERACTIVE_NO,
+            backup::MODE_GENERAL,
+            $user_id,
+            backup::TARGET_EXISTING_ADDING,
+            null,
+            backup::RELEASESESSION_YES
+        );
         foreach ($controller->get_plan()->get_tasks() as $task) {
             if ($task->setting_exists('overwrite_conf')) {
                 $task->get_setting('overwrite_conf')->set_value(false);
             }
+            if ($task->setting_exists('userscompletion')) {
+                $has_user_data = false;
+                if ($task->setting_exists('user')) {
+                    $has_user_data = (bool)$task->get_setting('userscompletion')->get_value();
+                }
+                if (!$has_user_data) {
+                    $task->get_setting('userscompletion')->set_value(false);
+                }
+            }
         }
-        if (\get_config('block_sharing_cart', 'workaround_qtypes')) {
-            \restore_fix_missings_helper::fix_plan($controller->get_plan());
+        if (get_config('block_sharing_cart', 'workaround_qtypes')) {
+            restore_fix_missings_helper::fix_plan($controller->get_plan());
         }
-        $controller->set_status(\backup::STATUS_AWAITING);
+        $controller->set_status(backup::STATUS_AWAITING);
         $controller->execute_plan();
 
         // move the restored module to desired section
         foreach ($controller->get_plan()->get_tasks() as $task) {
-            if ($task instanceof \restore_activity_task) {
+            if ($task instanceof restore_activity_task) {
                 $cmid = $task->get_moduleid();
-                $cm = \get_coursemodule_from_id(null, $cmid, 0, false, MUST_EXIST);
-                \moveto_module($cm, $section);
+                $cm = get_coursemodule_from_id(null, $cmid, 0, false, MUST_EXIST);
+                moveto_module($cm, $section);
                 // Fire event.
-                $event = \core\event\course_module_created::create_from_cm($cm);
+                $event = course_module_created::create_from_cm($cm);
                 $event->trigger();
+
+                restore_activity_created::create_by_course_module_id(
+                    $course->id,
+                    $cmid,
+                    $id
+                )->trigger();
             }
         }
-        \rebuild_course_cache($course->id);
+        rebuild_course_cache($course->id);
 
         $controller->destroy();
     }
@@ -581,24 +731,44 @@ class controller {
      * @param int $courseid
      * @param int $sectionnumber
      * @param int $overwritesectionid
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws \file_exception
-     * @throws \moodle_exception
-     * @throws \stored_file_creation_exception
+     * @param bool $is_async
+     * @param int|null $user_id
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws file_exception
+     * @throws moodle_exception
+     * @throws stored_file_creation_exception
      */
-    public function restore_directory($path, $courseid, $sectionnumber, $overwritesectionid): void {
+    public function restore_directory(
+        string $path,
+        int $courseid,
+        int $sectionnumber,
+        int $overwritesectionid,
+        bool $is_async = false,
+        ?int $user_id = null
+    ): void {
         global $DB, $USER;
 
-        $cart_items = $DB->get_records('block_sharing_cart', ['tree' => $path, 'userid' => $USER->id], 'weight ASC');
-        foreach ($cart_items as $cart_item) {
-            if (!$cart_item->modname) { // issue-83 skip restoring empty item
-                continue;
+        $user_id ??= $USER->id;
+        $cart_items = $DB->get_records('block_sharing_cart', ['tree' => $path, 'userid' => $user_id], 'weight ASC');
+        if ($is_async) {
+            foreach ($cart_items as $cart_item) {
+                if (!$cart_item->fileid) { // issue-83 skip restoring empty item
+                    continue;
+                }
+                $this->restore_async($cart_item->id, $courseid, $sectionnumber, $user_id);
             }
-            $this->restore($cart_item->id, $courseid, $sectionnumber);
+        }
+        else {
+            foreach ($cart_items as $cart_item) {
+                if (!$cart_item->fileid) { // issue-83 skip restoring empty item
+                    continue;
+                }
+                $this->restore($cart_item->id, $courseid, $sectionnumber, $user_id);
+            }
         }
 
-        $course_context = \context_course::instance($courseid);
+        $course_context = context_course::instance($courseid);
 
         $restored_section = $DB->get_record('course_sections', array('course' => $courseid, 'section' => $sectionnumber));
 
@@ -618,7 +788,7 @@ class controller {
             }
 
             // Copy section files
-            $user_context = \context_user::instance($USER->id);
+            $user_context = context_user::instance($user_id);
             $fs = get_file_storage();
             $files = $fs->get_area_files($user_context->id, 'user', 'sharing_cart_section', $overwritesectionid);
             foreach ($files as $file) {
@@ -661,7 +831,7 @@ class controller {
 
         $record = record::from_id($id);
         if ($record->userid != $USER->id) {
-            throw new exception('forbidden');
+            throw exception::from_forbidden();
         }
         self::validate_sesskey();
 
@@ -679,9 +849,9 @@ class controller {
      *
      * @param int $id The record ID to move
      * @param int $to The record ID of the desired position or zero for move to bottom
-     * @throws \dml_exception
+     * @throws dml_exception
      * @throws exception
-     * @global \moodle_database $DB
+     * @global moodle_database $DB
      * @global object $USER
      */
     public function move($id, $to): void {
@@ -689,7 +859,7 @@ class controller {
 
         $record = record::from_id($id);
         if ($record->userid != $USER->id) {
-            throw new exception('forbidden');
+            throw exception::from_forbidden();
         }
         self::validate_sesskey();
 
@@ -712,7 +882,7 @@ class controller {
      *  Delete a shared item by record ID
      *
      * @param int $id
-     * @throws \moodle_exception
+     * @throws moodle_exception
      * @global object $USER
      */
     public function delete($id): void {
@@ -720,23 +890,24 @@ class controller {
 
         $record = record::from_id($id);
         if ($record->userid != $USER->id) {
-            throw new exception('forbidden');
+            throw exception::from_forbidden();
         }
         self::validate_sesskey();
 
         $storage = new storage();
         $storage->delete($record->filename);
-
         $record->delete();
+
+        sharing_cart_item_deleted::create_by_sharing_cart_item_id($id, $record->course)->trigger();
     }
 
     /**
      * Delete a directory
      *
      * @param $path
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws \moodle_exception
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
      */
     public function delete_directory($path): void {
         global $DB, $USER;
@@ -754,7 +925,7 @@ class controller {
 
         // Delete unused file
         $fs = get_file_storage();
-        $user_context = \context_user::instance($USER->id);
+        $user_context = context_user::instance($USER->id);
         $files = $fs->get_area_files($user_context->id, 'user', 'sharing_cart_section');
         foreach ($files as $file) {
             $sectionid = $file->get_itemid();
@@ -770,7 +941,7 @@ class controller {
     * @param int $course_id
     *
     * @return void
-    * @throws \dml_exception
+    * @throws dml_exception
     */
     public function delete_unused_sections(int $course_id = 0) : void {
 
@@ -797,7 +968,7 @@ class controller {
 
                 // Trigger event
                 $event = section_deleted::create([
-                    'context' => \context_user::instance($USER->id),
+                    'context' => context_user::instance($USER->id),
                     'objectid' => $section->id
                 ]);
                 $event->trigger();
@@ -810,7 +981,7 @@ class controller {
      *
      * @param string $path
      * @return array
-     * @throws \dml_exception
+     * @throws dml_exception
      */
     public function get_path_sections(string $path): array {
         global $DB, $USER;
@@ -837,8 +1008,8 @@ class controller {
     public static function get_tempdir(): string {
         global $CFG;
         $tempdir = $CFG->backuptempdir;
-        if (!\check_dir_exists($tempdir, true, true)) {
-            throw new exception('unexpectederror');
+        if (!check_dir_exists($tempdir, true, true)) {
+            throw exception::from_unexpected_error();
         }
         return $tempdir;
     }
@@ -851,64 +1022,30 @@ class controller {
      */
     public static function validate_sesskey(string $sesskey = null): void {
         try {
-            if (\confirm_sesskey($sesskey)) {
+            if (confirm_sesskey($sesskey)) {
                 return;
             }
-        } catch (\moodle_exception $ex) {
+        } catch (moodle_exception $ex) {
             unset($ex);
         }
-        throw new exception('invalidoperation');
+        throw exception::from_invalid_operation();
     }
 
     /**
      *  Get the intro HTML of the course module
      *
-     * @param stdClass $cm
+     * @param cm_info $cm
      * @return string
-     * @throws \dml_exception
-     * @global \moodle_database $DB
      */
-    public static function get_cm_intro(stdClass $cm): string {
-        global $DB;
-        if (!property_exists($cm, 'extra')) {
-            $mod = $DB->get_record_sql(
-                    'SELECT m.id, m.name, m.intro, m.introformat
-					FROM {' . $cm->modname . '} m, {course_modules} cm
-					WHERE m.id = cm.instance AND cm.id = :cmid',
-                    array('cmid' => $cm->id)
-            );
-            $cm->extra = \format_module_intro($cm->modname, $mod, $cm->id, false);
-        }
-        return $cm->extra;
-    }
-
-    /**
-     *  Get the icon for the course module
-     *
-     * @param stdClass $cm
-     * @return string
-     * @global object $CFG
-     */
-    public static function get_cm_icon(stdClass $cm): string {
-        global $CFG;
-        if (file_exists("$CFG->dirroot/mod/$cm->modname/lib.php")) {
-            include_once "$CFG->dirroot/mod/$cm->modname/lib.php";
-            if (function_exists("{$cm->modname}_get_coursemodule_info")) {
-                $info = call_user_func("{$cm->modname}_get_coursemodule_info", $cm);
-                if (!empty($info->icon) && empty($info->iconcomponent)) {
-                    return $info->icon;
-                }
-                // TODO: add a field for iconcomponent to block_sharing_cart table?
-            }
-        }
-        return '';
+    public static function get_cm_intro(cm_info $cm): string {
+        return course_module_repository::create()->get_title($cm);
     }
 
     /**
      * @param int $cmid
      * @param int $courseid
      * @return false|string
-     * @throws \moodle_exception
+     * @throws moodle_exception
      */
     public function ensure_backup_in_module(int $cmid, int $courseid) {
         return json_encode(array(
@@ -923,7 +1060,7 @@ class controller {
     /**
      * @param stdClass[] $records
      * @return stdClass[]
-     * @throws \dml_exception
+     * @throws dml_exception
      */
     public function attach_uninstall_attribute(array $records): array {
         global $DB;

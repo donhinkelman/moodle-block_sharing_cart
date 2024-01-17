@@ -22,14 +22,31 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/**
- * Remove sharing cart entity, when related file was removed from the system
- * @param object $file file record
- * @throws dml_exception
- */
-function block_sharing_cart_after_file_deleted($file) {
-    global $DB;
+namespace block_sharing_cart\event;
 
-    $cleaner = new \block_sharing_cart\files\cleaner($DB, $file);
-    $cleaner->remove_related_sharing_cart_entity();
+
+/**
+ * @method static self create(array $data)
+ */
+class restore_activity_started extends base
+{
+    protected function get_crud(): string
+    {
+        return static::CRUD_READ;
+    }
+
+    public function get_description(): string
+    {
+        return "User with id {$this->userid} started a restore of the activity with sharing cart item id {$this->objectid}";
+    }
+
+    public static function create_by_sharing_cart_backup_id(
+        int $sharing_cart_backup_id
+    ): self
+    {
+        return static::create([
+            'objectid' => $sharing_cart_backup_id,
+            'context' => \context_system::instance(),
+        ]);
+    }
 }
