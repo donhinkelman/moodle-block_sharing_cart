@@ -18,15 +18,37 @@
  *  Sharing Cart
  *
  * @package    block_sharing_cart
- * @copyright  2023 (c) Don Hinkelman, moxis and others
+ * @copyright  2017 (C) VERSION2, INC.
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+namespace block_sharing_cart;
 
-/** @var object $plugin */
-$plugin->component = 'block_sharing_cart';
-$plugin->version   = 2024011800;
-$plugin->requires  = 2021051704; // Moodle 3.11.4
-$plugin->release   = '4.4, release 2';
-$plugin->maturity  = MATURITY_STABLE;
+
+use core\event\user_deleted;
+
+// @codeCoverageIgnoreStart
+defined('MOODLE_INTERNAL') || die();
+// @codeCoverageIgnoreEnd
+
+class observers
+{
+    public static function user_deleted(user_deleted $event): void
+    {
+        self::delete_records_by_user_id($event->objectid);
+    }
+
+    /**
+     * Delete all sharing cart records by user id.
+     * Ensure that all sharing cart records are deleted when a user is deleted from moodle,
+     * instead of relying on the privacy provider.
+     * @param int $user_id
+     * @return void
+     * @throws \dml_exception
+     */
+    private static function delete_records_by_user_id(int $user_id): void
+    {
+        global $DB;
+        $DB->delete_records('block_sharing_cart', ['userid' => $user_id]);
+    }
+}

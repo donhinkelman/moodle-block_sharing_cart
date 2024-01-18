@@ -176,7 +176,20 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
         upgrade_block_savepoint(true, 2022111100, 'sharing_cart');
     }
 
-    if ($oldversion < 2024010300) {
+    if ($oldversion < 2024011800) {
+
+        // Remove records that have no owner.
+        // (This could have been the leftover from the version before privacy api was introduced.)
+        $sql = "SELECT i.id FROM {block_sharing_cart} i
+                LEFT JOIN {user} u ON u.id = i.userid
+                WHERE u.id IS NULL OR u.deleted = :deleted";
+        $deleted_sharing_cart_ids = $DB->get_fieldset_sql($sql, ['deleted' => 1]);
+
+        if (!empty($deleted_sharing_cart_ids)) {
+            $DB->delete_records_list('block_sharing_cart', 'id', $deleted_sharing_cart_ids);
+        }
+
+        // Begin upgrade block_sharing_cart table.
         $table = new xmldb_table('block_sharing_cart');
         $field = new xmldb_field(
             'fileid',
@@ -225,16 +238,26 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
 
         foreach ($sharing_cart_records as $record) {
             if (!isset($user_backup_files[$record->userid])) {
-                $files = $storage->get_area_files(
-                    context_user::instance($record->userid)->id,
-                    \block_sharing_cart\storage::COMPONENT,
-                    \block_sharing_cart\storage::FILEAREA,
-                    \block_sharing_cart\storage::ITEMID,
-                    'id',
-                    false
-                );
-                foreach ($files as $file) {
-                    $user_backup_files[$record->userid][$file->get_filename()] = $file->get_id();
+                try {
+                    $context = context_user::instance($record->userid);
+                    $files = $storage->get_area_files(
+                        $context->id,
+                        \block_sharing_cart\storage::COMPONENT,
+                        \block_sharing_cart\storage::FILEAREA,
+                        false,
+                        'id',
+                        false
+                    );
+                    foreach ($files as $file) {
+                        $user_backup_files[$record->userid][$file->get_filename()] = $file->get_id();
+                    }
+                }
+                catch (moodle_exception $exception) {
+                    if ($exception->errorcode === 'invaliduser') {
+                        $deleted_sharing_cart_files[] = $record->id;
+                        continue;
+                    }
+                    throw $exception;
                 }
             }
 
@@ -270,7 +293,7 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
 
         $sharing_cart_records->close();
 
-        upgrade_block_savepoint(true, 2024010300, 'sharing_cart');
+        upgrade_block_savepoint(true, 2024011800, 'sharing_cart');
     }
 
     return true;
