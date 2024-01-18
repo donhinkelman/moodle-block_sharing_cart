@@ -276,23 +276,6 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
             $DB->delete_records_list('block_sharing_cart', 'id', $deleted_sharing_cart_files);
         }
 
-        $sharing_cart_records = $DB->get_recordset_select(
-            'block_sharing_cart',
-            'LENGTH(modtext) > 100'
-        );
-
-        foreach ($sharing_cart_records as $record) {
-            $intro = trim(strip_tags($record->modtext));
-            $record->modtext = substr(
-                str_replace(["\n", "\r", "\t"], ' ', $intro),
-                0,
-                100
-            );
-            $DB->update_record('block_sharing_cart', $record);
-        }
-
-        $sharing_cart_records->close();
-
         upgrade_block_savepoint(true, 2024011800, 'sharing_cart');
     }
 

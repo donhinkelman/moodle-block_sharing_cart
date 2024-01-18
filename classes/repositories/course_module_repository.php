@@ -58,7 +58,7 @@ class course_module_repository
                 MUST_EXIST
             );
             if (!empty($record)) {
-                $intro = format_text(
+                return format_text(
                     $record->intro,
                     $record->introformat,
                     [
@@ -68,8 +68,6 @@ class course_module_repository
                         'context' => $cm->context
                     ]
                 );
-                $intro = str_replace(["\n", "\r", "\t"], ' ', strip_tags($intro));
-                return trim(mb_substr($intro, 0, 100, 'UTF-8'));
             }
         }
         catch (\Exception $e) { }
