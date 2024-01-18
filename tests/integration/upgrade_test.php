@@ -26,6 +26,10 @@ namespace block_sharing_cart\integration;
 
 use advanced_testcase;
 use block_sharing_cart\storage;
+use context_user;
+use file_storage;
+use moodle_database;
+use stored_file;
 
 // @codeCoverageIgnoreStart
 defined('MOODLE_INTERNAL') || die();
@@ -33,7 +37,9 @@ defined('MOODLE_INTERNAL') || die();
 
 class upgrade_test extends advanced_testcase
 {
-    private function db(): \moodle_database
+    private file_storage $storage;
+
+    private function db(): moodle_database
     {
         global $DB;
         return $DB;
@@ -42,6 +48,7 @@ class upgrade_test extends advanced_testcase
     protected function setUp(): void
     {
         $this->resetAfterTest();
+        $this->storage = get_file_storage();
     }
 
     public function test_upgrade_sharing_cart_index_and_add_file_id_to_records_and_trim_item_name_that_is_too_long(): void
@@ -51,23 +58,15 @@ class upgrade_test extends advanced_testcase
         require_once $CFG->dirroot . '/blocks/sharing_cart/db/upgrade.php';
 
         $user = self::getDataGenerator()->create_user();
+        $deleted_user = self::getDataGenerator()->create_user();
         $course = self::getDataGenerator()->create_course();
 
-        $context = \context_user::instance($user->id);
-
-        $storage = get_file_storage();
-        $file = $storage->create_file_from_string((object)[
-            'contextid' => $context->id,
-            'component' => storage::COMPONENT,
-            'filearea' => storage::FILEAREA,
-            'itemid' => storage::ITEMID,
-            'filepath' => storage::FILEPATH,
-            'filename' => 'test.mbz',
-            'content' => 'test',
-            'userid' => $user->id,
-            'timecreated' => time(),
-            'timemodified' => time(),
-        ], 'Test');
+        $file1 = $this->create_backup_file([
+            'userid' => $user->id
+        ]);
+        $file_deleted_user = $this->create_backup_file([
+            'userid' => $deleted_user->id
+        ]);
 
         $lorem = self::getDataGenerator()->loremipsum;
         $expected_mod_text = trim(substr($lorem, 0, 100));
@@ -79,7 +78,7 @@ class upgrade_test extends advanced_testcase
             'modicon' => '',
             'modtext' => $lorem,
             'ctime' => time(),
-            'filename' => $file->get_filename(),
+            'filename' => $file1->get_filename(),
             'tree' => '',
             'weight' => 1,
             'course' => $course->id,
@@ -87,7 +86,36 @@ class upgrade_test extends advanced_testcase
             'fileid' => 0,
         ];
 
-        $instance_no_file_id->id = (int)$this->db()->insert_record('block_sharing_cart', $instance_no_file_id);
+        $instance_deleted_user = (object)[
+            'id' => 2,
+            'userid' => $deleted_user->id,
+            'modname' => 'label',
+            'modicon' => '',
+            'modtext' => $lorem,
+            'ctime' => time(),
+            'filename' => $file_deleted_user->get_filename(),
+            'tree' => '',
+            'weight' => 2,
+            'course' => $course->id,
+            'section' => 0,
+            'fileid' => 0,
+        ];
+
+        $instance_no_file_id->id = (int)$this->db()->insert_record(
+            'block_sharing_cart',
+            $instance_no_file_id
+        );
+        $instance_deleted_user->id = (int)$this->db()->insert_record(
+            'block_sharing_cart',
+            $instance_deleted_user
+        );
+
+        $this->db()->set_field(
+            'user',
+            'deleted',
+            1,
+            ['id' => $deleted_user->id]
+        );
 
         $downgrade_version = 2024010300 - 1;
         $current_version = $this->db()->get_field(
@@ -104,9 +132,15 @@ class upgrade_test extends advanced_testcase
 
         xmldb_block_sharing_cart_upgrade(2024010300 - 1);
 
-        $actual_record = $this->db()->get_record('block_sharing_cart', ['id' => $instance_no_file_id->id]);
+        $records = $this->db()->get_records(
+            'block_sharing_cart',
+            ['userid' => $user->id],
+        );
+        self::assertCount(1, $records);
+        $actual_record = reset($records);
+
         self::assertEquals(
-            $file->get_id(),
+            $file1->get_id(),
             $actual_record->fileid
         );
         self::assertEquals(
@@ -114,11 +148,40 @@ class upgrade_test extends advanced_testcase
             $actual_record->modtext
         );
 
+        $deleted_user_records = $this->db()->get_records(
+            'block_sharing_cart',
+            ['userid' => $deleted_user->id],
+        );
+
+        self::assertCount(0, $deleted_user_records);
+
         $this->db()->set_field(
             'config_plugins',
             'value',
             $current_version,
             ['plugin' => 'block_sharing_cart', 'name' => 'version']
         );
+    }
+
+    private function create_backup_file(array $record = []): stored_file
+    {
+        global $USER;
+
+        $record['userid'] ??= $USER->id;
+        $record['contextid'] ??= context_user::instance($record['userid'])->id;
+        $record['component'] ??= storage::COMPONENT;
+        $record['filearea'] ??= storage::FILEAREA;
+        $record['itemid'] ??= storage::ITEMID;
+        $record['filepath'] ??= storage::FILEPATH;
+        $record['filename'] ??= hash('md5', random_bytes(16)) . '.mbz';
+        $record['timecreated'] ??= time();
+        $record['timemodified'] ??= $record['timecreated'];
+
+        $content = $record['content'] ?? random_bytes(16);
+        $file = $this->storage->create_file_from_string((object)$record, $content);
+
+        unset($record['content']);
+
+        return $file;
     }
 }
