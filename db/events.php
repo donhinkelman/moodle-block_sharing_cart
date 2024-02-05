@@ -22,14 +22,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/**
- * Remove sharing cart entity, when related file was removed from the system
- * @param object $file file record
- * @throws dml_exception
- */
-function block_sharing_cart_after_file_deleted($file) {
-    global $DB;
+// @codeCoverageIgnoreStart
+defined('MOODLE_INTERNAL') || die();
+// @codeCoverageIgnoreEnd
 
-    $cleaner = new \block_sharing_cart\files\cleaner($DB, $file);
-    $cleaner->remove_related_sharing_cart_entity();
-}
+$observers = [
+    [
+        'eventname' => '\core\event\user_deleted',
+        'callback' => '\block_sharing_cart\observers::user_deleted',
+    ],
+];

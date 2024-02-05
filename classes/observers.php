@@ -22,14 +22,33 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/**
- * Remove sharing cart entity, when related file was removed from the system
- * @param object $file file record
- * @throws dml_exception
- */
-function block_sharing_cart_after_file_deleted($file) {
-    global $DB;
+namespace block_sharing_cart;
 
-    $cleaner = new \block_sharing_cart\files\cleaner($DB, $file);
-    $cleaner->remove_related_sharing_cart_entity();
+
+use core\event\user_deleted;
+
+// @codeCoverageIgnoreStart
+defined('MOODLE_INTERNAL') || die();
+// @codeCoverageIgnoreEnd
+
+class observers
+{
+    public static function user_deleted(user_deleted $event): void
+    {
+        self::delete_records_by_user_id($event->objectid);
+    }
+
+    /**
+     * Delete all sharing cart records by user id.
+     * Ensure that all sharing cart records are deleted when a user is deleted from moodle,
+     * instead of relying on the privacy provider.
+     * @param int $user_id
+     * @return void
+     * @throws \dml_exception
+     */
+    private static function delete_records_by_user_id(int $user_id): void
+    {
+        global $DB;
+        $DB->delete_records('block_sharing_cart', ['userid' => $user_id]);
+    }
 }

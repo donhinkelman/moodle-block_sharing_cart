@@ -2,7 +2,7 @@
 
 .block_sharing_cart div.card-text ul.tree {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
 }
 
 .block_sharing_cart div.card-text ul.tree li:hover {

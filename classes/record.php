@@ -30,38 +30,43 @@ use block_sharing_cart\exception as sharing_cart_exception;
 
 /**
  *  Sharing Cart record manager
+ * @property int $id
+ * @property int $userid
+ * @property string $modname
+ * @property string $modicon
+ * @property string $modtext
+ * @property int $ctime
+ * @property string $filename
+ * @property string $tree
+ * @property int $weight
+ * @property int $course
+ * @property int $section
+ * @property int $fileid
  */
-class record {
+class record implements \ArrayAccess, \JsonSerializable {
     public const TABLE = 'block_sharing_cart';
 
     public const WEIGHT_BOTTOM = 9999;
-
-    public $id = null;
-    public $userid = null;
-    public $modname = null;
-    public $modicon = '';
-    public $modtext = null;
-    public $ctime = null;
-    public $filename = null;
-    public $tree = '';
-    public $weight = 0;
-    public $course = 0;
-    public $coursefullname = '';
+    private array $data = [];
 
     /**
      *  Constructor
      *
      * @param mixed $record = empty
      */
-    public function __construct($record = array()) {
+    public function __construct($record = []) {
         global $USER;
-        foreach ((array) $record as $field => $value) {
-            $this->{$field} = $value;
+
+        $record = (array)$record;
+        foreach ($record as $field => $value) {
+            $this->data[$field] = $value;
         }
 
         // default values
-        $this->userid || $this->userid = $USER->id;
-        $this->ctime || $this->ctime = time();
+        $this->data['userid'] ??= $USER->id;
+        $this->data['ctime'] ??= time();
+        $this->data['section'] ??= 0;
+        $this->data['fileid'] ??= 0;
     }
 
     /**
@@ -91,7 +96,7 @@ class record {
         if (!$this->weight) {
             $this->weight = self::WEIGHT_BOTTOM;
         }
-        $this->id = $DB->insert_record(self::TABLE, $this);
+        $this->id = $DB->insert_record(self::TABLE, $this->to_record());
         if (!$this->id) {
             throw new sharing_cart_exception('unexpectederror');
         }
@@ -107,7 +112,7 @@ class record {
      */
     public function update(): void {
         global $DB;
-        if (!$DB->update_record(self::TABLE, $this)) {
+        if (!$DB->update_record(self::TABLE, $this->to_record())) {
             throw new sharing_cart_exception('unexpectederror');
         }
         self::renumber($this->userid);
@@ -122,6 +127,49 @@ class record {
         global $DB;
         $DB->delete_records(self::TABLE, array('id' => $this->id));
         self::renumber($this->userid);
+    }
+
+    public function __set(string $name, $value): void
+    {
+        $this->offsetSet($name, $value);
+    }
+
+    #[\ReturnTypeWillChange]
+    public function __get(string $name)
+    {
+        return $this->offsetGet($name);
+    }
+
+    public function offsetExists($offset): bool
+    {
+        return isset($this->data[$offset]);
+    }
+
+    #[\ReturnTypeWillChange]
+    public function offsetGet($offset)
+    {
+        return $this->data[$offset] ?? null;
+    }
+
+    public function offsetSet($offset, $value): void
+    {
+        $this->data[$offset] = $value;
+    }
+
+    public function offsetUnset($offset): void
+    {
+        unset($this->data[$offset]);
+    }
+
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize()
+    {
+        return $this->data;
+    }
+
+    public function to_record(): object
+    {
+        return (object)$this->data;
     }
 
     /**
