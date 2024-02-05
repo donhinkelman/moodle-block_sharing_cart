@@ -66,19 +66,22 @@ try {
         case 'backup':
             $cmid = required_param('cmid', PARAM_INT);
             $userdata = required_param('userdata', PARAM_BOOL);
+            $anonymize = required_param('anonymize', PARAM_BOOL);
             $courseid = required_param('courseid', PARAM_INT);
             if ($is_async) {
                 $controller->backup_async(
                     $cmid,
                     $courseid,
-                    $userdata
+                    $userdata,
+                    $anonymize
                 );
             }
             else {
                 $controller->backup(
                     $cmid,
                     $userdata,
-                    $courseid
+                    $courseid,
+                    $anonymize
                 );
             }
             exit;
@@ -93,6 +96,7 @@ try {
                 $sectionname = $section->name;
             }
             $userdata = required_param('userdata', PARAM_BOOL);
+            $anonymize = required_param('anonymize', PARAM_BOOL);
             $courseid = required_param('courseid', PARAM_INT);
             $section_id = (int)$sectionid;
 
@@ -101,11 +105,12 @@ try {
                     $section_id,
                     $courseid,
                     $sectionname,
-                    $userdata
+                    $userdata,
+                    $anonymize
                 );
             }
             else {
-                $controller->backup_section($section_id, $sectionname, $userdata, $courseid);
+                $controller->backup_section($section_id, $sectionname, $userdata, $courseid, $anonymize);
             }
             exit;
         case 'movedir':
