@@ -16,8 +16,10 @@ Warning: PHP versions 7.4 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
-* 4.4, release 3 2024.02.05
+- 4.4, release 4 2024.02.06
   * Added an anonymize userdata checkbox to the confirm modal
+* 4.4, release 3 2024.02.05
+  * various fixes by Frederik
 * 4.4, release 2 2024.01.18
   * Fixed corrupted sharing cart items that belong to deleted users.
 * 4.4, release 1 2024.01.16
