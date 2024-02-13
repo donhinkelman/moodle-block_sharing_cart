@@ -44,6 +44,7 @@ require_login($courseid);
 
 try {
 
+    $is_async = get_config('block_sharing_cart', 'restore_mode') === 'async';
     $controller = new controller();
 
     // Trying to restore a directory of items
@@ -82,27 +83,44 @@ try {
         }
 
         // Perform directory restore
-        $controller->restore_directory($target, $courseid, $sectionnumber, $overwrite);
+        $controller->restore_directory($target, $courseid, $sectionnumber, $overwrite, $is_async);
 
     } else {
 
         // Restore single item
-        $controller->restore($target, $courseid, $sectionnumber);
-
+        if ($is_async) {
+            $controller->restore_async($target, $courseid, $sectionnumber);
+        }
+        else {
+            $controller->restore($target, $courseid, $sectionnumber);
+        }
     }
 
     redirect($returnurl);
 
 } catch (\block_sharing_cart\exception $ex) {
-
-    print_error($ex->errorcode, $ex->module, $returnurl, $ex->a);
+    throw new moodle_exception(
+        $ex->errorcode,
+        $ex->module,
+        $returnurl,
+        $ex->a
+    );
 
 } catch (Exception $ex) {
 
     if (!empty($CFG->debug) && $CFG->debug >= DEBUG_DEVELOPER) {
-        print_error('notlocalisederrormessage', 'error', '', $ex->__toString());
+        throw new moodle_exception(
+            'notlocalisederrormessage',
+            'error',
+            '',
+            $ex->__toString()
+        );
     } else {
-        print_error('unexpectederror', 'block_sharing_cart', $returnurl);
+        throw new moodle_exception(
+            'unexpectederror',
+            'block_sharing_cart',
+            $returnurl
+        );
     }
 
 }

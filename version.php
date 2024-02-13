@@ -18,7 +18,7 @@
  *  Sharing Cart
  *
  * @package    block_sharing_cart
- * @copyright  2023 (c) Don Hinkelman, moxis and others
+ * @copyright  2024 (c) Don Hinkelman, moxis and others
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die;
 
 /** @var object $plugin */
 $plugin->component = 'block_sharing_cart';
-$plugin->version   = 2023121800;
-$plugin->requires  = 2021051704; // Moodle 3.11.4
-$plugin->release   = '4.3, release 1';
+$plugin->version   = 2024020600;
+$plugin->requires  = 2021051704; // Moodle 3.11.4 or later, PHP 7.4 or later
+$plugin->release   = '4.4, release 3';
 $plugin->maturity  = MATURITY_STABLE;

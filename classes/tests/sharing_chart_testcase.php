@@ -130,8 +130,26 @@ abstract class sharing_chart_testcase extends advanced_testcase {
         return $this->create_module('assign', $course, $section, $properties, $options);
     }
 
+    protected function set_module_visible(string $module, bool $visible): void {
+        $record = $this->db()->get_record(
+            'modules',
+            ['name' => $module],
+            '*',
+            MUST_EXIST
+        );
+        $record->visible = (int)$visible;
+        $this->db()->update_record(
+            'modules',
+            $record
+        );
+    }
+
+    protected function enable_assign(): void {
+        $this->set_module_visible('assign', true);
+    }
+
     protected function disable_assign(): void {
-        $this->db()->update_record('modules', (object)['id' => 1, 'visible' => 0]);
+        $this->set_module_visible('assign', false);
     }
 
     /**
@@ -154,11 +172,17 @@ abstract class sharing_chart_testcase extends advanced_testcase {
      * @param array|null $options
      * @return object
      */
-    protected function create_module(string $name, $course, int $section = 0, array $properties = [], array $options = null): object {
+    protected function create_module(
+        string $name,
+        object $course,
+        int $section = 0,
+        array $properties = [],
+        array $options = null
+    ): object {
         $properties['course'] = $course->id;
 
         if (!isset($properties['section'])) {
-            $properties['section'] = $section;
+            $options['section'] = $section;
         }
 
         return self::getDataGenerator()->create_module($name, $properties, $options);
