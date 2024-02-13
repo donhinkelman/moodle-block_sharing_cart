@@ -70,7 +70,8 @@ class block_sharing_cart extends block_base {
     public function get_content() {
         global $USER, $COURSE, $PAGE;
 
-        $section_id = optional_param('section', 0, PARAM_INT);
+        $section_id = optional_param('sectionid', null, PARAM_INT);
+        $section_section = optional_param('section', null, PARAM_INT);
 
         $context = context_course::instance($this->page->course->id);
 
@@ -167,13 +168,13 @@ class block_sharing_cart extends block_base {
                 }
             }
 
-            $footer .= $this->insert_copy_section_in_footer($section_id, $sections_dropdown);
+            $footer .= $this->insert_copy_section_in_footer($section_section, $sections_dropdown);
 
             if (!has_capability('moodle/course:manageactivities', $context)) {
                 $activities_dropdown = '';
                 /** @var cm_info $activity */
                 foreach ($activities as $activity) {
-                    if ($this->is_activity_not_in_section($section_id, $activity)) {
+                    if (!$this->is_activity_in_section($section_id, $section_section, $activity)) {
                         continue;
                     }
 
@@ -205,15 +206,31 @@ class block_sharing_cart extends block_base {
         return $this->content = (object) array('text' => $html, 'footer' => $footer);
     }
 
-    private function is_activity_not_in_section(int $section_id, cm_info $activity): bool {
-        return $section_id !== $activity->get_section_info()->section;
+    private function is_activity_in_section(?int $section_id, ?int $section, cm_info $activity): bool {
+        $activity_section = $activity->get_section_info()->section;
+        $activity_id = $activity->get_section_info()->id;
+
+        if ($section === null && $section_id === null) {
+            return true;
+        }
+
+        return $this->is_activity_section_set($section, $activity_section)
+            || $this->is_activity_section_id_set($section_id, $activity_id);
+    }
+
+    private function is_activity_section_set(?int $section, int $activity_section): bool {
+        return $section === $activity_section;
+    }
+
+    private function is_activity_section_id_set(?int $section_id, int $activity_section_id): bool {
+        return $section_id == $activity_section_id;
     }
 
     private function is_activity_deletion_in_progress(cm_info $activity): bool {
         return $activity->deletioninprogress == 1;
     }
 
-    private function insert_copy_section_in_footer(int $section_id, string $sections_dropdown): string {
+    private function insert_copy_section_in_footer(?int $section_id, string $sections_dropdown): string {
         if (!get_config('block_sharing_cart', 'show_copy_section_in_block')) {
             return "";
         }

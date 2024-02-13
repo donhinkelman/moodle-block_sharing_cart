@@ -31,6 +31,8 @@ Change Log
 * 4.3, release 1 2023.11.01
   * Adapted Sharing Cart to new core Moodle 4.3 Backup feature which allows backup without editing the backup.
 * 4.2, release skipped.
+* 4.1, release 4 2024.01.19
+  * Fixed issue with activity copy button, where only activities from section 0 would be shown
 * 4.1, release 3 2023.09.20
   * Added activity copy button, if user has capability to back up activities, but not to manage activities 
 * 4.1, release 2 2023.07.05
