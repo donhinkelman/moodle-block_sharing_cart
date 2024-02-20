@@ -423,7 +423,7 @@ class privacy_test extends provider_testcase {
     private function add_sharing_cart_activity(object $course, object $module): void {
         // Creating sharing cart item
         $controller = new controller();
-        $controller->backup($module->cmid, false, $course->id);
+        $controller->backup($module->cmid, false, $course->id, false);
     }
 
     /**
@@ -451,7 +451,7 @@ class privacy_test extends provider_testcase {
 
         // Backup section for sharing cart
         $controller = new controller();
-        $controller->backup_section($section_record->id, $section_name, false, $course->id);
+        $controller->backup_section($section_record->id, $section_name, false, $course->id, false);
 
         return $section_name;
     }

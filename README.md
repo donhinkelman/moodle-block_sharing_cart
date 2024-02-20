@@ -6,16 +6,20 @@ The old way of clicking the basket icon is now default. - Users who have already
 
 Version 4.3, release 1 - 2023.11.01
 
-The "master" branch requires Moodle 3.11.4 or newer.
+The "master" branch requires Moodle 4.2 or newer.
 
 * Moodle 3.2 => "MOODLE_32_STABLE" branch
 * Moodle 2.2 => "MOODLE_22_STABLE" branch
 * Moodle 1.9 => "MOODLE_19_STABLE" branch
 
-Warning: PHP versions 7.3 and older are deprecated, and will cause problems, unrelated to the Sharing Cart, such as badges.
+Warning: PHP versions 7.4 and older are deprecated, and will cause problems, unrelated to the Sharing Cart, such as badges.
 
 Change Log
 ----------
+- 4.4, release 4 2024.02.06
+  * Added an anonymize userdata checkbox to the confirm modal
+* 4.4, release 3 2024.02.05
+  * various fixes by Frederik
 * 4.4, release 2 2024.01.18
   * Fixed corrupted sharing cart items that belong to deleted users.
 * 4.4, release 1 2024.01.16
