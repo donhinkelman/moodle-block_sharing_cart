@@ -66,6 +66,17 @@ class backup_options
         return $this;
     }
 
+    public function set_anonymize_user_data(bool $value, context $context): self
+    {
+        if (!$value) {
+            $this->settings['anonymize'] = $value;
+        }
+        else if (has_capability('moodle/backup:anonymise', $context)) {
+            $this->settings['anonymize'] = $value;
+        }
+        return $this;
+    }
+
     public function set_include_badge(bool $value): self
     {
         $this->settings['badges'] = $value;

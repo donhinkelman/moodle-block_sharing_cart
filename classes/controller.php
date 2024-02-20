@@ -218,14 +218,18 @@ class controller {
         int $cm_id,
         int $course_id,
         bool $include_userdata = false,
+        bool $anonymize = false,
         bool $include_badges = false
     ): void
     {
         global $USER;
 
+        $user_context = context_user::instance($USER->id);
+
         $options = new backup_options();
-        $options->set_include_user_data($include_userdata, context_user::instance($USER->id))
-            ->set_include_badge($include_badges);
+        $options->set_include_user_data($include_userdata, $user_context)
+                ->set_anonymize_user_data($anonymize, $user_context)
+                ->set_include_badge($include_badges);
 
         $repo = backup_repository::create();
         $repo->backup_async(
@@ -242,14 +246,18 @@ class controller {
         int $course_id,
         ?string $section_name = null,
         bool $include_userdata = false,
+        bool $anonymize = false,
         bool $include_badges = false
     ): void
     {
         global $USER;
 
+        $user_context = context_user::instance($USER->id);
+
         $options = new backup_options();
-        $options->set_include_user_data($include_userdata, context_user::instance($USER->id))
-            ->set_include_badge($include_badges);
+        $options->set_include_user_data($include_userdata, $user_context)
+                ->set_anonymize_user_data($anonymize, $user_context)
+                ->set_include_badge($include_badges);
 
         $repo = backup_repository::create();
         $repo->backup_section_async(
@@ -278,6 +286,7 @@ class controller {
         int $cmid,
         bool $has_userdata,
         int $course,
+        bool $should_anonymize,
         int $section = 0,
         bool $include_badges = false,
         ?int $user_id = null
@@ -332,6 +341,9 @@ class controller {
         ];
         if ($has_userdata && has_capability('moodle/backup:userinfo', $context)) {
             $settings['users'] = true;
+        }
+        if ($has_userdata && $should_anonymize && has_capability('moodle/backup:anonymise', $context)) {
+            $settings['anonymize'] = true;
         }
         $controller = new backup_controller(
                 backup::TYPE_1ACTIVITY,
@@ -433,7 +445,7 @@ class controller {
      * @param int $course
      * @throws moodle_exception
      */
-    public function backup_section(int $sectionid, ?string $sectionname, bool $userdata, int $course): void {
+    public function backup_section(int $sectionid, ?string $sectionname, bool $userdata, int $course, bool $anonymize): void {
         global $DB, $USER;
 
         $itemids = array();
@@ -513,6 +525,7 @@ class controller {
                         (int)$module->id,
                         $userdata && $this->is_userdata_copyable((int)$module->id),
                         $course,
+                        $anonymize,
                         $sc_section_id
                     );
                 }
