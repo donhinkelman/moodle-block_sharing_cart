@@ -139,6 +139,7 @@ class block_sharing_cart extends block_base {
                 'activity_string',
                 'delete_folder',
                 'modal_checkbox',
+                'modal_checkbox_anonymize',
                 'modal_confirm_backup',
                 'modal_confirm_delete',
                 'backup_heavy_load_warning_message',

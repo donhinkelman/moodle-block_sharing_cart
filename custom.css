@@ -184,17 +184,10 @@
 /* MODAL START */
 .modal-checbox-wrapper.modal-sharing_cart {
     display: flex;
+    flex-direction: column;
     margin-top: 20px;
+    margin-left: 16px;
 }
-
-.modal-checbox-wrapper.modal-sharing_cart input {
-    margin: auto 0;
-}
-
-.modal-checbox-wrapper.modal-sharing_cart label {
-    margin: auto 0 auto 5px;
-}
-
 /* MODAL END */
 
 /* ACTIVITIES & SECTION STYLING START */
