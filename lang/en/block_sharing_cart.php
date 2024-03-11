@@ -1,26 +1,4 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-/**
- *  Sharing Cart
- *
- * @package    block_sharing_cart
- * @copyright  2017 (C) VERSION2, INC.
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 
 $string['pluginname'] = 'Sharing Cart';
 $string['sharing_cart'] = 'Sharing Cart';
@@ -41,7 +19,7 @@ $string['sharing_cart_help'] =
             Which will be replaced with an input box if you click "Edit" icon.</p>
 </div>';
 $string['sharing_cart:addinstance'] = 'Add a new Sharing Cart block';
-
+/*
 $string['backup'] = 'Copy to Sharing Cart';
 $string['restore'] = 'Copy to course';
 $string['movedir'] = 'Move into folder';
@@ -68,7 +46,7 @@ $string['label_image_replaced_text'] = ' (Label: Image)';
 $string['uninstalled_plugin_warning_title'] = 'This plugin is uninstalled. Trying to recover this without reinstalling the plugin: {$a} will cause errors. Restoration is disabled';
 $string['drop_here'] = 'Drop here..';
 $string['async_restore_in_progress'] = 'Restoring sharing item "{$a->modtext}" to the section number {$a->section}';
-
+*/
 $string['settings:backup_mode'] = 'Backup mode';
 $string['settings:backup_mode_desc'] = 'Choose between immediate or asynchronous backup process';
 $string['settings:restore_mode'] = 'Restore mode';
@@ -97,6 +75,7 @@ $string['settings:show_copy_section_in_block_desc'] = 'Show the "Copy section" i
 $string['settings:show_copy_activity_in_block'] = 'Show the "Copy activity" in block';
 $string['settings:show_copy_activity_in_block_desc'] = 'Show the "Copy activity" in the sharing cart block, underneath all modules/activities - This is only available if the user has the capability to backup activities, but not the capability to manage/move activities';
 
+/*
 $string['invalidoperation'] = 'An invalid operation detected';
 $string['unexpectederror'] = 'An unexpected error occurred';
 $string['recordnotfound'] = 'Shared item not found';
@@ -130,16 +109,4 @@ $string['missing_capabilities'] = 'Required capabilities missing: {$a}';
 
 $string['modal_bulkdelete_title'] = 'Sure you want to delete';
 $string['modal_bulkdelete_confirm'] = 'Delete selected';
-
-$string['privacy:metadata:block_sharing_cart'] = 'Sharing cart data is stored here';
-$string['privacy:metadata:block_sharing_cart:userid'] = 'The ID of user';
-$string['privacy:metadata:block_sharing_cart:modname'] = 'The name of activity module';
-$string['privacy:metadata:block_sharing_cart:modicon'] = 'Activity module icon';
-$string['privacy:metadata:block_sharing_cart:modtext'] = 'The title of the activity module';
-$string['privacy:metadata:block_sharing_cart:ctime'] = 'Created time';
-$string['privacy:metadata:block_sharing_cart:tree'] = 'The title of sharing cart folder that display in the block';
-$string['privacy:metadata:block_sharing_cart:weight'] = 'Order of items, sorting in ascending order';
-$string['privacy:metadata:block_sharing_cart_plugins'] = 'Sharing cart plugins data is stored here';
-$string['privacy:metadata:block_sharing_cart_plugins:plugin'] = 'The name of the plugin';
-$string['privacy:metadata:block_sharing_cart_plugins:userid'] = 'The ID of user';
-$string['privacy:metadata:block_sharing_cart_plugins:data'] = 'Sharing cart plugins data';
+*/

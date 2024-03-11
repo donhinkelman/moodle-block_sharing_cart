@@ -1,0 +1,16 @@
+<div class="sharing_cart_item">
+    <div class="info">
+        <img src="{{icon}}" alt=""/><span>{{name}}</span>
+        <span class="sharing_cart_item_actions">
+            {{#is_root}}
+                <i class="fa fa-trash" data-itemid="{{id}}" title="{{#str}}delete,block_sharing_cart{{/str}}"></i>
+            {{/is_root}}
+            <i class="fa fa-clone" data-itemid="{{id}}" title="{{#str}}delete,block_sharing_cart{{/str}}"></i>
+        </span>
+    </div>
+    <div class="sharing_cart_item_children">
+        {{#children}}
+            {{> block_sharing_cart/block/item}}
+        {{/children}}
+    </div>
+</div>
