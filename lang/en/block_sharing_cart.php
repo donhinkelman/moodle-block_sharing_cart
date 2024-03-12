@@ -19,6 +19,7 @@ $string['sharing_cart_help'] =
             Which will be replaced with an input box if you click "Edit" icon.</p>
 </div>';
 $string['sharing_cart:addinstance'] = 'Add a new Sharing Cart block';
+
 /*
 $string['backup'] = 'Copy to Sharing Cart';
 $string['restore'] = 'Copy to course';
@@ -26,7 +27,6 @@ $string['movedir'] = 'Move into folder';
 $string['clicktomove'] = 'Click to move here';
 $string['copyhere'] = 'Copy here';
 $string['notarget'] = 'Target not found';
-$string['clipboard'] = 'Copying this shared item';
 $string['bulkdelete'] = 'Bulk delete';
 $string['confirm_backup'] = 'Are you sure you want to copy this activity/resource into Sharing Cart?';
 $string['confirm_backup_section'] = 'Do you want to copy this course section and its activities / resources into Sharing Cart?';
@@ -46,36 +46,7 @@ $string['label_image_replaced_text'] = ' (Label: Image)';
 $string['uninstalled_plugin_warning_title'] = 'This plugin is uninstalled. Trying to recover this without reinstalling the plugin: {$a} will cause errors. Restoration is disabled';
 $string['drop_here'] = 'Drop here..';
 $string['async_restore_in_progress'] = 'Restoring sharing item "{$a->modtext}" to the section number {$a->section}';
-*/
-$string['settings:backup_mode'] = 'Backup mode';
-$string['settings:backup_mode_desc'] = 'Choose between immediate or asynchronous backup process';
-$string['settings:restore_mode'] = 'Restore mode';
-$string['settings:restore_mode_desc'] = 'Choose between immediate or asynchronous restore process';
-$string['settings:backup_restore_mode_immediate'] = 'Immediate';
-$string['settings:backup_restore_mode_async'] = 'Asynchronous';
-$string['settings:userdata_copyable_modtypes'] = 'User data copyable module types';
-$string['settings:userdata_copyable_modtypes_desc'] = 'While copying an activity into the Sharing Cart,
-a dialog shows an option whether a copy of an activity includes its user data or not,
-if its module type is checked in the above and an operator has <strong>moodle/backup:userinfo</strong>,
-<strong>moodle/backup:anonymise</strong> and <strong>moodle/restore:userinfo</strong> capabilities.
-(By default, only manager role has those capabilities.)';
-$string['settings:workaround_qtypes'] = 'Workaround for question types';
-$string['settings:workaround_qtypes_desc'] = 'The workaround for question restore issue will be performed if its question type is checked.
-When the questions to be restored already exist, however, those data look like inconsistent,
-this workaround will try to make another duplicates instead of reusing existing data.
-It may be useful for avoiding some restore errors, such as <i>error_question_match_sub_missing_in_db</i>.';
-$string['settings:add_to_sharing_cart'] = 'Add to sharing cart';
-$string['settings:add_to_sharing_cart_desc'] = 'Choose between drag and drop or click to add method for adding modules and sections to the sharing cart. -
-The \'Click to add\' method is the standard in the sharing cart, where you need to click on the basket icon, before it will be added into the sharing cart. -
-The \'Drag and drop\' allows you to drag and drop modules/activities and sections into the sharing cart block or into the basket icon in the footer. Please note that this is only supported for Moodle 4.0+';
-$string['settings:drag_and_drop'] = 'Drag and drop';
-$string['settings:click_to_add'] = 'Click to add';
-$string['settings:show_copy_section_in_block'] = 'Show the "Copy section" in block';
-$string['settings:show_copy_section_in_block_desc'] = 'Show the "Copy section" in the sharing cart block, underneath all modules/activities';
-$string['settings:show_copy_activity_in_block'] = 'Show the "Copy activity" in block';
-$string['settings:show_copy_activity_in_block_desc'] = 'Show the "Copy activity" in the sharing cart block, underneath all modules/activities - This is only available if the user has the capability to backup activities, but not the capability to manage/move activities';
 
-/*
 $string['invalidoperation'] = 'An invalid operation detected';
 $string['unexpectederror'] = 'An unexpected error occurred';
 $string['recordnotfound'] = 'Shared item not found';
@@ -110,3 +81,39 @@ $string['missing_capabilities'] = 'Required capabilities missing: {$a}';
 $string['modal_bulkdelete_title'] = 'Sure you want to delete';
 $string['modal_bulkdelete_confirm'] = 'Delete selected';
 */
+
+// Block
+$string['rename_item'] = 'Rename item';
+$string['delete_item'] = 'Delete item';
+$string['copy_item'] = 'Copy item';
+$string['confirm_delete_item'] = 'Are you sure you want to delete this item? All sub-items will also be deleted.';
+$string['copying_this_item'] = 'Copying this item';
+
+// Settings
+$string['settings:backup_mode'] = 'Backup mode';
+$string['settings:backup_mode_desc'] = 'Choose between immediate or asynchronous backup process';
+$string['settings:restore_mode'] = 'Restore mode';
+$string['settings:restore_mode_desc'] = 'Choose between immediate or asynchronous restore process';
+$string['settings:backup_restore_mode_immediate'] = 'Immediate';
+$string['settings:backup_restore_mode_async'] = 'Asynchronous';
+$string['settings:userdata_copyable_modtypes'] = 'User data copyable module types';
+$string['settings:userdata_copyable_modtypes_desc'] = 'While copying an activity into the Sharing Cart,
+a dialog shows an option whether a copy of an activity includes its user data or not,
+if its module type is checked in the above and an operator has <strong>moodle/backup:userinfo</strong>,
+<strong>moodle/backup:anonymise</strong> and <strong>moodle/restore:userinfo</strong> capabilities.
+(By default, only manager role has those capabilities.)';
+$string['settings:workaround_qtypes'] = 'Workaround for question types';
+$string['settings:workaround_qtypes_desc'] = 'The workaround for question restore issue will be performed if its question type is checked.
+When the questions to be restored already exist, however, those data look like inconsistent,
+this workaround will try to make another duplicates instead of reusing existing data.
+It may be useful for avoiding some restore errors, such as <i>error_question_match_sub_missing_in_db</i>.';
+$string['settings:add_to_sharing_cart'] = 'Add to sharing cart';
+$string['settings:add_to_sharing_cart_desc'] = 'Choose between drag and drop or click to add method for adding modules and sections to the sharing cart. -
+The \'Click to add\' method is the standard in the sharing cart, where you need to click on the basket icon, before it will be added into the sharing cart. -
+The \'Drag and drop\' allows you to drag and drop modules/activities and sections into the sharing cart block or into the basket icon in the footer. Please note that this is only supported for Moodle 4.0+';
+$string['settings:drag_and_drop'] = 'Drag and drop';
+$string['settings:click_to_add'] = 'Click to add';
+$string['settings:show_copy_section_in_block'] = 'Show the "Copy section" in block';
+$string['settings:show_copy_section_in_block_desc'] = 'Show the "Copy section" in the sharing cart block, underneath all modules/activities';
+$string['settings:show_copy_activity_in_block'] = 'Show the "Copy activity" in block';
+$string['settings:show_copy_activity_in_block_desc'] = 'Show the "Copy activity" in the sharing cart block, underneath all modules/activities - This is only available if the user has the capability to backup activities, but not the capability to manage/move activities';

@@ -27,6 +27,7 @@ class block_sharing_cart extends block_base {
         $base_factory = \block_sharing_cart\app\factory::make();
 
         $this->page->requires->css('/blocks/sharing_cart/style/style.css');
+        $this->page->requires->js_call_amd('block_sharing_cart/block', 'init', []);
 
         if ($this->content !== null) {
             return $this->content;

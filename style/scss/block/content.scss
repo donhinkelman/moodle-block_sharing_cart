@@ -1,25 +1,100 @@
+body:has(.block.block_sharing_cart) .course-content {
+  .clipboard {
+    display: flex;
+    border: 2px dashed #999;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    font-weight: bold;
+    gap: 0.5rem;
+    align-items: center;
+
+    .info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    [data-action="clear-clipboard"] {
+      cursor: pointer;
+    }
+  }
+
+  .clipboard_target {
+    display: flex;
+    border: 2px dashed #999;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    font-size: 2rem;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .add_to_sharing_cart {
+    display: flex;
+    align-self: center;
+    cursor: pointer;
+  }
+}
+
 .block.block_sharing_cart {
   .sharing_cart_items {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
 
     .sharing_cart_item {
       display: flex;
       flex-direction: column;
       width: 100%;
-      padding-top: 0.5rem;
+      cursor: auto;
 
       &:hover {
         background-color: rgba(0, 0, 0, .03);
       }
 
-      .info {
+      &[data-type="course"], &[data-type="section"] {
+        cursor: pointer;
+      }
+
+      &[data-type="course"] {
+        .item-body {
+        }
+      }
+
+      &[data-type="section"] {
+        .item-body {
+        }
+      }
+
+      // Not course or section (meaning module)
+      &:not([data-type="course"]):not([data-type="section"]) {
+        .item-body {
+          .info {
+            img {
+              width: 1rem;
+              height: 1rem;
+            }
+          }
+        }
+      }
+
+      // Collapsed
+      &[data-collapsed="true"] {
+        .sharing_cart_item_children {
+          display: none;
+        }
+      }
+
+      .item-body {
         display: flex;
         flex-direction: row;
         padding: 0.5rem;
-        margin-left: 0.5rem;
         margin-right: 0.5rem;
+        align-items: center;
+
+        .name {
+          margin-left: 0.5rem;
+        }
 
         .sharing_cart_item_actions {
           display: flex;
