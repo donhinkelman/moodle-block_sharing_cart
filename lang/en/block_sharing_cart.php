@@ -84,9 +84,13 @@ $string['modal_bulkdelete_confirm'] = 'Delete selected';
 
 // Block
 $string['rename_item'] = 'Rename item';
+
 $string['delete_item'] = 'Delete item';
-$string['copy_item'] = 'Copy item';
 $string['confirm_delete_item'] = 'Are you sure you want to delete this item? All sub-items will also be deleted.';
+
+$string['copy_item'] = 'Copy item';
+$string['into_section'] = 'into section';
+$string['confirm_copy_item'] = 'Are you sure you want to copy this item? All it\'s sub-items will also be copied.';
 $string['copying_this_item'] = 'Copying this item';
 
 // Settings

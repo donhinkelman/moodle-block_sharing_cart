@@ -26,8 +26,22 @@ class block_sharing_cart extends block_base {
 
         $base_factory = \block_sharing_cart\app\factory::make();
 
-        $this->page->requires->css('/blocks/sharing_cart/style/style.css');
-        $this->page->requires->js_call_amd('block_sharing_cart/block', 'init', []);
+        if ($this->page->user_is_editing()) {
+            $this->page->requires->css('/blocks/sharing_cart/style/style.css');
+            $this->page->requires->js_call_amd('block_sharing_cart/block', 'init', []);
+            $this->page->requires->strings_for_js([
+                'copy_item',
+                'confirm_copy_item',
+                'into_section',
+                'delete_item',
+                'confirm_delete_item',
+            ], 'block_sharing_cart');
+            $this->page->requires->strings_for_js([
+                'import',
+                'delete',
+                'cancel',
+            ], 'core');
+        }
 
         if ($this->content !== null) {
             return $this->content;

@@ -27,9 +27,7 @@ export default class ItemElement {
     }
 
     addEventListeners() {
-        if(this.#element.dataset.type === 'course' || this.#element.dataset.type === 'section') {
-            this.#element.addEventListener('click', this.toggleCollapseRecursively.bind(this));
-        }
+        this.#element.addEventListener('click', this.toggleCollapseRecursively.bind(this));
 
         this.#element.querySelector('[data-action="delete"]')?.addEventListener('click', this.confirmDeleteItem.bind(this));
         this.#element.querySelector('[data-action="copy_to_course"]')?.addEventListener('click', this.copyItemToCourse.bind(this));
@@ -39,7 +37,7 @@ export default class ItemElement {
         e.preventDefault();
         e.stopPropagation();
 
-        this.#blockElement.setClipboard(this);
+        await this.#blockElement.setClipboard(this);
     }
 
     async confirmDeleteItem(e) {
@@ -127,12 +125,28 @@ export default class ItemElement {
         iconElement.classList.add(item.dataset.collapsed === 'true' ? 'fa-folder-o' : 'fa-folder-open-o');
     }
 
+    isModule() {
+        return !this.isCourse() && !this.isSection();
+    }
+
+    isCourse() {
+        return this.#element.dataset.type === 'course';
+    }
+
+    isSection() {
+        return this.#element.dataset.type === 'section';
+    }
+
     /**
      * @param {Event} e
      */
     toggleCollapseRecursively(e) {
         e.preventDefault();
         e.stopPropagation();
+
+        if(this.isModule()) {
+            return;
+        }
 
         this.toggleCollapse(this.#element);
         this.getItemChildrenRecursively().forEach((item) => {

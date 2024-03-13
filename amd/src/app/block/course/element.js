@@ -23,6 +23,11 @@ export default class CourseElement {
      */
     #clipboard = null;
 
+    /**
+     * @type {AbortController}
+     */
+    #clipboardTargetListenerAbortController = new AbortController();
+
     constructor(baseFactory, blockElement, element) {
         this.#baseFactory = baseFactory;
         this.#blockElement = blockElement;
@@ -51,12 +56,27 @@ export default class CourseElement {
             const button = element.cloneNode(true);
 
             sectionTitle.after(button);
+
+            const sectionId = sectionTitle.dataset.itemid;
+
+            button.addEventListener(
+                'click',
+                this.#blockElement.addSectionBackupToSharingCart.bind(this.#blockElement, sectionId)
+            );
         });
 
-        this.#element.querySelectorAll('.cm_action_menu').forEach((courseModuleActionMenu) => {
+        const courseModuleActionMenus = this.#element.querySelectorAll('.cm_action_menu');
+        courseModuleActionMenus.forEach((courseModuleActionMenu) => {
             const button = element.cloneNode(true);
 
             courseModuleActionMenu.append(button);
+
+            const courseModuleId = courseModuleActionMenu.dataset.cmid;
+
+            button.addEventListener(
+                'click',
+                this.#blockElement.addCourseModuleBackupToSharingCart.bind(this.#blockElement, courseModuleId)
+            );
         });
     }
 
@@ -79,16 +99,25 @@ export default class CourseElement {
         )[0];
 
         this.#element.prepend(this.#clipboard);
-        this.#clipboard.querySelector('[data-action="clear-clipboard"]').addEventListener('click', this.clearClipboard.bind(this));
+
+        const clearClipboardButton = this.#clipboard.querySelector('[data-action="clear-clipboard"]');
+        clearClipboardButton.addEventListener(
+            'click',
+            this.onClearClipboard.bind(this)
+        );
     }
 
     /**
      * @param {Event} e
      */
-    clearClipboard(e) {
+    onClearClipboard(e) {
         e.preventDefault();
         e.stopPropagation();
 
+        this.clearClipboard();
+    }
+
+    clearClipboard() {
         this.#clipboard.classList.add('d-none');
         this.clearClipboardTargets();
 
@@ -127,11 +156,31 @@ export default class CourseElement {
             js
         )[0];
 
+        this.#clipboardTargetListenerAbortController.abort();
+        this.#clipboardTargetListenerAbortController = new AbortController();
+
         this.#element.querySelectorAll('[data-for="cmlist"]').forEach((section) => {
             const clipboardTarget = section.querySelector('.clipboard_target') ?? element.cloneNode(true);
 
             section.prepend(clipboardTarget);
+
+            const sectionId = section.closest('[data-for="section"]').dataset.id;
+
+            clipboardTarget.addEventListener(
+                'click',
+                this.#blockElement.confirmImportBackupFromSharingCart.bind(this.#blockElement, item, sectionId),
+                {
+                    signal: this.#clipboardTargetListenerAbortController.signal
+                }
+            );
         });
+    }
+
+    /**
+     * @param {Number} sectionId
+     */
+    getSectionName(sectionId) {
+        return this.#element.querySelector(`[data-for="section"][data-id="${sectionId}"] .sectionname`).innerText.trim();
     }
 
     getClipboardTargets() {
