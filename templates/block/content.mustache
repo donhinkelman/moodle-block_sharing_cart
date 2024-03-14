@@ -1,5 +1,13 @@
-<div class="sharing_cart_items">
-    {{#items}}
-        {{> block_sharing_cart/block/item}}
-    {{/items}}
+<div>
+    <div class="sharing_cart_items">
+        {{#items}}
+            {{> block_sharing_cart/block/item}}
+        {{/items}}
+    </div>
+    <hr>
+    <div class="d-flex">
+        <a class="btn btn-primary w-100 d-flex flex-row justify-content-center align-items-center">
+            <i class="fa fa-shopping-basket mr-1"></i>{{#str}}copy_this_course, block_sharing_cart{{/str}}
+        </a>
+    </div>
 </div>

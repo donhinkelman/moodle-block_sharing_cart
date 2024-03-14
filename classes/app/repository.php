@@ -30,4 +30,12 @@ abstract class repository {
     public function get_by_id(int $id): false|object {
         return $this->db->get_record($this->get_table(), ['id' => $id]);
     }
+
+    public function insert(object $record): int {
+        return $this->db->insert_record($this->get_table(), $record);
+    }
+
+    public function update(object $record): void {
+        $this->db->update_record($this->get_table(), $record);
+    }
 }

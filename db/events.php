@@ -6,7 +6,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $observers = [
     [
-        'eventname' => '\core\event\user_deleted',
+        'eventname' => \core\event\user_deleted::class,
         'callback' => '\block_sharing_cart\observers::user_deleted', // TODO: Implement user_deleted callback
     ],
 ];

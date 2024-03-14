@@ -93,6 +93,8 @@ $string['into_section'] = 'into section';
 $string['confirm_copy_item'] = 'Are you sure you want to copy this item? All it\'s sub-items will also be copied.';
 $string['copying_this_item'] = 'Copying this item';
 
+$string['copy_this_course'] = 'Copy this course';
+
 // Settings
 $string['settings:backup_mode'] = 'Backup mode';
 $string['settings:backup_mode_desc'] = 'Choose between immediate or asynchronous backup process';

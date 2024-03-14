@@ -110,7 +110,7 @@ export default class ItemElement {
      * @param {Boolean|NULL} collapse
      */
     toggleCollapse(item, collapse = null) {
-        if (item.dataset.type !== 'course' && item.dataset.type !== 'section') {
+        if (item.dataset.type !== 'course' && item.dataset.type !== 'section' && item.dataset.status !== '0') {
             return;
         }
 
@@ -144,7 +144,7 @@ export default class ItemElement {
         e.preventDefault();
         e.stopPropagation();
 
-        if(this.isModule()) {
+        if(this.isModule() || this.#element.dataset.status === '0') {
             return;
         }
 

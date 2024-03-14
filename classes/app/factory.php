@@ -15,7 +15,11 @@ class factory {
         return new collection($records);
     }
 
-    public function items(): items\factory {
-        return new items\factory($this);
+    public function backup(): backup\factory {
+        return new backup\factory($this);
+    }
+
+    public function item(): item\factory {
+        return new item\factory($this);
     }
 }

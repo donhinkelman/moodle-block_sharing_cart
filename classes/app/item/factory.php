@@ -1,6 +1,6 @@
 <?php
 
-namespace block_sharing_cart\app\items;
+namespace block_sharing_cart\app\item;
 
 // @codeCoverageIgnoreStart
 defined('MOODLE_INTERNAL') || die();

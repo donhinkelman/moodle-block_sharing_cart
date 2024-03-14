@@ -35,7 +35,7 @@ class content implements \renderable, \core\output\named_templatable {
     }
 
     private function export_items_for_template(): array {
-        $all_items = $this->base_factory->items()->repository()->get_by_user_id($this->user_id);
+        $all_items = $this->base_factory->item()->repository()->get_by_user_id($this->user_id);
         $all_items->map(fn($item) => $this->export_item_for_template($item));
 
         $root_items = $all_items->filter(static function (object $item) {

@@ -3,6 +3,8 @@ import BaseFactory from '../factory';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 import { get_strings } from "core/str";
+import Ajax from "core/ajax";
+import Templates from "core/templates";
 
 export default class BlockElement {
     /**
@@ -50,13 +52,20 @@ export default class BlockElement {
         const items = this.#element.querySelectorAll('.sharing_cart_item');
 
         items.forEach((element) => {
-            const itemElement = this.#baseFactory.blockFactory().item().element(this, element);
-            itemElement.addEventListeners();
-
-            this.#items.push(
-                itemElement
-            );
+            this.setupItem(element);
         });
+    }
+
+    /**
+     * @param {HTMLElement} element
+     */
+    setupItem(element) {
+        const itemElement = this.#baseFactory.blockFactory().item().element(this, element);
+        itemElement.addEventListeners();
+
+        this.#items.push(
+            itemElement
+        );
     }
 
     /**
@@ -87,16 +96,73 @@ export default class BlockElement {
      * @param {Number} sectionId
      */
     addSectionBackupToSharingCart(sectionId) {
-        // TODO: Do web service call to backup item
         console.log('Adding section (id: '+sectionId+') backup to sharing cart');
+
+        Ajax.call([{
+            methodname: 'block_sharing_cart_backup_section_into_sharing_cart',
+            args: {
+                section_id: sectionId,
+            },
+            done: async (data) => {
+                await this.renderItem(data);
+            },
+            fail: (data) => {
+                console.log(data);
+            }
+        }]);
     }
 
     /**
      * @param {Number} courseModuleId
      */
     addCourseModuleBackupToSharingCart(courseModuleId) {
-        // TODO: Do web service call to backup item
         console.log('Adding course module (id: '+courseModuleId+') backup to sharing cart');
+
+        Ajax.call([{
+            methodname: 'block_sharing_cart_backup_course_module_into_sharing_cart',
+            args: {
+                course_module_id: courseModuleId,
+            },
+            done: async (data) => {
+                await this.renderItem(data);
+            },
+            fail: (data) => {
+                console.log(data);
+            }
+        }]);
+    }
+
+    /**
+     * @param {Object} item
+     */
+    async renderItem(item) {
+        let element = document.createElement('div');
+        const {html, js} = await new Promise((resolve, reject) => {
+            Templates.render('block_sharing_cart/block/item', {
+                id: item.id,
+                name: item.name,
+                type: item.type,
+                status: 0,
+                is_module: item.type !== 'section' && item.type !== 'course',
+                is_course: item.type === 'course',
+                is_section: item.type === 'section',
+                is_root: true,
+            }).then(async (html, js) => {
+                resolve({
+                    html,
+                    js
+                });
+            }).fail(reject);
+        });
+        element = await Templates.replaceNode(
+            element,
+            html,
+            js
+        )[0];
+
+        this.#element.querySelector('.sharing_cart_items').append(element);
+
+        this.setupItem(element);
     }
 
     /**
