@@ -4,10 +4,13 @@ namespace block_sharing_cart\admin_settings;
 
 // @codeCoverageIgnoreStart
 defined('MOODLE_INTERNAL') || die();
+
 // @codeCoverageIgnoreEnd
 
-class multi_checkbox_mod_types extends multi_checkbox_with_icon {
-    public function __construct($name, $visiblename, $description, $defaultsetting = null) {
+class multi_checkbox_mod_types extends multi_checkbox_with_icon
+{
+    public function __construct($name, $visiblename, $description, $defaultsetting = null)
+    {
         global $DB, $OUTPUT;
 
         $choices = [];

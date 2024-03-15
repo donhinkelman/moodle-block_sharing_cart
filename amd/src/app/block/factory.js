@@ -39,7 +39,13 @@ export default class Factory {
         return new ItemFactory(this.#baseFactory);
     }
 
-    element(element) {
-        return new BlockElement(this.#baseFactory, element);
+
+    /**
+     * @param {HTMLElement} element
+     * @param {Boolean} canBackupUserdata
+     * @param {Boolean} canAnonymizeUserdata
+     */
+    element(element, canBackupUserdata, canAnonymizeUserdata) {
+        return new BlockElement(this.#baseFactory, element, canBackupUserdata, canAnonymizeUserdata);
     }
 }

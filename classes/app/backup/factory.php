@@ -4,18 +4,22 @@ namespace block_sharing_cart\app\backup;
 
 // @codeCoverageIgnoreStart
 defined('MOODLE_INTERNAL') || die();
+
 // @codeCoverageIgnoreEnd
 
 use block_sharing_cart\app\factory as base_factory;
 
-class factory {
+class factory
+{
     private base_factory $base_factory;
 
-    public function __construct(base_factory $base_factory) {
+    public function __construct(base_factory $base_factory)
+    {
         $this->base_factory = $base_factory;
     }
 
-    public function backup_controller(string $type, int $instance_id, int $user_id): \backup_controller {
+    public function backup_controller(string $type, int $instance_id, int $user_id): \backup_controller
+    {
         return new \backup_controller(
             $type,
             $instance_id,
@@ -27,7 +31,8 @@ class factory {
         );
     }
 
-    public function handler(): handler {
+    public function handler(): handler
+    {
         return new handler($this->base_factory);
     }
 }

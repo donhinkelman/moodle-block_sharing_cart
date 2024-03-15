@@ -2,8 +2,7 @@
 
 $string['pluginname'] = 'Sharing Cart';
 $string['sharing_cart'] = 'Sharing Cart';
-$string['sharing_cart_help'] =
-'<div>
+$string['sharing_cart_help'] = '<div>
     <strong>Copying from course to Sharing Cart</strong>
         <p>You will notice a small "Copy to Sharing Cart" icon which appears after each
             resource or activity in a course.
@@ -83,6 +82,10 @@ $string['modal_bulkdelete_confirm'] = 'Delete selected';
 */
 
 // Block
+$string['no_items'] = 'No items.<br>
+<br>
+Click the <i class="fa fa-shopping-basket"></i> icon to add items to the Sharing Cart.';
+
 $string['rename_item'] = 'Rename item';
 
 $string['delete_item'] = 'Delete item';
@@ -92,6 +95,12 @@ $string['copy_item'] = 'Copy item';
 $string['into_section'] = 'into section';
 $string['confirm_copy_item'] = 'Are you sure you want to copy this item? All it\'s sub-items will also be copied.';
 $string['copying_this_item'] = 'Copying this item';
+
+$string['backup_item'] = 'Backup item';
+$string['into_sharing_cart'] = 'into Sharing Cart';
+$string['backup_settings'] = 'Backup settings';
+$string['copy_user_data'] = 'Do you want to copy user data? (Eg. glossary/wiki/database entries)';
+$string['anonymize_user_data'] = 'Do you want to anonymize the user data?';
 
 $string['copy_this_course'] = 'Copy this course';
 

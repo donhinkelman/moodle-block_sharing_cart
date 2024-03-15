@@ -29,4 +29,20 @@ $functions = [
         'ajax' => true,
         'capabilities' => ''
     ],
+    'block_sharing_cart_delete_item_from_sharing_cart' => [
+        'classname' => \block_sharing_cart\external\item\delete_item_from_sharing_cart::class,
+        'methodname' => 'execute',
+        'description' => 'Deletes an item from the sharing cart',
+        'type' => 'write',
+        'ajax' => true,
+        'capabilities' => ''
+    ],
+    'block_sharing_cart_get_item_from_sharing_cart' => [
+        'classname' => \block_sharing_cart\external\item\get_item_from_sharing_cart::class,
+        'methodname' => 'execute',
+        'description' => 'Get an item from the sharing cart',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => ''
+    ],
 ];

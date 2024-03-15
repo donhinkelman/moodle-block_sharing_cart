@@ -1,4 +1,5 @@
 import BlockFactory from "./block/factory";
+import MoodleFactory from "./moodle/factory";
 
 export default class Factory {
     /**
@@ -11,7 +12,14 @@ export default class Factory {
     /**
      * @returns {BlockFactory}
      */
-    blockFactory() {
+    block() {
         return new BlockFactory(this);
+    }
+
+    /**
+     * @returns {MoodleFactory}
+     */
+    moodle() {
+        return new MoodleFactory(this);
     }
 }

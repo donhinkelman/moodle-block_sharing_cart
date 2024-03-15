@@ -14,13 +14,21 @@ export default class EventHandler {
         this.#baseFactory = baseFactory;
     }
 
-    onLoad() {
-        this.setupBlock();
+    /**
+     * @param {Boolean} canBackupUserdata
+     * @param {Boolean} canAnonymizeUserdata
+     */
+    onLoad(canBackupUserdata, canAnonymizeUserdata) {
+        this.setupBlock(canBackupUserdata, canAnonymizeUserdata);
     }
 
-    setupBlock() {
+    /**
+     * @param {Boolean} canBackupUserdata
+     * @param {Boolean} canAnonymizeUserdata
+     */
+    setupBlock(canBackupUserdata, canAnonymizeUserdata) {
         const block = document.querySelector('.block.block_sharing_cart');
 
-        this.#baseFactory.blockFactory().element(block).addEventListeners();
+        this.#baseFactory.block().element(block, canBackupUserdata, canAnonymizeUserdata).addEventListeners();
     }
 }

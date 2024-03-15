@@ -1,5 +1,9 @@
 import BaseFactory from './app/factory';
 
-export const init = () => {
-    BaseFactory.make().blockFactory().eventHandler().onLoad();
+/**
+ * @param {Boolean} canBackupUserdata
+ * @param {Boolean} canAnonymizeUserdata
+ */
+export const init = (canBackupUserdata, canAnonymizeUserdata) => {
+    BaseFactory.make().block().eventHandler().onLoad(canBackupUserdata, canAnonymizeUserdata);
 };

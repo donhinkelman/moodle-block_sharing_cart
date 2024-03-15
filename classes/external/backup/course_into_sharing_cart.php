@@ -4,54 +4,59 @@ namespace block_sharing_cart\external\backup;
 
 // @codeCoverageIgnoreStart
 defined('MOODLE_INTERNAL') || die();
+
 // @codeCoverageIgnoreEnd
 
 use block_sharing_cart\app\factory;
+use block_sharing_cart\app\item\entity;
 use core_external\external_api;
 use core_external\external_description;
 use core_external\external_function_parameters;
 use core_external\external_single_structure;
 use core_external\external_value;
 
-class course_into_sharing_cart extends external_api {
-    public static function execute_parameters(): external_function_parameters {
+class course_into_sharing_cart extends external_api
+{
+    public static function execute_parameters(): external_function_parameters
+    {
         return new external_function_parameters([
             'course_id' => new external_value(PARAM_INT, '', VALUE_REQUIRED),
+            'settings' => new external_single_structure([
+                'users' => new external_value(PARAM_BOOL, 'Whether to include user data in the backup', VALUE_REQUIRED),
+                'anonymize' => new external_value(
+                    PARAM_BOOL, 'Whether to anonymize user data in the backup', VALUE_REQUIRED
+                ),
+            ], 'The settings of the item')
         ]);
     }
 
-    public static function execute(int $course_id): object {
+    public static function execute(int $course_id, array $settings): object
+    {
         global $USER;
 
         $base_factory = factory::make();
 
         $params = self::validate_parameters(self::execute_parameters(), [
             'course_id' => $course_id,
+            'settings' => $settings,
         ]);
 
-        $course = get_course($params['course_id']);
+        self::validate_context(\context_course::instance($params['course_id']));
 
-        self::validate_context(\context_course::instance($course->id));
+        $item = $base_factory->item()->repository()->insert_course(
+            $course_id,
+            $USER->id,
+            null,
+            entity::STATUS_AWAITING_BACKUP
+        );
 
-        $time = time();
-        $item_id = $base_factory->item()->repository()->insert((object)[
-            'user_id' => $USER->id,
-            'file_id' => null,
-            'parent_item_id' => null,
-            'type' => 'course',
-            'name' => $course->fullname,
-            'status' => 0,
-            'timecreated' => $time,
-            'timemodified' => $time,
-        ]);
-        $item = $base_factory->item()->repository()->get_by_id($item_id);
+        $base_factory->backup()->handler()->backup_course($course_id, $item, $settings);
 
-        $base_factory->backup()->handler()->backup_course($course_id, $item);
-
-        return $item;
+        return (object)$item->to_array();
     }
 
-    public static function execute_returns(): external_description {
+    public static function execute_returns(): external_description
+    {
         return new external_single_structure([
             'id' => new external_value(PARAM_INT, 'The id of the item in the sharing cart', VALUE_REQUIRED),
             'user_id' => new external_value(PARAM_INT, 'The id of the user who owns the item', VALUE_REQUIRED),

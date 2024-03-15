@@ -4,22 +4,28 @@ namespace block_sharing_cart\app;
 
 // @codeCoverageIgnoreStart
 defined('MOODLE_INTERNAL') || die();
+
 // @codeCoverageIgnoreEnd
 
-class factory {
-    public static function make(): self {
+class factory
+{
+    public static function make(): self
+    {
         return new self();
     }
 
-    public function collection(array $records): collection {
+    public function collection(array $records = []): collection
+    {
         return new collection($records);
     }
 
-    public function backup(): backup\factory {
+    public function backup(): backup\factory
+    {
         return new backup\factory($this);
     }
 
-    public function item(): item\factory {
+    public function item(): item\factory
+    {
         return new item\factory($this);
     }
 }

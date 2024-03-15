@@ -4,29 +4,41 @@ namespace block_sharing_cart\external\backup;
 
 // @codeCoverageIgnoreStart
 defined('MOODLE_INTERNAL') || die();
+
 // @codeCoverageIgnoreEnd
 
 use block_sharing_cart\app\factory;
+use block_sharing_cart\app\item\entity;
 use core_external\external_api;
 use core_external\external_description;
 use core_external\external_function_parameters;
 use core_external\external_single_structure;
 use core_external\external_value;
 
-class section_into_sharing_cart extends external_api {
-    public static function execute_parameters(): external_function_parameters {
+class section_into_sharing_cart extends external_api
+{
+    public static function execute_parameters(): external_function_parameters
+    {
         return new external_function_parameters([
             'section_id' => new external_value(PARAM_INT, '', VALUE_REQUIRED),
+            'settings' => new external_single_structure([
+                'users' => new external_value(PARAM_BOOL, 'Whether to include user data in the backup', VALUE_REQUIRED),
+                'anonymize' => new external_value(
+                    PARAM_BOOL, 'Whether to anonymize user data in the backup', VALUE_REQUIRED
+                ),
+            ], 'The settings of the item')
         ]);
     }
 
-    public static function execute(int $section_id): object {
+    public static function execute(int $section_id, array $settings): object
+    {
         global $USER, $DB;
 
         $base_factory = factory::make();
 
         $params = self::validate_parameters(self::execute_parameters(), [
             'section_id' => $section_id,
+            'settings' => $settings,
         ]);
 
         $course_id = $DB->get_field('course_sections', 'course', ['id' => $params['section_id']], MUST_EXIST);
@@ -35,15 +47,20 @@ class section_into_sharing_cart extends external_api {
             \context_course::instance($course_id)
         );
 
-        $item_id = $base_factory->item()->repository()->insert_section($params['section_id'], $USER->id,null,0);
-        $item = $base_factory->item()->repository()->get_by_id($item_id);
+        $item = $base_factory->item()->repository()->insert_section(
+            $params['section_id'],
+            $USER->id,
+            null,
+            entity::STATUS_AWAITING_BACKUP
+        );
 
-        $base_factory->backup()->handler()->backup_section($params['section_id'], $item);
+        $base_factory->backup()->handler()->backup_section($params['section_id'], $item, $settings);
 
-        return $item;
+        return (object)$item->to_array();
     }
 
-    public static function execute_returns(): external_description {
+    public static function execute_returns(): external_description
+    {
         return new external_single_structure([
             'id' => new external_value(PARAM_INT, 'The id of the item in the sharing cart', VALUE_REQUIRED),
             'user_id' => new external_value(PARAM_INT, 'The id of the user who owns the item', VALUE_REQUIRED),

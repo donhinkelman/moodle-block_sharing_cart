@@ -4,6 +4,7 @@ namespace block_sharing_cart\app\backup;
 
 // @codeCoverageIgnoreStart
 defined('MOODLE_INTERNAL') || die();
+
 // @codeCoverageIgnoreEnd
 
 use block_sharing_cart\app\factory as base_factory;
@@ -13,36 +14,59 @@ global $CFG;
 require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
 require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 
-class handler {
+class handler
+{
     private base_factory $base_factory;
 
-    public function __construct(base_factory $base_factory) {
+    public function __construct(base_factory $base_factory)
+    {
         $this->base_factory = $base_factory;
     }
 
-    public function backup_course_module(int $course_module_id, object $root_item): asynchronous_backup_task {
+    public function backup_course_module(
+        int $course_module_id,
+        object $root_item,
+        array $settings = []
+    ): asynchronous_backup_task {
         global $USER;
 
-        $backup_controller = $this->base_factory->backup()->backup_controller(\backup::TYPE_1ACTIVITY, $course_module_id, $USER->id);
+        $backup_controller = $this->base_factory->backup()->backup_controller(
+            \backup::TYPE_1ACTIVITY,
+            $course_module_id,
+            $USER->id
+        );
 
-        return $this->queue_async_backup($backup_controller, $root_item);
+        return $this->queue_async_backup($backup_controller, $root_item, $settings);
     }
-    public function backup_section(int $section_id, object $root_item): asynchronous_backup_task {
+
+    public function backup_section(int $section_id, object $root_item, array $settings = []): asynchronous_backup_task
+    {
         global $USER;
 
-        $backup_controller = $this->base_factory->backup()->backup_controller(\backup::TYPE_1SECTION, $section_id, $USER->id);
+        $backup_controller = $this->base_factory->backup()->backup_controller(
+            \backup::TYPE_1SECTION,
+            $section_id,
+            $USER->id
+        );
 
-        return $this->queue_async_backup($backup_controller, $root_item);
+        return $this->queue_async_backup($backup_controller, $root_item, $settings);
     }
-    public function backup_course(int $course_id, object $root_item): asynchronous_backup_task {
+
+    public function backup_course(int $course_id, object $root_item, array $settings = []): asynchronous_backup_task
+    {
         global $USER;
 
-        $backup_controller = $this->base_factory->backup()->backup_controller(\backup::TYPE_1COURSE, $course_id, $USER->id);
+        $backup_controller = $this->base_factory->backup()->backup_controller(
+            \backup::TYPE_1COURSE,
+            $course_id,
+            $USER->id
+        );
 
-        return $this->queue_async_backup($backup_controller, $root_item);
+        return $this->queue_async_backup($backup_controller, $root_item, $settings);
     }
 
-    public function get_backup_item_tree(\stored_file $file): array {
+    public function get_backup_item_tree(\stored_file $file): array
+    {
         $tree = [];
 
         /**
@@ -73,17 +97,17 @@ class handler {
         return $tree;
     }
 
-    private function queue_async_backup(\backup_controller $backup_controller, object $root_item): asynchronous_backup_task {
+    private function queue_async_backup(
+        \backup_controller $backup_controller,
+        object $root_item,
+        array $settings = []
+    ): asynchronous_backup_task {
         $asynctask = new asynchronous_backup_task();
         $asynctask->set_blocking(false);
         $asynctask->set_custom_data([
             'backupid' => $backup_controller->get_backupid(),
-            'block_sharing_cart_root_item' => (object)[
-                'id' => $root_item->id,
-                'type' => $root_item->type,
-                'user_id' => $root_item->user_id
-            ],
-            'block_sharing_cart_backup_item_instance_id' => $backup_controller->get_id(),
+            'block_sharing_cart_root_item_id' => $root_item->id,
+            'backup_settings' => $settings
         ]);
         $asynctask->set_userid($backup_controller->get_userid());
         \core\task\manager::queue_adhoc_task($asynctask);

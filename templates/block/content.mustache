@@ -3,6 +3,11 @@
         {{#items}}
             {{> block_sharing_cart/block/item}}
         {{/items}}
+        {{^items.0}}
+            <div class="alert alert-info mb-0">
+                {{#str}}no_items, block_sharing_cart{{/str}}
+            </div>
+        {{/items.0}}
     </div>
     <hr>
     <div class="d-flex">

@@ -1,6 +1,6 @@
 <?php
 
-namespace block_sharing_cart\external\backup;
+namespace block_sharing_cart\external\item;
 
 // @codeCoverageIgnoreStart
 defined('MOODLE_INTERNAL') || die();
@@ -15,44 +15,36 @@ use core_external\external_function_parameters;
 use core_external\external_single_structure;
 use core_external\external_value;
 
-class course_module_into_sharing_cart extends external_api
+class get_item_from_sharing_cart extends external_api
 {
     public static function execute_parameters(): external_function_parameters
     {
         return new external_function_parameters([
-            'course_module_id' => new external_value(PARAM_INT, '', VALUE_REQUIRED),
-            'settings' => new external_single_structure([
-                'users' => new external_value(PARAM_BOOL, 'Whether to include user data in the backup', VALUE_REQUIRED),
-                'anonymize' => new external_value(
-                    PARAM_BOOL, 'Whether to anonymize user data in the backup', VALUE_REQUIRED
-                ),
-            ], 'The settings of the item')
+            'item_id' => new external_value(PARAM_INT, '', VALUE_REQUIRED),
         ]);
     }
 
-    public static function execute(int $course_module_id, array $settings): object
+    public static function execute(int $item_id): ?object
     {
         global $USER;
 
         $base_factory = factory::make();
 
         $params = self::validate_parameters(self::execute_parameters(), [
-            'course_module_id' => $course_module_id,
-            'settings' => $settings,
+            'item_id' => $item_id,
         ]);
 
         self::validate_context(
-            \context_module::instance($params['course_module_id'])
+            \context_user::instance($USER->id)
         );
+        $item = $base_factory->item()->repository()->get_by_id($params['item_id']);
+        if (!$item) {
+            return null;
+        }
 
-        $item = $base_factory->item()->repository()->insert_activity(
-            $params['course_module_id'],
-            $USER->id,
-            null,
-            entity::STATUS_AWAITING_BACKUP
-        );
-
-        $base_factory->backup()->handler()->backup_course_module($course_module_id, $item, $settings);
+        if ($item->get_user_id() !== (int)$USER->id) {
+            return null;
+        }
 
         return (object)$item->to_array();
     }

@@ -1,15 +1,25 @@
-<div class="sharing_cart_item" data-type="{{type}}" data-itemid="{{id}}" data-status="{{status}}" {{^is_module}}data-collapsed="true"{{/is_module}}>
+<div class="sharing_cart_item" data-type="{{type}}" data-itemid="{{id}}" data-status="{{status}}"
+     {{^is_module}}data-collapsed="true"{{/is_module}}>
     <div class="item-body">
         <div class="info">
             {{> block_sharing_cart/block/item/icon }}
             <span class="name">{{name}}</span>
         </div>
         <span class="sharing_cart_item_actions">
-            {{#is_root}}
-                <i class="fa fa-trash" data-action="delete" title="{{#str}}delete_item, block_sharing_cart{{/str}}"></i>
-                <i class="fa fa-pencil" data-action="rename" title="{{#str}}rename_item, block_sharing_cart{{/str}}"></i>
-            {{/is_root}}
-            <i class="fa fa-clone" data-action="copy_to_course" title="{{#str}}copy_item, block_sharing_cart{{/str}}"></i>
+            {{^status_awaiting}}
+                {{#is_root}}
+                    <i class="fa fa-trash" data-action="delete"
+                       title="{{#str}}delete_item, block_sharing_cart{{/str}}"></i>
+                    {{#status_finished}}
+                        <i class="fa fa-pencil" data-action="rename"
+                           title="{{#str}}rename_item, block_sharing_cart{{/str}}"></i>
+                    {{/status_finished}}
+                {{/is_root}}
+                {{#status_finished}}
+                    <i class="fa fa-clone" data-action="copy_to_course"
+                       title="{{#str}}copy_item, block_sharing_cart{{/str}}"></i>
+                {{/status_finished}}
+            {{/status_awaiting}}
         </span>
     </div>
     <div class="sharing_cart_item_children">

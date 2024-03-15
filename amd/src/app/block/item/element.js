@@ -2,7 +2,8 @@
 import BaseFactory from '../factory';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
-import { get_strings } from "core/str";
+import {get_strings} from "core/str";
+import Ajax from "core/ajax";
 
 export default class ItemElement {
     /**
@@ -24,9 +25,53 @@ export default class ItemElement {
         this.#baseFactory = baseFactory;
         this.#blockElement = blockElement;
         this.#element = element;
+
+        if (this.#element.dataset.status === '0') {
+            this.#pollItem();
+        }
+
+        this.#addEventListeners();
     }
 
-    addEventListeners() {
+    #pollItem(currentTry = 0, retries = 10) {
+        currentTry += 1;
+
+        console.log("Retry: " + currentTry);
+
+        if (currentTry >= retries) {
+            console.error("Item not finished after " + retries + " retries, giving up.");
+            return;
+        }
+
+        Ajax.call([{
+            methodname: 'block_sharing_cart_get_item_from_sharing_cart',
+            args: {
+                item_id: this.getItemId(),
+            },
+            done: async (item) => {
+                if (item.status === 0) {
+                    new Promise(
+                        (resolve) => {
+                            setTimeout(resolve, currentTry * 1000);
+                        }
+                    ).then(
+                        () => {
+                            this.#pollItem(currentTry, retries);
+                        }
+                    );
+
+                    return;
+                }
+
+                await this.#blockElement.renderItem(item);
+            },
+            fail: (data) => {
+                console.error(data);
+            }
+        }]);
+    }
+
+    #addEventListeners() {
         this.#element.addEventListener('click', this.toggleCollapseRecursively.bind(this));
 
         this.#element.querySelector('[data-action="delete"]')?.addEventListener('click', this.confirmDeleteItem.bind(this));
@@ -65,7 +110,7 @@ export default class ItemElement {
 
         const modal = await ModalFactory.create({
             type: ModalFactory.types.DELETE_CANCEL,
-            title: strings[0] + ': "' + this.getItemName() + '"',
+            title: strings[0] + ': "' + this.getItemName().slice(0, 50).trim() + '"',
             body: strings[1],
             buttons: {
                 delete: strings[2],
@@ -82,6 +127,13 @@ export default class ItemElement {
      */
     getItemChildrenRecursively() {
         return this.#element.querySelectorAll('.sharing_cart_item');
+    }
+
+    /**
+     * @return {HTMLElement}
+     */
+    getItemElement() {
+        return this.#element;
     }
 
     /**
@@ -110,7 +162,10 @@ export default class ItemElement {
      * @param {Boolean|NULL} collapse
      */
     toggleCollapse(item, collapse = null) {
-        if (item.dataset.type !== 'course' && item.dataset.type !== 'section' && item.dataset.status !== '0') {
+        if (item.dataset.type !== 'course' &&
+            item.dataset.type !== 'section' &&
+            item.dataset.status !== '0' &&
+            item.dataset.status !== '2') {
             return;
         }
 
@@ -144,7 +199,7 @@ export default class ItemElement {
         e.preventDefault();
         e.stopPropagation();
 
-        if(this.isModule() || this.#element.dataset.status === '0') {
+        if (this.isModule() || this.#element.dataset.status !== '1') {
             return;
         }
 

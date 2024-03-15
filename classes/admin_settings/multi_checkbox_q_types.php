@@ -9,8 +9,10 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once $CFG->dirroot . '/question/engine/bank.php';
 
-class multi_checkbox_q_types extends multi_checkbox_with_icon {
-    public function __construct(string $name, string $visiblename, string $description, $defaultsetting = null) {
+class multi_checkbox_q_types extends multi_checkbox_with_icon
+{
+    public function __construct(string $name, string $visiblename, string $description, $defaultsetting = null)
+    {
         global $OUTPUT;
 
         $choices = [];
@@ -20,7 +22,7 @@ class multi_checkbox_q_types extends multi_checkbox_with_icon {
         // some qtypes do not need workaround
         unset($qtypes['missingtype'], $qtypes['random']);
 
-        $qtypenames = array_map(static function(\question_type $qtype) {
+        $qtypenames = array_map(static function (\question_type $qtype) {
             return $qtype->local_name();
         }, $qtypes);
         foreach (\question_bank::sort_qtype_array($qtypenames) as $qtypename => $label) {

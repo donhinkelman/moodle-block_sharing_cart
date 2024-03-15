@@ -4,6 +4,7 @@ namespace block_sharing_cart\integration;
 
 // @codeCoverageIgnoreStart
 defined('MOODLE_INTERNAL') || die();
+
 // @codeCoverageIgnoreEnd
 
 use advanced_testcase;

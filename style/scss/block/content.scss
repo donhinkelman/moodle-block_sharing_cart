@@ -17,14 +17,14 @@
         cursor: pointer;
       }
 
-      &[data-status="0"] {
+      &[data-status="2"], &[data-status="0"] {
         cursor: auto;
+      }
+
+      &[data-status="0"] {
         .item-body {
           .info {
             color: rgba(0, 0, 0, .5);
-          }
-          .sharing_cart_item_actions {
-            display: none;
           }
         }
       }
@@ -61,6 +61,19 @@
           width: 100%;
           min-width: 0;
           flex: 1 1 auto;
+
+          i.fa-spinner {
+            animation: spin 2s linear infinite;
+
+            @keyframes spin {
+              0% {
+                transform: rotate(0deg);
+              }
+              100% {
+                transform: rotate(360deg);
+              }
+            }
+          }
 
           .name {
             margin-left: 0.5rem;

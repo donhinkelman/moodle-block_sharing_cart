@@ -1,6 +1,5 @@
 // eslint-disable-next-line no-unused-vars
 import BaseFactory from '../factory';
-import Templates from "core/templates";
 
 export default class CourseElement {
     /**
@@ -35,21 +34,10 @@ export default class CourseElement {
     }
 
     async addBackupToSharingCartButtons() {
-        let element = document.createElement('div');
-        const {html, js} = await new Promise((resolve, reject) => {
-            Templates.render('block_sharing_cart/block/course/add_to_sharing_cart_button', {})
-                .then(async (html, js) => {
-                    resolve({
-                        html,
-                        js
-                    });
-                }).fail(reject);
-        });
-        element = await Templates.replaceNode(
-            element,
-            html,
-            js
-        )[0];
+        const element = await this.#baseFactory.moodle().template().createElementFromTemplate(
+            'block_sharing_cart/block/course/add_to_sharing_cart_button',
+            {}
+        );
 
         const sectionTitles = this.#element.querySelectorAll('.course-section-header .inplaceeditable');
         sectionTitles.forEach((sectionTitle) => {
@@ -81,22 +69,10 @@ export default class CourseElement {
     }
 
     async renderClipboard() {
-        this.#clipboard = document.createElement('div');
-
-        const {html, js} = await new Promise((resolve, reject) => {
-            Templates.render('block_sharing_cart/block/course/clipboard', {})
-                .then(async (html, js) => {
-                    resolve({
-                        html,
-                        js
-                    });
-                }).fail(reject);
-        });
-        this.#clipboard = await Templates.replaceNode(
-            this.#clipboard,
-            html,
-            js
-        )[0];
+        this.#clipboard = await this.#baseFactory.moodle().template().createElementFromTemplate(
+            'block_sharing_cart/block/course/clipboard',
+            {}
+        );
 
         this.#element.prepend(this.#clipboard);
 
@@ -140,21 +116,10 @@ export default class CourseElement {
      * @param {ItemElement} item
      */
     async updateClipboardTargets(item) {
-        let element = document.createElement('div');
-        const {html, js} = await new Promise((resolve, reject) => {
-            Templates.render('block_sharing_cart/block/course/clipboard_target', {})
-                .then(async (html, js) => {
-                    resolve({
-                        html,
-                        js
-                    });
-                }).fail(reject);
-        });
-        element = await Templates.replaceNode(
-            element,
-            html,
-            js
-        )[0];
+        const element = await this.#baseFactory.moodle().template().createElementFromTemplate(
+            'block_sharing_cart/block/course/clipboard_target',
+            {}
+        );
 
         this.#clipboardTargetListenerAbortController.abort();
         this.#clipboardTargetListenerAbortController = new AbortController();
@@ -181,6 +146,13 @@ export default class CourseElement {
      */
     getSectionName(sectionId) {
         return this.#element.querySelector(`[data-for="section"][data-id="${sectionId}"] .sectionname`).innerText.trim();
+    }
+
+    /**
+     * @param {Number} courseModuleId
+     */
+    getCourseModuleName(courseModuleId) {
+        return this.#element.querySelector(`[data-for="cmitem"][data-id="${courseModuleId}"] .instancename`).innerText.trim();
     }
 
     getClipboardTargets() {

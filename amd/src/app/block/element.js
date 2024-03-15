@@ -2,9 +2,8 @@
 import BaseFactory from '../factory';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
-import { get_strings } from "core/str";
+import {get_strings} from "core/str";
 import Ajax from "core/ajax";
-import Templates from "core/templates";
 
 export default class BlockElement {
     /**
@@ -31,23 +30,31 @@ export default class BlockElement {
      * @type {ItemElement|NULL}
      */
     #clipboardItem = null;
-    constructor(baseFactory, element) {
+
+    #canBackupUserdata = false;
+    #canAnonymizeUserdata = false;
+
+    constructor(baseFactory, element, canBackupUserdata, canAnonymizeUserdata) {
         this.#baseFactory = baseFactory;
         this.#element = element;
+        this.#canBackupUserdata = canBackupUserdata;
+        this.#canAnonymizeUserdata = canAnonymizeUserdata;
     }
 
     addEventListeners() {
         this.setupCourse();
         this.setupItems();
     }
+
     setupCourse() {
         const course = document.querySelector('.course-content');
 
-        const courseElement = this.#baseFactory.blockFactory().course().element(this, course);
+        const courseElement = this.#baseFactory.block().course().element(this, course);
         courseElement.addBackupToSharingCartButtons();
 
         this.#course = courseElement;
     }
+
     setupItems() {
         const items = this.#element.querySelectorAll('.sharing_cart_item');
 
@@ -60,8 +67,7 @@ export default class BlockElement {
      * @param {HTMLElement} element
      */
     setupItem(element) {
-        const itemElement = this.#baseFactory.blockFactory().item().element(this, element);
-        itemElement.addEventListeners();
+        const itemElement = this.#baseFactory.block().item().element(this, element);
 
         this.#items.push(
             itemElement
@@ -76,6 +82,7 @@ export default class BlockElement {
 
         await this.#course.setClipboard(item);
     }
+
     clearClipboard() {
         this.#clipboardItem = null;
     }
@@ -84,82 +91,178 @@ export default class BlockElement {
      * @param {ItemElement} item
      */
     deleteItem(item) {
-        // TODO: Do web service call to delete item
-        console.log('Deleting item (id: '+item.getItemId()+') from sharing cart');
+        Ajax.call([{
+            methodname: 'block_sharing_cart_delete_item_from_sharing_cart',
+            args: {
+                item_id: item.getItemId(),
+            },
+            done: async (deleted) => {
+                if (deleted) {
+                    const index = this.#items.findIndex((i) => i.getItemId() === item.getItemId());
+                    this.#items.splice(index, 1);
+                    item.remove();
+                } else {
+                    console.error('Failed to delete item');
+                }
+            },
+            fail: (data) => {
+                console.error(data);
+            }
+        }]);
+    }
 
-        const index = this.#items.findIndex((i) => i.getItemId() === item.getItemId());
-        this.#items.splice(index, 1);
-        item.remove();
+    /**
+     * @param {String} itemName
+     * @param {CallableFunction} onSave
+     * @return {Promise<Modal>}
+     */
+    async createBackupItemToSharingCartModal(itemName, onSave) {
+        const strings = await get_strings([
+            {
+                key: 'backup_item',
+                component: 'block_sharing_cart',
+            },
+            {
+                key: 'into_sharing_cart',
+                component: 'block_sharing_cart',
+            },
+            {
+                key: 'backup',
+                component: 'core',
+            },
+            {
+                key: 'cancel',
+                component: 'core',
+            }
+        ]);
+
+        const {html, js} = await this.#baseFactory.moodle().template().renderTemplate(
+            'block_sharing_cart/modal/backup_to_sharing_cart_modal_body',
+            {
+                show_user_data_backup: this.#canBackupUserdata,
+                show_anonymize_user_data: this.#canBackupUserdata && this.#canAnonymizeUserdata,
+            }
+        );
+
+        /**
+         * @type {Modal}
+         */
+        const modal = await ModalFactory.create({
+            type: ModalFactory.types.SAVE_CANCEL,
+            title: strings[0] + ': "' + itemName.slice(0, 50).trim() + '" ' + strings[1],
+            body: html,
+            buttons: {
+                save: strings[2],
+                cancel: strings[3],
+            },
+            removeOnClose: true,
+        });
+        modal.getRoot().on(ModalEvents.shown, () => this.#baseFactory.moodle().template().runTemplateJS(js));
+        modal.getRoot().on(ModalEvents.save, () => {
+            const modalUserdataCheckbox = document.getElementById('modal-userdata-checkbox');
+            const modalAnonymizeCheckbox = document.getElementById('modal-anonymize-checkbox');
+
+            onSave({
+                users: modalUserdataCheckbox.checked ?? false,
+                anonymize: modalAnonymizeCheckbox.checked ?? false
+            });
+        });
+
+        return modal;
     }
 
     /**
      * @param {Number} sectionId
      */
-    addSectionBackupToSharingCart(sectionId) {
-        console.log('Adding section (id: '+sectionId+') backup to sharing cart');
+    async addSectionBackupToSharingCart(sectionId) {
+        const sectionName = this.#course.getSectionName(sectionId);
 
-        Ajax.call([{
-            methodname: 'block_sharing_cart_backup_section_into_sharing_cart',
-            args: {
-                section_id: sectionId,
-            },
-            done: async (data) => {
-                await this.renderItem(data);
-            },
-            fail: (data) => {
-                console.log(data);
-            }
-        }]);
+        const modal = await this.createBackupItemToSharingCartModal(sectionName, (settings) => {
+            Ajax.call([{
+                methodname: 'block_sharing_cart_backup_section_into_sharing_cart',
+                args: {
+                    section_id: sectionId,
+                    settings: settings
+                },
+                done: async (data) => {
+                    await this.renderItem(data);
+                },
+                fail: (data) => {
+                    console.error(data);
+                }
+            }]);
+        });
+
+        await modal.show();
     }
 
     /**
      * @param {Number} courseModuleId
      */
-    addCourseModuleBackupToSharingCart(courseModuleId) {
-        console.log('Adding course module (id: '+courseModuleId+') backup to sharing cart');
+    async addCourseModuleBackupToSharingCart(courseModuleId) {
+        const courseModuleName = this.#course.getCourseModuleName(courseModuleId);
 
-        Ajax.call([{
-            methodname: 'block_sharing_cart_backup_course_module_into_sharing_cart',
-            args: {
-                course_module_id: courseModuleId,
-            },
-            done: async (data) => {
-                await this.renderItem(data);
-            },
-            fail: (data) => {
-                console.log(data);
-            }
-        }]);
+        const modal = await this.createBackupItemToSharingCartModal(courseModuleName, (settings) => {
+            Ajax.call([{
+                methodname: 'block_sharing_cart_backup_course_module_into_sharing_cart',
+                args: {
+                    course_module_id: courseModuleId,
+                    settings: settings
+                },
+                done: async (data) => {
+                    await this.renderItem(data);
+                },
+                fail: (data) => {
+                    console.error(data);
+                }
+            }]);
+        });
+        await modal.show();
     }
 
     /**
      * @param {Object} item
      */
     async renderItem(item) {
-        let element = document.createElement('div');
-        const {html, js} = await new Promise((resolve, reject) => {
-            Templates.render('block_sharing_cart/block/item', {
+        const existingItemIndex = this.#items.findIndex((i) => i.getItemId() === item.id);
+        const existingItem = this.#items[existingItemIndex] ?? false;
+        const oldElement = this.#element.querySelector('.sharing_cart_items .sharing_cart_item[data-itemid="' + item.id + '"]');
+        if (existingItem && oldElement) {
+            const element = await this.#baseFactory.moodle().template().createElementFromFragment(
+                'block_sharing_cart',
+                'item',
+                1,
+                {
+                    item_id: item.id,
+                }
+            );
+
+            this.#element.querySelector('.sharing_cart_items').replaceChild(element, oldElement);
+            this.#items[existingItemIndex] = this.#baseFactory.block().item().element(this, element);
+
+            element.querySelectorAll('.sharing_cart_item').forEach((subItem) => {
+                this.setupItem(subItem);
+            });
+
+            return;
+        }
+
+        const element = await this.#baseFactory.moodle().template().createElementFromTemplate(
+            'block_sharing_cart/block/item',
+            {
                 id: item.id,
                 name: item.name,
                 type: item.type,
                 status: 0,
+                status_awaiting: true,
+                status_finished: false,
+                status_failed: false,
                 is_module: item.type !== 'section' && item.type !== 'course',
                 is_course: item.type === 'course',
                 is_section: item.type === 'section',
                 is_root: true,
-            }).then(async (html, js) => {
-                resolve({
-                    html,
-                    js
-                });
-            }).fail(reject);
-        });
-        element = await Templates.replaceNode(
-            element,
-            html,
-            js
-        )[0];
-
+            }
+        );
         this.#element.querySelector('.sharing_cart_items').append(element);
 
         this.setupItem(element);
@@ -172,7 +275,7 @@ export default class BlockElement {
     importItem(item, sectionId) {
         // TODO: Do web service call to delete item
 
-        console.log('Importing item (id: '+item.getItemId()+') from sharing cart to section (id: '+sectionId+')');
+        console.log('Importing item (id: ' + item.getItemId() + ') from sharing cart to section (id: ' + sectionId + ')');
         this.#course.clearClipboard();
     }
 
@@ -212,7 +315,10 @@ export default class BlockElement {
 
         const modal = await ModalFactory.create({
             type: ModalFactory.types.SAVE_CANCEL,
-            title: strings[0] + ': "' + item.getItemName() + '" ' + strings[1] + ': "' + sectionName + '"',
+            title: strings[0] + ': ' +
+                '"' + item.getItemName().slice(0, 50).trim() + '"' +
+                strings[1] + ': ' +
+                '"' + sectionName.slice(0, 50).trim() + '"',
             body: strings[2],
             buttons: {
                 save: strings[3],
