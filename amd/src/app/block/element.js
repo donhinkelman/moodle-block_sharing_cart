@@ -2,8 +2,9 @@
 import BaseFactory from '../factory';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
-import {get_strings} from "core/str";
+import {get_string, get_strings} from "core/str";
 import Ajax from "core/ajax";
+import {getCurrentCourseEditor} from "core_courseformat/courseeditor";
 
 export default class BlockElement {
     /**
@@ -69,6 +70,8 @@ export default class BlockElement {
     setupItem(element) {
         const itemElement = this.#baseFactory.block().item().element(this, element);
 
+        this.#element.querySelector('.no-items')?.remove();
+
         this.#items.push(
             itemElement
         );
@@ -98,9 +101,33 @@ export default class BlockElement {
             },
             done: async (deleted) => {
                 if (deleted) {
+                    const childItems = item.getItemChildrenRecursively();
+                    childItems.forEach((childItem) => {
+                        const index = this.#items.findIndex((i) => i.getItemId() === Number.parseInt(childItem.dataset.itemid));
+                        if (index === -1) {
+                            return;
+                        }
+
+                        if (this.#items[index].getItemId() === this.#clipboardItem?.getItemId()) {
+                            this.#course.clearClipboard();
+                        }
+
+                        this.#items.splice(index, 1);
+                        childItem.remove();
+                    });
+
                     const index = this.#items.findIndex((i) => i.getItemId() === item.getItemId());
+                    if (this.#items[index].getItemId() === this.#clipboardItem?.getItemId()) {
+                        this.#course.clearClipboard();
+                    }
+
                     this.#items.splice(index, 1);
                     item.remove();
+
+                    if (this.#items.length === 0) {
+                        this.#element.querySelector('.sharing_cart_items')
+                            .innerHTML = await get_string('no_items', 'block_sharing_cart');
+                    }
                 } else {
                     console.error('Failed to delete item');
                 }
@@ -273,10 +300,24 @@ export default class BlockElement {
      * @param {Number} sectionId
      */
     importItem(item, sectionId) {
-        // TODO: Do web service call to delete item
-
-        console.log('Importing item (id: ' + item.getItemId() + ') from sharing cart to section (id: ' + sectionId + ')');
         this.#course.clearClipboard();
+
+        Ajax.call([{
+            methodname: 'block_sharing_cart_restore_item_from_sharing_cart_into_section',
+            args: {
+                item_id: item.getItemId(),
+                section_id: sectionId
+            },
+            done: async (success) => {
+                if (success) {
+                    const courseEditor = getCurrentCourseEditor();
+                    courseEditor.dispatch('sectionState', [sectionId]);
+                }
+            },
+            fail: (data) => {
+                console.error(data);
+            }
+        }]);
     }
 
     /**
@@ -298,10 +339,6 @@ export default class BlockElement {
                 component: 'block_sharing_cart',
             },
             {
-                key: 'confirm_copy_item',
-                component: 'block_sharing_cart',
-            },
-            {
                 key: 'import',
                 component: 'core',
             },
@@ -313,19 +350,29 @@ export default class BlockElement {
 
         const sectionName = this.#course.getSectionName(sectionId);
 
+        const {html, js} = await this.#baseFactory.moodle().template().renderFragment(
+            'block_sharing_cart',
+            'item_restore_form',
+            1,
+            {
+                item_id: item.getItemId()
+            }
+        );
+
         const modal = await ModalFactory.create({
             type: ModalFactory.types.SAVE_CANCEL,
             title: strings[0] + ': ' +
                 '"' + item.getItemName().slice(0, 50).trim() + '"' +
                 strings[1] + ': ' +
                 '"' + sectionName.slice(0, 50).trim() + '"',
-            body: strings[2],
+            body: html,
             buttons: {
-                save: strings[3],
-                cancel: strings[4],
+                save: strings[2],
+                cancel: strings[3],
             },
             removeOnClose: true,
         });
+        modal.getRoot().on(ModalEvents.shown, () => this.#baseFactory.moodle().template().runTemplateJS(js));
         modal.getRoot().on(ModalEvents.save, this.importItem.bind(this, item, sectionId));
         await modal.show();
     }

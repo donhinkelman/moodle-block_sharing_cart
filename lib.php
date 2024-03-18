@@ -25,3 +25,33 @@ function block_sharing_cart_output_fragment_item($args)
 
     return $OUTPUT->render($template);
 }
+
+function block_sharing_cart_output_fragment_item_restore_form($args)
+{
+    global $OUTPUT, $USER;
+
+    $item_id = clean_param($args['item_id'], PARAM_INT);
+
+    $base_factory = \block_sharing_cart\app\factory::make();
+    $item = $base_factory->item()->repository()->get_by_id($item_id);
+    if (!$item) {
+        return '';
+    }
+
+    if ($item->get_user_id() !== (int)$USER->id) {
+        return '';
+    }
+
+    $children = $base_factory->item()->repository()->get_by_parent_item_id($item->get_id());
+    if ($children->empty()) {
+        if ($item->get_file_id()) {
+            return get_string('confirm_copy_item', 'block_sharing_cart');
+        }
+
+        return get_string('confirm_copy_item', 'block_sharing_cart');
+    }
+
+    $template = new \block_sharing_cart\output\modal\import_item_modal_body($base_factory, $item);
+
+    return $OUTPUT->render($template);
+}

@@ -43,6 +43,7 @@ class block_sharing_cart extends block_base
             $this->page->requires->strings_for_js([
                 'copy_item',
                 'confirm_copy_item',
+                'confirm_copy_item_form_text',
                 'into_section',
                 'delete_item',
                 'confirm_delete_item',
@@ -50,6 +51,7 @@ class block_sharing_cart extends block_base
                 'into_sharing_cart',
                 'copy_user_data',
                 'anonymize_user_data',
+                'no_items',
             ], 'block_sharing_cart');
             $this->page->requires->strings_for_js([
                 'import',

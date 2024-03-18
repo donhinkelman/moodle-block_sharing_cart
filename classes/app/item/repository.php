@@ -85,6 +85,7 @@ class repository extends \block_sharing_cart\app\repository
                     'user_id' => $user_id,
                     'file_id' => null,
                     'parent_item_id' => $parent_item_id,
+                    'instance_id' => $cm_info->id,
                     'type' => "mod_{$cm_info->modname}",
                     'name' => $cm_info->get_name(),
                     'status' => $status,
@@ -112,6 +113,7 @@ class repository extends \block_sharing_cart\app\repository
                     'user_id' => $user_id,
                     'file_id' => null,
                     'parent_item_id' => $parent_item_id,
+                    'instance_id' => $section_id,
                     'type' => entity::TYPE_SECTION,
                     'name' => $course_format->get_section_name($section),
                     'status' => $status,
@@ -137,6 +139,7 @@ class repository extends \block_sharing_cart\app\repository
                     'user_id' => $user_id,
                     'file_id' => null,
                     'parent_item_id' => $parent_item_id,
+                    'instance_id' => $course_id,
                     'type' => entity::TYPE_COURSE,
                     'name' => $course->fullname,
                     'status' => $status,
@@ -226,5 +229,37 @@ class repository extends \block_sharing_cart\app\repository
         }
 
         return $items;
+    }
+
+    public function get_parent_item_recursively_by_item(entity $item): entity
+    {
+        if ($item->get_parent_item_id()) {
+            return $this->get_parent_item_recursively_by_item(
+                $this->get_by_id(
+                    $item->get_parent_item_id()
+                )
+            );
+        }
+
+        return $item;
+    }
+
+    public function get_stored_file_by_item(entity $item): ?\stored_file
+    {
+        /**
+         * @var \file_storage $fs
+         */
+        $fs = get_file_storage();
+
+        return array_values(
+            $fs->get_area_files(
+                \core\context\user::instance($item->get_user_id())->id,
+                'block_sharing_cart',
+                'backup',
+                $this->get_parent_item_recursively_by_item($item)->get_id(),
+                includedirs: false,
+                limitnum: 1
+            )
+        )[0] ?? null;
     }
 }

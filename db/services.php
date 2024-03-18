@@ -5,6 +5,9 @@ defined('MOODLE_INTERNAL') || die();
 // @codeCoverageIgnoreEnd
 
 $functions = [
+    /**
+     * Backup
+     */
     'block_sharing_cart_backup_course_module_into_sharing_cart' => [
         'classname' => \block_sharing_cart\external\backup\course_module_into_sharing_cart::class,
         'methodname' => 'execute',
@@ -29,6 +32,19 @@ $functions = [
         'ajax' => true,
         'capabilities' => ''
     ],
+
+    /**
+     * Restore
+     */
+    'block_sharing_cart_restore_item_from_sharing_cart_into_section' => [
+        'classname' => \block_sharing_cart\external\restore\item_into_section::class,
+        'methodname' => 'execute',
+        'description' => 'Takes a sharing cart item and restores it into a section',
+        'type' => 'write',
+        'ajax' => true,
+        'capabilities' => ''
+    ],
+
     'block_sharing_cart_delete_item_from_sharing_cart' => [
         'classname' => \block_sharing_cart\external\item\delete_item_from_sharing_cart::class,
         'methodname' => 'execute',

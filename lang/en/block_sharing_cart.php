@@ -82,9 +82,9 @@ $string['modal_bulkdelete_confirm'] = 'Delete selected';
 */
 
 // Block
-$string['no_items'] = 'No items.<br>
+$string['no_items'] = '<div class="no-items">No items.<br>
 <br>
-Click the <i class="fa fa-shopping-basket"></i> icon to add items to the Sharing Cart.';
+Click the <i class="fa fa-shopping-basket"></i> icon to add items to the Sharing Cart.</div>';
 
 $string['rename_item'] = 'Rename item';
 
@@ -93,7 +93,8 @@ $string['confirm_delete_item'] = 'Are you sure you want to delete this item? All
 
 $string['copy_item'] = 'Copy item';
 $string['into_section'] = 'into section';
-$string['confirm_copy_item'] = 'Are you sure you want to copy this item? All it\'s sub-items will also be copied.';
+$string['confirm_copy_item_form_text'] = 'Are you sure you want to copy this item? Below you can select what to include in the copy.';
+$string['confirm_copy_item'] = 'Are you sure you want to copy this item?';
 $string['copying_this_item'] = 'Copying this item';
 
 $string['backup_item'] = 'Backup item';

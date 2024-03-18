@@ -24,6 +24,11 @@ class factory
         return new backup\factory($this);
     }
 
+    public function restore(): restore\factory
+    {
+        return new restore\factory($this);
+    }
+
     public function item(): item\factory
     {
         return new item\factory($this);
