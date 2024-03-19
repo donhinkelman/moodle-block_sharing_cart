@@ -1,5 +1,9 @@
 <div>
-    <div class="sharing_cart_items">
+    <h6>
+        {{#str}}items, block_sharing_cart{{/str}}
+    </h6>
+    <hr>
+    <div class="sharing_cart_items mb-3">
         {{#items}}
             {{> block_sharing_cart/block/item}}
         {{/items}}
@@ -7,10 +11,23 @@
             {{#str}}no_items, block_sharing_cart{{/str}}
         {{/items.0}}
     </div>
+    <h6>
+        {{#str}}restores, block_sharing_cart{{/str}}
+    </h6>
     <hr>
+    <div class="sharing_cart_restores">
+        {{#restores}}
+            {{> block_sharing_cart/block/restore}}
+        {{/restores}}
+        {{^restores.0}}
+            {{#str}}no_restores, block_sharing_cart{{/str}}
+        {{/restores.0}}
+    </div>
+    <!--
     <div class="d-flex">
         <a class="btn btn-primary w-100 d-flex flex-row justify-content-center align-items-center">
             <i class="fa fa-shopping-basket mr-1"></i>{{#str}}copy_this_course, block_sharing_cart{{/str}}
         </a>
     </div>
+    -->
 </div>

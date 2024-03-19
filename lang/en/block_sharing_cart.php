@@ -82,9 +82,14 @@ $string['modal_bulkdelete_confirm'] = 'Delete selected';
 */
 
 // Block
-$string['no_items'] = '<div class="no-items">No items.<br>
+$string['items'] = 'Items';
+$string['restores'] = 'Restores';
+$string['no_items'] = '<div class="no-items text-muted">No items.<br>
 <br>
 Click the <i class="fa fa-shopping-basket"></i> icon to add items to the Sharing Cart.</div>';
+$string['no_restores'] = '<div class="no-restores text-muted">No restores in progress.<br>
+<br>
+Click the <i class="fa fa-clone"></i> icon to add items from the Sharing Cart to the course.</div>';
 
 $string['rename_item'] = 'Rename item';
 

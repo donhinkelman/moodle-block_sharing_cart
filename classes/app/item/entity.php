@@ -49,6 +49,17 @@ class entity extends \block_sharing_cart\app\entity
         return $this;
     }
 
+    public function get_old_instance_id(): ?int
+    {
+        return $this->record['old_instance_id'] ?? null;
+    }
+
+    public function set_old_instance_id(?int $value): self
+    {
+        $this->record['old_instance_id'] = $value;
+        return $this;
+    }
+
     public function get_type(): string
     {
         return $this->record['type'] ?? self::TYPE_COURSE;
@@ -126,6 +137,7 @@ class entity extends \block_sharing_cart\app\entity
             'user_id' => $this->get_user_id(),
             'file_id' => $this->get_file_id(),
             'parent_item_id' => $this->get_parent_item_id(),
+            'old_instance_id' => $this->get_old_instance_id(),
             'type' => $this->get_type(),
             'name' => $this->get_name(),
             'status' => $this->get_status(),

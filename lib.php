@@ -42,13 +42,11 @@ function block_sharing_cart_output_fragment_item_restore_form($args)
         return '';
     }
 
-    $children = $base_factory->item()->repository()->get_by_parent_item_id($item->get_id());
-    if ($children->empty()) {
-        if ($item->get_file_id()) {
-            return get_string('confirm_copy_item', 'block_sharing_cart');
-        }
-
-        return get_string('confirm_copy_item', 'block_sharing_cart');
+    if ($item->is_module()) {
+        return get_string(
+                'confirm_copy_item',
+                'block_sharing_cart'
+            ) . "<input type='checkbox' class='form-check-input d-none' data-id='{$item->get_old_instance_id()}' data-type='coursemodule' checked>";
     }
 
     $template = new \block_sharing_cart\output\modal\import_item_modal_body($base_factory, $item);

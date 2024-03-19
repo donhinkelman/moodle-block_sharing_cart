@@ -97,6 +97,30 @@ class handler
         return $tree;
     }
 
+    public function get_backup_item_course_modules(\stored_file $file): array
+    {
+        $course_modules = [];
+
+        /**
+         * @var \file_storage $fs
+         */
+        $fs = get_file_storage();
+        $file_path = $fs->get_file_system()->get_local_path_from_storedfile($file);
+
+        /** @var object $info */
+        $info = \backup_general_helper::get_backup_information_from_mbz($file_path);
+
+        foreach ($info->activities as $activity) {
+            $course_modules[$activity->moduleid] = (object)[
+                'moduleid' => $activity->moduleid,
+                'modulename' => $activity->modulename,
+                'title' => $activity->title
+            ];
+        }
+
+        return $course_modules;
+    }
+
     private function queue_async_backup(
         \backup_controller $backup_controller,
         object $root_item,

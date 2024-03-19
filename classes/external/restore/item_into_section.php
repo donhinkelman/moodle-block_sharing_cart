@@ -12,6 +12,7 @@ use core_external\external_api;
 use core_external\external_description;
 use core_external\external_function_parameters;
 use core_external\external_single_structure;
+use core_external\external_multiple_structure;
 use core_external\external_value;
 
 class item_into_section extends external_api
@@ -21,10 +22,7 @@ class item_into_section extends external_api
         return new external_function_parameters([
             'item_id' => new external_value(PARAM_INT, '', VALUE_REQUIRED),
             'section_id' => new external_value(PARAM_INT, '', VALUE_REQUIRED),
-            'sections_to_include' => new \external_multiple_structure(
-                new external_value(PARAM_INT, '', VALUE_REQUIRED)
-            ),
-            'course_modules_to_include' => new \external_multiple_structure(
+            'course_modules_to_include' => new external_multiple_structure(
                 new external_value(PARAM_INT, '', VALUE_REQUIRED)
             ),
         ]);
@@ -33,7 +31,6 @@ class item_into_section extends external_api
     public static function execute(
         int $item_id,
         int $section_id,
-        array $sections_to_include,
         array $course_modules_to_include
     ): bool {
         global $USER;
@@ -43,7 +40,6 @@ class item_into_section extends external_api
         $params = self::validate_parameters(self::execute_parameters(), [
             'item_id' => $item_id,
             'section_id' => $section_id,
-            'sections_to_include' => $sections_to_include,
             'course_modules_to_include' => $course_modules_to_include,
         ]);
 
@@ -61,7 +57,6 @@ class item_into_section extends external_api
         }
 
         $base_factory->restore()->handler()->restore_item_into_section($item, $params['section_id'], [
-            'sections_to_include' => $params['sections_to_include'],
             'course_modules_to_include' => $params['course_modules_to_include'],
         ]);
 

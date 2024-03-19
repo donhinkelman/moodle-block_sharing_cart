@@ -7,9 +7,7 @@ defined('MOODLE_INTERNAL') || die();
 
 // @codeCoverageIgnoreEnd
 
-use block_sharing_cart\app\factory;
 use async_helper;
-use block_sharing_cart\app\item\entity;
 
 global $CFG;
 require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
@@ -105,12 +103,37 @@ class asynchronous_restore_task extends \core\task\adhoc_task
     {
         try {
             $customdata = $this->get_custom_data();
+        } catch (\Exception $e) {
+            // Uh uhh, something went wrong.
+            throw $e;
+        }
+    }
+
+    private function before_restore_finished_hook(\restore_controller $restore_controller): void
+    {
+        try {
+            $customdata = $this->get_custom_data();
 
             $backup_settings = $customdata->backup_settings ?? null;
 
             $move_to_section_id = $backup_settings->move_to_section_id ?? null;
             if ($move_to_section_id) {
-                $this->move_course_modules_to_section_id($restore_controller, $move_to_section_id);
+                $this->update_section_number($restore_controller, $move_to_section_id);
+            }
+
+            $course_modules_to_include = array_map('intval', $backup_settings->course_modules_to_include ?? []);
+            $this->only_include_specified_course_modules($restore_controller, $course_modules_to_include);
+
+            $has_atleast_one_course_module_included = false;
+            foreach ($restore_controller->get_plan()->get_tasks() as $task) {
+                if (($task instanceof \restore_activity_task) && $task->get_setting('included')->get_value()) {
+                    $has_atleast_one_course_module_included = true;
+                    break;
+                }
+            }
+
+            if (!$has_atleast_one_course_module_included) {
+                throw new \Exception('No course modules were included in the restore.');
             }
         } catch (\Exception $e) {
             // Uh uhh, something went wrong.
@@ -118,23 +141,47 @@ class asynchronous_restore_task extends \core\task\adhoc_task
         }
     }
 
-    private function before_restore_finished_hook(\restore_controller $restore_controller): void {}
-
-    private function move_course_modules_to_section_id(\restore_controller $restore_controller, int $section_id): void
+    private function update_section_number(\restore_controller $restore_controller, int $section_id): void
     {
         global $DB;
 
-        $section = $DB->get_record('course_sections', ['id' => $section_id], strictness: MUST_EXIST);
+        $new_section_number = $DB->get_field(
+            'course_sections',
+            'section',
+            ['id' => $section_id],
+            strictness: MUST_EXIST
+        );
+
+        foreach ($restore_controller->get_plan()->get_tasks() as $task) {
+            if ($task instanceof \restore_section_task) {
+                $section_xml_path = "{$task->get_taskbasepath()}/section.xml";
+
+                $section_xml = simplexml_load_string(
+                    file_get_contents($section_xml_path)
+                );
+                $section_xml->number = $new_section_number;
+
+                $section_xml->asXML($section_xml_path);
+            }
+        }
+    }
+
+    private function only_include_specified_course_modules(
+        \restore_controller $restore_controller,
+        array $course_modules_to_include
+    ): void {
+        mtrace("Excluding/Including activities...");
 
         foreach ($restore_controller->get_plan()->get_tasks() as $task) {
             if ($task instanceof \restore_activity_task) {
-                $cmid = $task->get_moduleid();
-                $cm = get_coursemodule_from_id(null, $cmid, strictness: MUST_EXIST);
-                moveto_module($cm, $section);
+                $cm_id = (int)$task->get_old_moduleid();
 
-                // Fire event.
-                $event = \core\event\course_module_created::create_from_cm($cm);
-                $event->trigger();
+                $include_activity = in_array($cm_id, $course_modules_to_include, true);
+                mtrace(
+                    '...' . ($include_activity ? "Including activity: (id: $cm_id)" : "Excluding activity: (id: $cm_id)")
+                );
+
+                $task->get_setting('included')->set_value($include_activity);
             }
         }
     }

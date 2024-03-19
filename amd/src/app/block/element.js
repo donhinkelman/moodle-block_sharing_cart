@@ -298,20 +298,30 @@ export default class BlockElement {
     /**
      * @param {ItemElement} item
      * @param {Number} sectionId
+     * @param {HTMLElement} modal
      */
-    importItem(item, sectionId) {
+    importItem(item, sectionId, modal) {
         this.#course.clearClipboard();
+
+        const courseModuleIds = [];
+        modal.querySelectorAll('input[type="checkbox"][data-type="coursemodule"]:checked').forEach((checkbox) => {
+            courseModuleIds.push(checkbox.dataset.id);
+        });
 
         Ajax.call([{
             methodname: 'block_sharing_cart_restore_item_from_sharing_cart_into_section',
             args: {
                 item_id: item.getItemId(),
-                section_id: sectionId
+                section_id: sectionId,
+                course_modules_to_include: courseModuleIds,
             },
             done: async (success) => {
                 if (success) {
                     const courseEditor = getCurrentCourseEditor();
-                    courseEditor.dispatch('sectionState', [sectionId]);
+
+                    setTimeout(() => {
+                        courseEditor.dispatch('sectionState', [sectionId]);
+                    }, 4000);
                 }
             },
             fail: (data) => {
@@ -373,7 +383,7 @@ export default class BlockElement {
             removeOnClose: true,
         });
         modal.getRoot().on(ModalEvents.shown, () => this.#baseFactory.moodle().template().runTemplateJS(js));
-        modal.getRoot().on(ModalEvents.save, this.importItem.bind(this, item, sectionId));
+        modal.getRoot().on(ModalEvents.save, this.importItem.bind(this, item, sectionId, modal.getRoot()[0]));
         await modal.show();
     }
 }
