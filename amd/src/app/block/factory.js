@@ -2,6 +2,7 @@
 import BaseFactory from '../factory';
 import EventHandler from "./event_handler";
 import CourseFactory from "./course/factory";
+import QueueFactory from "./queue/factory";
 import ItemFactory from "./item/factory";
 import BlockElement from "./element";
 
@@ -30,6 +31,13 @@ export default class Factory {
      */
     course() {
         return new CourseFactory(this.#baseFactory);
+    }
+
+    /**
+     * @returns {QueueFactory}
+     */
+    queue() {
+        return new QueueFactory(this.#baseFactory);
     }
 
     /**

@@ -1,8 +1,12 @@
 <?php
 
-function block_sharing_cart_after_file_deleted($file): void
+function block_sharing_cart_after_file_deleted(\stored_file $file): void
 {
-    // TODO: Implement block_sharing_cart_after_file_deleted
+    $base_factory = \block_sharing_cart\app\factory::make();
+
+    if ($item = $base_factory->item()->repository()->get_by_file_id($file->get_id())) {
+        $base_factory->item()->repository()->delete_by_id($item->get_id());
+    }
 }
 
 function block_sharing_cart_output_fragment_item($args)

@@ -36,6 +36,13 @@ class repository extends \block_sharing_cart\app\repository
         );
     }
 
+    public function get_by_file_id(int $file_id): entity
+    {
+        return $this->map_record_to_entity(
+            $this->db->get_record($this->get_table(), ['file_id' => $file_id])
+        );
+    }
+
     public function get_by_parent_item_id(?int $parent_item_id): collection
     {
         return $this->map_records_to_collection_of_entities(

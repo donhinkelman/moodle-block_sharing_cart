@@ -26,7 +26,7 @@
             </KEYS>
             <INDEXES>
                 <INDEX NAME="user_id" UNIQUE="false" FIELDS="file_id"/>
-                <INDEX NAME="file_id" UNIQUE="false" FIELDS="file_id"/>
+                <INDEX NAME="file_id" UNIQUE="true" FIELDS="file_id"/>
                 <INDEX NAME="parent_item_id" UNIQUE="false" FIELDS="parent_item_id"/>
                 <INDEX NAME="type" UNIQUE="false" FIELDS="type"/>
                 <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>

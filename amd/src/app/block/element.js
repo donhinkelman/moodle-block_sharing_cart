@@ -1,5 +1,4 @@
 // eslint-disable-next-line no-unused-vars
-import BaseFactory from '../factory';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 import {get_string, get_strings} from "core/str";
@@ -23,6 +22,11 @@ export default class BlockElement {
     #course;
 
     /**
+     * @type {QueueElement}
+     */
+    #queue;
+
+    /**
      * @type {ItemElement[]}
      */
     #items = [];
@@ -44,6 +48,7 @@ export default class BlockElement {
 
     addEventListeners() {
         this.setupCourse();
+        this.setupQueue();
         this.setupItems();
     }
 
@@ -54,6 +59,12 @@ export default class BlockElement {
         courseElement.addBackupToSharingCartButtons();
 
         this.#course = courseElement;
+    }
+
+    setupQueue() {
+        const queue = document.querySelector('.sharing_cart_queue');
+
+        this.#queue = this.#baseFactory.block().queue().element(this, queue);
     }
 
     setupItems() {

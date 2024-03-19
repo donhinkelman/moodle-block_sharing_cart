@@ -152,6 +152,11 @@ class asynchronous_restore_task extends \core\task\adhoc_task
             strictness: MUST_EXIST
         );
 
+        /**
+         * Dirty hack which updates the section number in the section.xml file.
+         * This is necessary because the section number is hardcoded in the section.xml file and cannot be changed
+         * through the restore_controller API or any other way. ;(
+         */
         foreach ($restore_controller->get_plan()->get_tasks() as $task) {
             if ($task instanceof \restore_section_task) {
                 $section_xml_path = "{$task->get_taskbasepath()}/section.xml";
