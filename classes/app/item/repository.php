@@ -137,32 +137,6 @@ class repository extends \block_sharing_cart\app\repository
         return $entity;
     }
 
-    public function insert_course(int $course_id, int $user_id, ?int $parent_item_id, int $status): entity
-    {
-        $course = get_course($course_id);
-
-        $time = time();
-        $item_id = $this->insert(
-            $entity = $this->base_factory->item()->entity(
-                (object)[
-                    'user_id' => $user_id,
-                    'file_id' => null,
-                    'parent_item_id' => $parent_item_id,
-                    'old_instance_id' => $course_id,
-                    'type' => entity::TYPE_COURSE,
-                    'name' => $course->fullname,
-                    'status' => $status,
-                    'timecreated' => $time,
-                    'timemodified' => $time,
-                ]
-            )
-        );
-
-        $entity->set_id($item_id);
-
-        return $entity;
-    }
-
     private function insert_activities(array $activities, entity $root_item): void
     {
         foreach ($activities as $activity) {
@@ -172,20 +146,6 @@ class repository extends \block_sharing_cart\app\repository
                 $root_item->get_id(),
                 entity::STATUS_BACKEDUP
             );
-        }
-    }
-
-    private function insert_sections(array $sections, entity $root_item): void
-    {
-        foreach ($sections as $section) {
-            $section_item = $this->insert_section(
-                $section->sectionid,
-                $root_item->get_user_id(),
-                $root_item->get_id(),
-                entity::STATUS_BACKEDUP
-            );
-
-            $this->insert_activities($section->activities, $section_item);
         }
     }
 
