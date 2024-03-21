@@ -1,28 +1,58 @@
 Sharing Cart
 ============
 
-**Sharing Cart 4.3 released (4.2 version skipped). Sharing cart basket icon now visible by default since 4.1, release 3
-**  To drag item directly into your sharing cart, change the settings.
-The old way of clicking the basket icon is now default. - Users who have already upgraded to 4.0, release 1 will need to
-manually change it back to the old way in settings.
+Purpose
+-------
+The Sharing Cart is a block that enables sharing of Moodle content
+(resources, activities and sections) between multiple courses on your site.
+You can share among teachers or among your own courses.
+It can copy single course items and section, with or without user data. - similar to the "Import" function in Course
+Administration.
+Items can be collected and saved on the Sharing Cart indefinitely,
+serving as a library of frequently used course items available for duplication.
 
-Version 4.3, release 1 - 2023.11.01
+Requirements
+------------
+The "master" branch requires Moodle 4.2 and PHP 8.0 or newer.
 
-The "master" branch requires Moodle 4.2 or newer.
+For older Moodle versions, please use the corresponding branch. We follow the following naming convention:
 
-* Moodle 3.2 => "MOODLE_32_STABLE" branch
-* Moodle 2.2 => "MOODLE_22_STABLE" branch
-* Moodle 1.9 => "MOODLE_19_STABLE" branch
+* Moodle X.Y => "MOODLE_XY_STABLE" branch
 
-Warning: PHP versions 7.4 and older are deprecated, and will cause problems, unrelated to the Sharing Cart, such as
-badges.
+Capabilities
+------------
+
+- moodle/backup:backupactivity
+    - Required for the sharing cart to show up in the block drawer.
+- moodle/backup:userinfo
+    - Required to be able to copy user data. (A checkbox will appear when copying an activity or section)
+- moodle/backup:anonymise
+    - Required to be able to anonymize user data. (A checkbox will appear when copying an activity or section)
+
+License
+-------
+GPL v3
 
 Change Log
 ----------
 
-- 4.4, release 4 2024.02.06
-    * Added an anonymize userdata checkbox to the confirm modal
-
+* 5.0, release 1 2024.03.21
+    * Total refactor of the whole plugin:
+        * Improvements
+            * Simplified the database structure.
+            * Code is now much more readable and maintainable.
+            * All HTML have been moved to mustache templates.
+            * We now use the Moodle core backup and restore system for sections as well. This means that we can now
+              restore sections and keep related access restrictions.
+            * All ajax calls are now done using the Moodle core external functions.
+            * As everything is now done asynchronously, you should have a much better experience when using the
+              sharing cart. - Not having to reload the whole page all the time...
+        * Changes
+            * It is no longer possible to move single activities between sections in the sharing cart.
+            * All backups/restores are now done asynchronously. If you have a lot of adhoc tasks running on your site,
+              it's also possible to manually run them.
+* 4.4, release 4 2024.02.06
+    * Added an anonymize userdata checkbox to the confirm modal.
 * 4.4, release 3 2024.02.05
     * various fixes by Frederik
 * 4.4, release 2 2024.01.18
@@ -290,45 +320,3 @@ Change Log
 * 2.3, release candidate 1
     * New feature: Option to copy with user data (for Wiki, Forum, Database, etc.)
     * Improvement: Ajaxify
-
-Purpose
--------
-The Sharing Cart is a block that enables sharing of Moodle content
-(resources, activities) between multiple courses on your site.
-You can share among teachers or among your own courses.
-It copies and moves single course items without user data
--- similar to the "Import" function in Course Administration.
-Items can be collected and saved on the Sharing Cart indefinitely,
-serving as a library of frequently used course items available for duplication.
-
-
-Requirements
-------------
-New Versions:  Moodle 3.3 or later
-Older Versions: Moodle 2.3.1 or later, with AJAX enabled
-PHP version 7.2 deprecated, PHP version 7.4 or above recommended to cover future upgrades
-
-* Capabilities
-    - moodle/restore:restoreactivity
-    - moodle/restore:restorecourse
-
-Tags
-------------
-When comitting new releases, make sure to add annotated tags with the new release and moodle version, example:
-
-Moodle 4.0 Release 1 => v4.0r1
-
-You can see other tags and their description on GitHub for further clarification
-
-Supports
-------------
-Supported course formats
-
-* format_topics
-* format_grid
-* format_pxgrid
-* format_pxflexsections (from v. 2019102102)
-
-License
--------
-GPL v3
