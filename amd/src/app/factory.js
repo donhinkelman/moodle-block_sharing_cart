@@ -1,9 +1,9 @@
 import BlockFactory from "./block/factory";
 import MoodleFactory from "./moodle/factory";
 
-export default class Factory {
+export default class BaseFactory {
     /**
-     * @returns {Factory}
+     * @returns {BaseFactory}
      */
     static make() {
         return new this();

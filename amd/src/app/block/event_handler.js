@@ -1,6 +1,3 @@
-// eslint-disable-next-line no-unused-vars
-import BaseFactory from '../factory';
-
 export default class EventHandler {
     /**
      * @type {BaseFactory}

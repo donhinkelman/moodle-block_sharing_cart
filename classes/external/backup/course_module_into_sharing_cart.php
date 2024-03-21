@@ -52,9 +52,12 @@ class course_module_into_sharing_cart extends external_api
             entity::STATUS_AWAITING_BACKUP
         );
 
-        $base_factory->backup()->handler()->backup_course_module($course_module_id, $item, $settings);
+        $backup_task = $base_factory->backup()->handler()->backup_course_module($course_module_id, $item, $settings);
 
-        return (object)$item->to_array();
+        $return = $item->to_array();
+        $return['task_id'] = $backup_task->get_id();
+
+        return (object)$return;
     }
 
     public static function execute_returns(): external_description
@@ -64,6 +67,7 @@ class course_module_into_sharing_cart extends external_api
             'user_id' => new external_value(PARAM_INT, 'The id of the user who owns the item', VALUE_REQUIRED),
             'file_id' => new external_value(PARAM_INT, 'The id of the backup file', VALUE_OPTIONAL),
             'parent_item_id' => new external_value(PARAM_INT, 'The id of the parent item', VALUE_OPTIONAL),
+            'task_id' => new external_value(PARAM_INT, 'The task id of backup adhoc task', VALUE_REQUIRED),
             'type' => new external_value(PARAM_TEXT, 'The type of the item', VALUE_REQUIRED),
             'name' => new external_value(PARAM_TEXT, 'The name of the item', VALUE_REQUIRED),
             'status' => new external_value(PARAM_INT, 'The status of the item', VALUE_REQUIRED),

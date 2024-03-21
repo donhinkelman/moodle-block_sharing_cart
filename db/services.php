@@ -24,14 +24,6 @@ $functions = [
         'ajax' => true,
         'capabilities' => ''
     ],
-    'block_sharing_cart_backup_course_into_sharing_cart' => [
-        'classname' => \block_sharing_cart\external\backup\course_into_sharing_cart::class,
-        'methodname' => 'execute',
-        'description' => 'Takes a course id and creates a sharing cart backup. Returns the item placeholder sharing cart item',
-        'type' => 'write',
-        'ajax' => true,
-        'capabilities' => ''
-    ],
 
     /**
      * Restore
@@ -61,4 +53,13 @@ $functions = [
         'ajax' => true,
         'capabilities' => ''
     ],
+
+    'block_sharing_cart_run_task_now' => [
+        'classname' => \block_sharing_cart\external\task\run_now::class,
+        'methodname' => 'execute',
+        'description' => 'Run a block_sharing_cart task now',
+        'type' => 'write',
+        'ajax' => true,
+        'capabilities' => ''
+    ]
 ];

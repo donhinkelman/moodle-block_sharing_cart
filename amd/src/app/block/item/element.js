@@ -1,5 +1,3 @@
-// eslint-disable-next-line no-unused-vars
-import BaseFactory from '../factory';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 import {get_strings} from "core/str";
@@ -35,8 +33,6 @@ export default class ItemElement {
 
     #pollItem(currentTry = 0, retries = 10) {
         currentTry += 1;
-
-        console.log("Retry: " + currentTry);
 
         if (currentTry >= retries) {
             console.error("Item not finished after " + retries + " retries, giving up.");
@@ -76,6 +72,7 @@ export default class ItemElement {
 
         this.#element.querySelector('[data-action="delete"]')?.addEventListener('click', this.confirmDeleteItem.bind(this));
         this.#element.querySelector('[data-action="copy_to_course"]')?.addEventListener('click', this.copyItemToCourse.bind(this));
+        this.#element.querySelector('[data-action="run_now"]')?.addEventListener('click', this.runNow.bind(this));
     }
 
     async copyItemToCourse(e) {
@@ -83,6 +80,27 @@ export default class ItemElement {
         e.stopPropagation();
 
         await this.#blockElement.setClipboard(this);
+    }
+
+    async runNow(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const currentTarget = e.currentTarget;
+
+        Ajax.call([{
+            methodname: 'block_sharing_cart_run_task_now',
+            args: {
+                task_id: currentTarget?.dataset?.taskId ?? null,
+            },
+            done: async () => {
+                currentTarget.remove();
+                this.#pollItem();
+            },
+            fail: (data) => {
+                console.error(data);
+            }
+        }]);
     }
 
     async confirmDeleteItem(e) {
@@ -162,8 +180,7 @@ export default class ItemElement {
      * @param {Boolean|NULL} collapse
      */
     toggleCollapse(item, collapse = null) {
-        if (item.dataset.type !== 'course' &&
-            item.dataset.type !== 'section' &&
+        if (item.dataset.type !== 'section' &&
             item.dataset.status !== '0' &&
             item.dataset.status !== '2') {
             return;
@@ -181,11 +198,7 @@ export default class ItemElement {
     }
 
     isModule() {
-        return !this.isCourse() && !this.isSection();
-    }
-
-    isCourse() {
-        return this.#element.dataset.type === 'course';
+        return !this.isSection();
     }
 
     isSection() {

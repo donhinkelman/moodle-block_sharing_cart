@@ -1,5 +1,3 @@
-// eslint-disable-next-line no-unused-vars
-import BaseFactory from '../factory';
 import EventHandler from "./event_handler";
 import CourseFactory from "./course/factory";
 import QueueFactory from "./queue/factory";

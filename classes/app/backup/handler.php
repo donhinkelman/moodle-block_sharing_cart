@@ -8,6 +8,7 @@ defined('MOODLE_INTERNAL') || die();
 // @codeCoverageIgnoreEnd
 
 use block_sharing_cart\app\factory as base_factory;
+use block_sharing_cart\app\item\entity;
 use block_sharing_cart\task\asynchronous_backup_task;
 
 global $CFG;
@@ -25,7 +26,7 @@ class handler
 
     public function backup_course_module(
         int $course_module_id,
-        object $root_item,
+        entity $root_item,
         array $settings = []
     ): asynchronous_backup_task {
         global $USER;
@@ -39,26 +40,13 @@ class handler
         return $this->queue_async_backup($backup_controller, $root_item, $settings);
     }
 
-    public function backup_section(int $section_id, object $root_item, array $settings = []): asynchronous_backup_task
+    public function backup_section(int $section_id, entity $root_item, array $settings = []): asynchronous_backup_task
     {
         global $USER;
 
         $backup_controller = $this->base_factory->backup()->backup_controller(
             \backup::TYPE_1SECTION,
             $section_id,
-            $USER->id
-        );
-
-        return $this->queue_async_backup($backup_controller, $root_item, $settings);
-    }
-
-    public function backup_course(int $course_id, object $root_item, array $settings = []): asynchronous_backup_task
-    {
-        global $USER;
-
-        $backup_controller = $this->base_factory->backup()->backup_controller(
-            \backup::TYPE_1COURSE,
-            $course_id,
             $USER->id
         );
 
@@ -97,44 +85,22 @@ class handler
         return $tree;
     }
 
-    public function get_backup_item_course_modules(\stored_file $file): array
-    {
-        $course_modules = [];
-
-        /**
-         * @var \file_storage $fs
-         */
-        $fs = get_file_storage();
-        $file_path = $fs->get_file_system()->get_local_path_from_storedfile($file);
-
-        /** @var object $info */
-        $info = \backup_general_helper::get_backup_information_from_mbz($file_path);
-
-        foreach ($info->activities as $activity) {
-            $course_modules[$activity->moduleid] = (object)[
-                'moduleid' => $activity->moduleid,
-                'modulename' => $activity->modulename,
-                'title' => $activity->title
-            ];
-        }
-
-        return $course_modules;
-    }
-
     private function queue_async_backup(
         \backup_controller $backup_controller,
-        object $root_item,
+        entity $root_item,
         array $settings = []
     ): asynchronous_backup_task {
         $asynctask = new asynchronous_backup_task();
         $asynctask->set_blocking(false);
         $asynctask->set_custom_data([
             'backupid' => $backup_controller->get_backupid(),
-            'block_sharing_cart_root_item_id' => $root_item->id,
+            'item' => $root_item->to_array(),
             'backup_settings' => $settings
         ]);
         $asynctask->set_userid($backup_controller->get_userid());
-        \core\task\manager::queue_adhoc_task($asynctask);
+        $task_id = \core\task\manager::queue_adhoc_task($asynctask);
+
+        $asynctask->set_id($task_id);
 
         return $asynctask;
     }

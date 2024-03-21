@@ -91,6 +91,7 @@ $string['no_restores'] = '<div class="no-restores text-muted">No restores in pro
 <br>
 Click the <i class="fa fa-clone"></i> icon to add items from the Sharing Cart to the course.</div>';
 
+$string['run_now'] = 'Run now';
 $string['rename_item'] = 'Rename item';
 
 $string['delete_item'] = 'Delete item';

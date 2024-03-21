@@ -27,19 +27,22 @@ class item implements \renderable, \core\output\named_templatable
         return 'block_sharing_cart/block/item';
     }
 
-    public static function export_item_for_template(entity $item): object
+    public static function export_item_for_template(entity $item, array $not_running_backup_tasks): object
     {
         $item_context = (object)$item->to_array();
 
         $item_context->is_root = $item->get_parent_item_id() === null;
 
-        $item_context->is_course = $item->is_course();
         $item_context->is_section = $item->is_section();
 
         $item_context->is_module = $item->is_module();
         $item_context->mod_icon = self::get_mod_icon($item);
 
         $item_context->status_awaiting = $item->get_status() === entity::STATUS_AWAITING_BACKUP;
+        $item_context->has_run_now = $item_context->status_awaiting && isset(
+                $not_running_backup_tasks[$item->get_id()]
+            );
+        $item_context->task_id = $item_context->has_run_now ? $not_running_backup_tasks[$item->get_id()]->id : null;
         $item_context->status_finished = $item->get_status() === entity::STATUS_BACKEDUP;
         $item_context->status_failed = $item->get_status() === entity::STATUS_BACKUP_FAILED;
 
@@ -71,11 +74,23 @@ class item implements \renderable, \core\output\named_templatable
 
     public function export_for_template(\renderer_base $output): array
     {
+        global $USER, $DB;
+
+        $not_running_backup_tasks = $DB->get_records('task_adhoc', [
+            'userid' => $USER->id,
+            'classname' => "\\block_sharing_cart\\task\\asynchronous_backup_task",
+            'timestarted' => null
+        ], fields: "id, JSON_EXTRACT(customdata, '$.item.id') as item_id");
+        $not_running_backup_tasks = array_combine(
+            array_column($not_running_backup_tasks, 'item_id'),
+            $not_running_backup_tasks
+        );
+
         $all_item_contexts = $this->base_factory->item()->repository()->get_recursively_by_parent_id(
             $this->item->get_id()
         )->map(
-            function (entity $item) {
-                return $this->export_item_for_template($item);
+            function (entity $item) use ($not_running_backup_tasks) {
+                return $this->export_item_for_template($item, $not_running_backup_tasks);
             }
         );
 

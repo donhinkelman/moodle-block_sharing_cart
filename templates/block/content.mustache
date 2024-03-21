@@ -1,21 +1,25 @@
 <div>
-    <h6>
-        {{#str}}items, block_sharing_cart{{/str}}
-    </h6>
-    <hr>
-    <div class="sharing_cart_items mb-3">
-        {{#items}}
-            {{> block_sharing_cart/block/item}}
-        {{/items}}
-        {{^items.0}}
-            {{#str}}no_items, block_sharing_cart{{/str}}
-        {{/items.0}}
+    <div class="mb-3">
+        <h6>
+            {{#str}}restores, block_sharing_cart{{/str}}
+        </h6>
+        <hr>
+        <div class="sharing_cart_queue">
+            <i class="fa fa-spinner"></i>
+        </div>
     </div>
-    <h6>
-        {{#str}}restores, block_sharing_cart{{/str}}
-    </h6>
-    <hr>
-    <div class="sharing_cart_queue">
-        <i class="fa fa-spinner"></i>
+    <div>
+        <h6>
+            {{#str}}items, block_sharing_cart{{/str}}
+        </h6>
+        <hr>
+        <div class="sharing_cart_items">
+            {{#items}}
+                {{> block_sharing_cart/block/item}}
+            {{/items}}
+            {{^items.0}}
+                {{#str}}no_items, block_sharing_cart{{/str}}
+            {{/items.0}}
+        </div>
     </div>
 </div>

@@ -36,11 +36,13 @@ class repository extends \block_sharing_cart\app\repository
         );
     }
 
-    public function get_by_file_id(int $file_id): entity
+    public function get_by_file_id(int $file_id): ?entity
     {
-        return $this->map_record_to_entity(
-            $this->db->get_record($this->get_table(), ['file_id' => $file_id])
-        );
+        $record = $this->db->get_record($this->get_table(), ['file_id' => $file_id]);
+
+        return $record ? $this->map_record_to_entity(
+            $record
+        ) : null;
     }
 
     public function get_by_parent_item_id(?int $parent_item_id): collection
@@ -197,20 +199,13 @@ class repository extends \block_sharing_cart\app\repository
 
         $this->update($root_item);
 
-        switch ($root_item->get_type()) {
-            case entity::TYPE_COURSE:
-                $tree = $this->base_factory->backup()->handler()->get_backup_item_tree($file);
-                $sections = array_values($tree);
-                $this->insert_sections($sections, $root_item);
-                break;
-            case entity::TYPE_SECTION:
-                $tree = $this->base_factory->backup()->handler()->get_backup_item_tree($file);
-                $section = array_values($tree)[0];
-                $this->insert_activities($section->activities, $root_item);
-                break;
-            default:
-                return;
+        if ($root_item->get_type() !== entity::TYPE_SECTION) {
+            return;
         }
+
+        $tree = $this->base_factory->backup()->handler()->get_backup_item_tree($file);
+        $section = array_values($tree)[0];
+        $this->insert_activities($section->activities, $root_item);
     }
 
     public function get_recursively_by_parent_id(int $item_id, ?collection $items = null): collection

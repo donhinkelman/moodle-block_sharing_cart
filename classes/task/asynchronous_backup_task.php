@@ -142,10 +142,11 @@ class asynchronous_backup_task extends \core\task\adhoc_task
             $base_factory = factory::make();
 
             $custom_data = $this->get_custom_data();
-            $root_item = $base_factory->item()->repository()->get_by_id($custom_data->block_sharing_cart_root_item_id);
+            $item = $custom_data->item ?? null;
+            $root_item = $base_factory->item()->repository()->get_by_id($item->id);
             if (!$root_item) {
                 throw new \Exception(
-                    "Couldn't fetch item (id: {$custom_data->block_sharing_cart_root_item_id})"
+                    "Couldn't fetch item (id: {$item->id})"
                 );
             }
 
@@ -223,10 +224,11 @@ class asynchronous_backup_task extends \core\task\adhoc_task
         mtrace("Async backup failed, trying to set item status to failed...");
 
         $custom_data = $this->get_custom_data();
-        $root_item = $base_factory->item()->repository()->get_by_id($custom_data->block_sharing_cart_root_item_id);
+        $item = $custom_data->item ?? null;
+        $root_item = $base_factory->item()->repository()->get_by_id($item->id);
         if (!$root_item) {
             mtrace(
-                "Couldn't fetch item (id: {$custom_data->block_sharing_cart_root_item_id}) from {$DB->get_prefix()}{$base_factory->item()->repository()->get_table()}, aborting..."
+                "Couldn't fetch item (id: {$item->id}) from {$DB->get_prefix()}{$base_factory->item()->repository()->get_table()}, aborting..."
             );
             return;
         }

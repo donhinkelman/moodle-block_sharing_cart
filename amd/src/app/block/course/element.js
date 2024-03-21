@@ -1,6 +1,3 @@
-// eslint-disable-next-line no-unused-vars
-import BaseFactory from '../factory';
-
 export default class CourseElement {
     /**
      * @type {BaseFactory}
@@ -131,6 +128,8 @@ export default class CourseElement {
 
             const sectionId = section.closest('[data-for="section"]').dataset.id;
 
+            clipboardTarget.classList.remove('hidden');
+            clipboardTarget.parentElement.classList.remove('hidden');
             clipboardTarget.addEventListener(
                 'click',
                 this.#blockElement.confirmImportBackupFromSharingCart.bind(this.#blockElement, item, sectionId),
@@ -149,10 +148,10 @@ export default class CourseElement {
     }
 
     /**
-     * @param {Number} courseModuleId
+     * @param {String} courseModuleId
      */
     getCourseModuleName(courseModuleId) {
-        return this.#element.querySelector(`[data-for="cmitem"][data-id="${courseModuleId}"] .instancename`).innerText.trim();
+        return this.#element.querySelector(`[data-for="cmitem"][data-id="${courseModuleId}"] .instancename`)?.innerText.trim() ?? 'Unknown'; // TODO: Fetch name from webservice to support all course module types example: mod_labels
     }
 
     getClipboardTargets() {

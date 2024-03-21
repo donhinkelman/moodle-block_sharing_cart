@@ -42,11 +42,12 @@ class handler
             $USER->id
         );
 
-        return $this->queue_async_restore($restore_controller, $settings);
+        return $this->queue_async_restore($restore_controller, $item, $settings);
     }
 
     private function queue_async_restore(
         \restore_controller $restore_controller,
+        entity $item,
         array $settings = []
     ): asynchronous_restore_task {
         $restore_controller->execute_precheck();
@@ -55,6 +56,8 @@ class handler
         $asynctask->set_blocking(false);
         $asynctask->set_custom_data([
             'backupid' => $restore_controller->get_restoreid(),
+            'item' => $item->to_array(),
+            'course_id' => $restore_controller->get_courseid(),
             'backup_settings' => $settings
         ]);
         $asynctask->set_userid($restore_controller->get_userid());

@@ -90,14 +90,15 @@ export default class Template {
         )[0];
     }
 
+
     /**
      * @param {String} component
      * @param {String} fragment
      * @param {Number} contextId
      * @param {Object} data
-     * @return {Promise<HTMLElement>}
+     * @return {Promise<HTMLElement[]>}
      */
-    async createElementFromFragment(component, fragment, contextId, data) {
+    async createElementsFromFragment(component, fragment, contextId, data) {
         const element = document.createElement('div');
 
         const {html, js} = await this.renderFragment(component, fragment, contextId, data);
@@ -106,6 +107,17 @@ export default class Template {
             element,
             html,
             js
-        )[0];
+        );
+    }
+
+    /**
+     * @param {String} component
+     * @param {String} fragment
+     * @param {Number} contextId
+     * @param {Object} data
+     * @return {Promise<HTMLElement>}
+     */
+    async createElementFromFragment(component, fragment, contextId, data) {
+        return (await this.createElementsFromFragment(component, fragment, contextId, data))[0];
     }
 }

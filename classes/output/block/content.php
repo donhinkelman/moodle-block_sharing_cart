@@ -29,9 +29,21 @@ class content implements \renderable, \core\output\named_templatable
 
     private function export_items_for_template(): array
     {
+        global $USER, $DB;
+
+        $not_running_backup_tasks = $DB->get_records('task_adhoc', [
+            'userid' => $USER->id,
+            'classname' => "\\block_sharing_cart\\task\\asynchronous_backup_task",
+            'timestarted' => null
+        ], fields: "id, JSON_EXTRACT(customdata, '$.item.id') as item_id");
+        $not_running_backup_tasks = array_combine(
+            array_column($not_running_backup_tasks, 'item_id'),
+            $not_running_backup_tasks
+        );
+
         $all_item_contexts = $this->base_factory->item()->repository()->get_by_user_id($this->user_id)->map(
-            function (entity $item) {
-                return item::export_item_for_template($item);
+            static function (entity $item) use ($not_running_backup_tasks) {
+                return item::export_item_for_template($item, $not_running_backup_tasks);
             }
         );
 

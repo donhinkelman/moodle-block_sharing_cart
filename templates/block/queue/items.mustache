@@ -1,0 +1,28 @@
+{{#queue_items}}
+    <div class="d-flex align-items-center queue-item alert
+        {{#is_running}}alert-warning{{/is_running}}
+        {{#is_failed}}alert-danger{{/is_failed}}
+        {{^is_running}}
+            {{^is_failed}}alert-info{{/is_failed}}
+        {{/is_running}}"
+         data-id="{{id}}" data-to-section-id="{{to_section_id}}"
+    >
+        {{#is_section}}
+            <i class="fa fa-folder-o"></i>
+        {{/is_section}}
+        {{#is_module}}
+            <img src="{{mod_icon}}" alt=""/>
+        {{/is_module}}
+
+        <span class="mx-1">{{name}}</span>
+
+        {{^is_running}}
+            {{^is_failed}}
+                <a class="btn btn-secondary text-nowrap ml-auto">{{#str}}run_now, block_sharing_cart{{/str}}</a>
+            {{/is_failed}}
+        {{/is_running}}
+    </div>
+{{/queue_items}}
+{{^queue_items.0}}
+    {{#str}}no_restores, block_sharing_cart{{/str}}
+{{/queue_items.0}}

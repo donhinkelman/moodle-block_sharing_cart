@@ -1,9 +1,7 @@
-// eslint-disable-next-line no-unused-vars
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 import {get_string, get_strings} from "core/str";
 import Ajax from "core/ajax";
-import {getCurrentCourseEditor} from "core_courseformat/courseeditor";
 
 export default class BlockElement {
     /**
@@ -293,10 +291,11 @@ export default class BlockElement {
                 type: item.type,
                 status: 0,
                 status_awaiting: true,
+                has_run_now: true,
+                task_id: item.task_id ?? null,
                 status_finished: false,
                 status_failed: false,
-                is_module: item.type !== 'section' && item.type !== 'course',
-                is_course: item.type === 'course',
+                is_module: item.type !== 'section',
                 is_section: item.type === 'section',
                 is_root: true,
             }
@@ -328,11 +327,7 @@ export default class BlockElement {
             },
             done: async (success) => {
                 if (success) {
-                    const courseEditor = getCurrentCourseEditor();
-
-                    setTimeout(() => {
-                        courseEditor.dispatch('sectionState', [sectionId]);
-                    }, 4000);
+                    await this.#queue.loadQueue(true);
                 }
             },
             fail: (data) => {

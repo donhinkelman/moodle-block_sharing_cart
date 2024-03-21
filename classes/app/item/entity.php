@@ -13,7 +13,6 @@ class entity extends \block_sharing_cart\app\entity
     public const STATUS_BACKEDUP = 1;
     public const STATUS_BACKUP_FAILED = 2;
 
-    public const TYPE_COURSE = 'course';
     public const TYPE_SECTION = 'section';
 
     public function get_user_id(): int
@@ -62,7 +61,7 @@ class entity extends \block_sharing_cart\app\entity
 
     public function get_type(): string
     {
-        return $this->record['type'] ?? self::TYPE_COURSE;
+        return $this->record['type'] ?? self::TYPE_SECTION;
     }
 
     public function set_type(string $value): self
@@ -115,11 +114,6 @@ class entity extends \block_sharing_cart\app\entity
         return $this;
     }
 
-    public function is_course(): bool
-    {
-        return $this->get_type() === self::TYPE_COURSE;
-    }
-
     public function is_section(): bool
     {
         return $this->get_type() === self::TYPE_SECTION;
@@ -127,7 +121,7 @@ class entity extends \block_sharing_cart\app\entity
 
     public function is_module(): bool
     {
-        return !$this->is_course() && !$this->is_section();
+        return !$this->is_section();
     }
 
     public function to_array(): array

@@ -1,5 +1,3 @@
-// eslint-disable-next-line no-unused-vars
-import BaseFactory from '../factory';
 import QueueElement from "./element";
 
 export default class Factory {

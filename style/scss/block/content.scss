@@ -13,7 +13,7 @@
         background-color: rgba(0, 0, 0, .03);
       }
 
-      &[data-type="course"], &[data-type="section"] {
+      &[data-type="section"] {
         cursor: pointer;
       }
 
@@ -30,7 +30,7 @@
       }
 
       // Not course or section (meaning module)
-      &:not([data-type="course"]):not([data-type="section"]) {
+      &:not([data-type="section"]) {
         .item-body {
           .info {
             img {
@@ -120,5 +120,18 @@
         }
       }
     }
+
+    .queue-item {
+      i.fa, img {
+        height: 1rem;
+      }
+
+      span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
   }
 }
+
