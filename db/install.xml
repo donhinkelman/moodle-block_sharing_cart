@@ -19,10 +19,6 @@
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-                <KEY NAME="user_id" TYPE="foreign" FIELDS="user_id" REFTABLE="user" REFFIELDS="id"/>
-                <KEY NAME="file_id" TYPE="foreign" FIELDS="file_id" REFTABLE="files" REFFIELDS="id"/>
-                <KEY NAME="parent_item_id" TYPE="foreign" FIELDS="parent_item_id" REFTABLE="block_sharing_cart_items"
-                     REFFIELDS="id"/>
             </KEYS>
             <INDEXES>
                 <INDEX NAME="user_id" UNIQUE="false" FIELDS="file_id"/>
