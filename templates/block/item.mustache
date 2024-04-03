@@ -12,8 +12,10 @@
                        title="{{#str}}delete_item, block_sharing_cart{{/str}}"></i>
                 {{/is_root}}
                 {{#status_finished}}
-                    <i class="fa fa-clone" data-action="copy_to_course"
-                       title="{{#str}}copy_item, block_sharing_cart{{/str}}"></i>
+                    {{#has_file_id}}
+                        <i class="fa fa-clone" data-action="copy_to_course"
+                           title="{{#str}}copy_item, block_sharing_cart{{/str}}"></i>
+                    {{/has_file_id}}
                 {{/status_finished}}
             {{/status_awaiting}}
             {{#has_run_now}}

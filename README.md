@@ -51,6 +51,10 @@ Change Log
             * It is no longer possible to move single activities between sections in the sharing cart.
             * All backups/restores are now done asynchronously. If you have a lot of adhoc tasks running on your site,
               it's also possible to manually run them.
+        * Old sharing cart items
+            * Will be converted to the new format when you upgrade the plugin.
+            * You won't be able to restore these items all at once like before, but you can restore them one by one.
+            * Old sections will be marked as legacy with a yellow warning icon.
 * 4.4, release 4 2024.02.06
     * Added an anonymize userdata checkbox to the confirm modal.
 * 4.4, release 3 2024.02.05

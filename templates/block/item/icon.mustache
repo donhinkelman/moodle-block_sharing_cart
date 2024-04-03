@@ -3,7 +3,12 @@
 {{/status_awaiting}}
 {{#status_finished}}
     {{#is_section}}
-        <i class="fa fa-folder-o"></i>
+        {{#has_file_id}}
+            <i class="fa fa-folder-o"></i>
+        {{/has_file_id}}
+        {{^has_file_id}}
+            <i class="fa fa-exclamation-triangle text-warning"></i>
+        {{/has_file_id}}
     {{/is_section}}
     {{#is_module}}
         <img src="{{mod_icon}}" alt=""/>

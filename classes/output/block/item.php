@@ -43,6 +43,7 @@ class item implements \renderable, \core\output\named_templatable
                 $not_running_backup_tasks[$item->get_id()]
             );
         $item_context->task_id = $item_context->has_run_now ? $not_running_backup_tasks[$item->get_id()]->id : null;
+        $item_context->has_file_id = $item->get_file_id() !== null;
         $item_context->status_finished = $item->get_status() === entity::STATUS_BACKEDUP;
         $item_context->status_failed = $item->get_status() === entity::STATUS_BACKUP_FAILED;
 
