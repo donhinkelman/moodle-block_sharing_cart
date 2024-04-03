@@ -53,6 +53,7 @@ class block_sharing_cart extends block_base
                 'anonymize_user_data',
                 'no_items',
                 'run_now',
+                'atleast_one_course_module_must_be_included',
             ], 'block_sharing_cart');
             $this->page->requires->strings_for_js([
                 'import',

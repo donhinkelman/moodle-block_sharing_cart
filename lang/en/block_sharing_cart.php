@@ -30,6 +30,7 @@ $string['into_sharing_cart'] = 'into Sharing Cart';
 $string['backup_settings'] = 'Backup settings';
 $string['copy_user_data'] = 'Do you want to copy user data? (Eg. glossary/wiki/database entries)';
 $string['anonymize_user_data'] = 'Do you want to anonymize the user data?';
+$string['atleast_one_course_module_must_be_included'] = 'Atleast one course module must be included, please select at least one course module to include.';
 
 $string['copy_this_course'] = 'Copy this course';
 

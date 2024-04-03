@@ -94,7 +94,7 @@ export default class QueueElement {
         this.#element.innerHTML = '';
 
         queueItems.forEach((element) => {
-            element.querySelector('.btn').addEventListener('click', () => {
+            element.querySelector('.btn')?.addEventListener('click', () => {
                 const taskId = element.dataset.id;
 
                 Ajax.call([{

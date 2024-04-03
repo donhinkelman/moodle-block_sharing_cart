@@ -70,9 +70,20 @@ export default class ItemElement {
     #addEventListeners() {
         this.#element.addEventListener('click', this.toggleCollapseRecursively.bind(this));
 
-        this.#element.querySelector('[data-action="delete"]')?.addEventListener('click', this.confirmDeleteItem.bind(this));
-        this.#element.querySelector('[data-action="copy_to_course"]')?.addEventListener('click', this.copyItemToCourse.bind(this));
-        this.#element.querySelector('[data-action="run_now"]')?.addEventListener('click', this.runNow.bind(this));
+        const actionsContainer = this.#element.querySelector(':scope > .item-body .sharing_cart_item_actions');
+
+        actionsContainer?.querySelector('[data-action="delete"]')?.addEventListener(
+            'click',
+            this.confirmDeleteItem.bind(this)
+        );
+        actionsContainer?.querySelector('[data-action="copy_to_course"]')?.addEventListener(
+            'click',
+            this.copyItemToCourse.bind(this)
+        );
+        actionsContainer?.querySelector('[data-action="run_now"]')?.addEventListener(
+            'click',
+            this.runNow.bind(this)
+        );
     }
 
     async copyItemToCourse(e) {

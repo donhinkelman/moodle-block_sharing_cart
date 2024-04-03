@@ -122,7 +122,9 @@ class asynchronous_restore_task extends \core\task\adhoc_task
             }
 
             $course_modules_to_include = array_map('intval', $backup_settings->course_modules_to_include ?? []);
-            $this->only_include_specified_course_modules($restore_controller, $course_modules_to_include);
+            if (!empty($course_modules_to_include)) {
+                $this->only_include_specified_course_modules($restore_controller, $course_modules_to_include);
+            }
 
             $has_atleast_one_course_module_included = false;
             foreach ($restore_controller->get_plan()->get_tasks() as $task) {
@@ -153,11 +155,24 @@ class asynchronous_restore_task extends \core\task\adhoc_task
         );
 
         /**
-         * Dirty hack which updates the section number in the section.xml file.
-         * This is necessary because the section number is hardcoded in the section.xml file and cannot be changed
+         * Dirty hack which updates the section number in the section.xml & module.xml files.
+         * This is necessary because the section number is hardcoded in the section.xml & module.xml files and cannot be changed
          * through the restore_controller API or any other way. ;(
          */
         foreach ($restore_controller->get_plan()->get_tasks() as $task) {
+            // Make sure we import into the correct section
+            if ($task instanceof \restore_activity_task) {
+                $module_xml_path = "{$task->get_taskbasepath()}/module.xml";
+
+                $module_xml = simplexml_load_string(
+                    file_get_contents($module_xml_path)
+                );
+                $module_xml->sectionnumber = $new_section_number;
+
+                $module_xml->asXML($module_xml_path);
+            }
+
+            // Overwrite empty/missing section settings in the target section
             if ($task instanceof \restore_section_task) {
                 $section_xml_path = "{$task->get_taskbasepath()}/section.xml";
 

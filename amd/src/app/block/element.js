@@ -318,6 +318,16 @@ export default class BlockElement {
             courseModuleIds.push(checkbox.dataset.id);
         });
 
+        if (item.isSection() && courseModuleIds.length === 0) {
+            modal.querySelectorAll('.form-check-input').forEach(async (item) => {
+                item.setCustomValidity(
+                    await get_string('atleast_one_course_module_must_be_included', 'block_sharing_cart')
+                );
+                item.reportValidity();
+            });
+            return false;
+        }
+
         Ajax.call([{
             methodname: 'block_sharing_cart_restore_item_from_sharing_cart_into_section',
             args: {

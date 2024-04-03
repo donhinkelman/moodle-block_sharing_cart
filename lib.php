@@ -48,9 +48,9 @@ function block_sharing_cart_output_fragment_item_restore_form($args)
 
     if ($item->is_module()) {
         return get_string(
-                'confirm_copy_item',
-                'block_sharing_cart'
-            ) . "<input type='checkbox' class='form-check-input d-none' data-id='{$item->get_old_instance_id()}' data-type='coursemodule' checked>";
+            'confirm_copy_item',
+            'block_sharing_cart'
+        );
     }
 
     $template = new \block_sharing_cart\output\modal\import_item_modal_body($base_factory, $item);

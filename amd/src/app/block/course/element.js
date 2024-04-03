@@ -151,7 +151,10 @@ export default class CourseElement {
      * @param {String} courseModuleId
      */
     getCourseModuleName(courseModuleId) {
-        return this.#element.querySelector(`[data-for="cmitem"][data-id="${courseModuleId}"] .instancename`)?.innerText.trim() ?? 'Unknown'; // TODO: Fetch name from webservice to support all course module types example: mod_labels
+        // TODO: Fetch name from webservice to support all course module types example: mod_labels
+
+        const courseModule = this.#element.querySelector(`[data-for="cmitem"][data-id="${courseModuleId}"]`);
+        return courseModule.querySelector(`.instancename`)?.innerText.trim() ?? 'Unknown';
     }
 
     getClipboardTargets() {

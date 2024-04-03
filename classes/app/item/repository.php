@@ -213,6 +213,19 @@ class repository extends \block_sharing_cart\app\repository
          */
         $fs = get_file_storage();
 
+        if ($item_file = array_values(
+            $fs->get_area_files(
+                \core\context\user::instance($item->get_user_id())->id,
+                'block_sharing_cart',
+                'backup',
+                $item->get_id(),
+                includedirs: false,
+                limitnum: 1
+            )
+        )[0] ?? null) {
+            return $item_file;
+        }
+
         return array_values(
             $fs->get_area_files(
                 \core\context\user::instance($item->get_user_id())->id,
