@@ -9,7 +9,7 @@ defined('MOODLE_INTERNAL') || die();
 
 class multi_checkbox_mod_types extends multi_checkbox_with_icon
 {
-    public function __construct($name, $visiblename, $description, $defaultsetting = null)
+    public function __construct(string $name, string $visiblename, string $description, $defaultsetting = null)
     {
         global $DB, $OUTPUT;
 

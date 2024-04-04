@@ -19,6 +19,11 @@ export default class ItemElement {
      */
     #element;
 
+    /**
+     * @param {BaseFactory} baseFactory
+     * @param {BlockElement} blockElement
+     * @param {HTMLElement} element
+     */
     constructor(baseFactory, blockElement, element) {
         this.#baseFactory = baseFactory;
         this.#blockElement = blockElement;

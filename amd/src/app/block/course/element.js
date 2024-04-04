@@ -24,6 +24,11 @@ export default class CourseElement {
      */
     #clipboardTargetListenerAbortController = new AbortController();
 
+    /**
+     * @param {BaseFactory} baseFactory
+     * @param {BlockElement} blockElement
+     * @param {HTMLElement} element
+     */
     constructor(baseFactory, blockElement, element) {
         this.#baseFactory = baseFactory;
         this.#blockElement = blockElement;

@@ -34,9 +34,23 @@ export default class BlockElement {
      */
     #clipboardItem = null;
 
+    /**
+     * @type {Boolean}
+     */
     #canBackupUserdata = false;
+
+    /**
+     * @type {Boolean}
+     */
     #canAnonymizeUserdata = false;
 
+
+    /**
+     * @param {BaseFactory} baseFactory
+     * @param {HTMLElement} element
+     * @param {Boolean} canBackupUserdata
+     * @param {Boolean} canAnonymizeUserdata
+     */
     constructor(baseFactory, element, canBackupUserdata, canAnonymizeUserdata) {
         this.#baseFactory = baseFactory;
         this.#element = element;

@@ -22,6 +22,12 @@ export default class QueueElement {
      */
     #reactive;
 
+    /**
+     *
+     * @param {BaseFactory} baseFactory
+     * @param {BlockElement} blockElement
+     * @param {HTMLElement} element
+     */
     constructor(baseFactory, blockElement, element) {
         this.#baseFactory = baseFactory;
         this.#blockElement = blockElement;

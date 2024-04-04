@@ -7,7 +7,6 @@ defined('MOODLE_INTERNAL') || die();
 
 // @codeCoverageIgnoreEnd
 
-use block_sharing_cart\app\collection;
 use block_sharing_cart\app\factory as base_factory;
 use block_sharing_cart\app\item\entity;
 
