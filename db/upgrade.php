@@ -399,6 +399,10 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0): bool
                         continue;
                     }
 
+                    if (file_exists($fs->get_file_system()->get_remote_path_from_storedfile($backup_file)) === false) {
+                        continue;
+                    }
+
                     $time = time();
 
                     $new_activity_record = (object)[
