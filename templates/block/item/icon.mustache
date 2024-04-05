@@ -7,7 +7,8 @@
             <i class="fa fa-folder-o"></i>
         {{/has_file_id}}
         {{^has_file_id}}
-            <i class="fa fa-exclamation-triangle text-warning"></i>
+            <i class="fa fa-exclamation-triangle text-warning"
+               title="{{#str}}legacy_section_info, block_sharing_cart{{/str}}"></i>
         {{/has_file_id}}
     {{/is_section}}
     {{#is_module}}

@@ -209,8 +209,10 @@ export default class ItemElement {
         }
 
         const iconElement = item.querySelector('.info > i');
-        iconElement.classList.remove('fa-folder-o', 'fa-folder-open-o');
-        iconElement.classList.add(item.dataset.collapsed === 'true' ? 'fa-folder-o' : 'fa-folder-open-o');
+        if (!iconElement.classList.contains('fa-exclamation-triangle')) {
+            iconElement.classList.remove('fa-folder-o', 'fa-folder-open-o');
+            iconElement.classList.add(item.dataset.collapsed === 'true' ? 'fa-folder-o' : 'fa-folder-open-o');
+        }
     }
 
     isModule() {

@@ -8,6 +8,7 @@ defined('MOODLE_INTERNAL') || die();
 // @codeCoverageIgnoreEnd
 
 use block_sharing_cart\app\collection;
+use block_sharing_cart\app\factory;
 use block_sharing_cart\app\factory as base_factory;
 use block_sharing_cart\app\item\entity;
 
@@ -43,7 +44,8 @@ class item implements \renderable, \core\output\named_templatable
                 $not_running_backup_tasks[$item->get_id()]
             );
         $item_context->task_id = $item_context->has_run_now ? $not_running_backup_tasks[$item->get_id()]->id : null;
-        $item_context->has_file_id = $item->get_file_id() !== null;
+        $item_context->has_file_id = $item->get_file_id() !== null || factory::make()->item()->repository(
+            )->get_parent_item_recursively_by_item($item)->get_file_id() !== null;
         $item_context->status_finished = $item->get_status() === entity::STATUS_BACKEDUP;
         $item_context->status_failed = $item->get_status() === entity::STATUS_BACKUP_FAILED;
 
