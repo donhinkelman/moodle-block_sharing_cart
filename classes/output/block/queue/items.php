@@ -45,6 +45,10 @@ class items implements \renderable, \core\output\named_templatable
                 continue;
             }
 
+            $is_running = $record->timestarted !== null;
+            $is_failed = $record->faildelay > 0;
+            $has_waited_5_seconds = time() - $record->timecreated > 5;
+
             $queue_items[] = [
                 'id' => $record->id,
                 'name' => strlen($item->name) > 50 ? substr($item->name, 0, 50) . '...' : $item->name,
@@ -55,8 +59,9 @@ class items implements \renderable, \core\output\named_templatable
                     $item->type
                 ) : null,
                 'to_section_id' => $backup_settings->move_to_section_id ?? null,
-                'is_running' => $record->timestarted !== null,
-                'is_failed' => $record->faildelay > 0
+                'is_running' => $is_running,
+                'is_failed' => $is_failed,
+                'show_run_now' => !$is_running && !$is_failed && $has_waited_5_seconds,
             ];
         }
 
