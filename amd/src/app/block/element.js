@@ -1,3 +1,4 @@
+import Sortable from 'local_pxsdk/sortablejs';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 import {get_string, get_strings} from "core/str";
@@ -30,6 +31,11 @@ export default class BlockElement {
     #items = [];
 
     /**
+     * @type {Sortable|NULL}
+     */
+    #sortable = null;
+
+    /**
      * @type {ItemElement|NULL}
      */
     #clipboardItem = null;
@@ -43,7 +49,6 @@ export default class BlockElement {
      * @type {Boolean}
      */
     #canAnonymizeUserdata = false;
-
 
     /**
      * @param {BaseFactory} baseFactory
@@ -84,6 +89,21 @@ export default class BlockElement {
 
         items.forEach((element) => {
             this.setupItem(element);
+        });
+
+        this.#sortable = new Sortable(this.#element.querySelector('.sharing_cart_items'), {
+            dataIdAttr: 'data-itemid',
+            onUpdate: (evt) => {
+                Ajax.call([{
+                    methodname: 'block_sharing_cart_reorder_sharing_cart_items',
+                    args: {
+                        item_ids: this.#sortable.toArray(),
+                    },
+                    fail: (data) => {
+                        console.error(data);
+                    }
+                }]);
+            }
         });
     }
 
@@ -314,7 +334,7 @@ export default class BlockElement {
                 is_root: true,
             }
         );
-        this.#element.querySelector('.sharing_cart_items').append(element);
+        this.#element.querySelector('.sharing_cart_items').prepend(element);
 
         this.setupItem(element);
     }

@@ -37,6 +37,14 @@ $functions = [
         'capabilities' => ''
     ],
 
+    'block_sharing_cart_reorder_sharing_cart_items' => [
+        'classname' => \block_sharing_cart\external\item\reorder_sharing_cart_items::class,
+        'methodname' => 'execute',
+        'description' => 'Reorder sharing cart items',
+        'type' => 'write',
+        'ajax' => true,
+        'capabilities' => ''
+    ],
     'block_sharing_cart_delete_item_from_sharing_cart' => [
         'classname' => \block_sharing_cart\external\item\delete_item_from_sharing_cart::class,
         'methodname' => 'execute',

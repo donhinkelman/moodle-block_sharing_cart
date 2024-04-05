@@ -92,6 +92,17 @@ class entity extends \block_sharing_cart\app\entity
         return $this;
     }
 
+    public function get_sortorder(): ?int
+    {
+        return $this->record['sortorder'] ?? null;
+    }
+
+    public function set_sortorder(?int $value): self
+    {
+        $this->record['sortorder'] = $value;
+        return $this;
+    }
+
     public function get_timecreated(): int
     {
         return $this->record['timecreated'] ?? 0;
@@ -135,6 +146,7 @@ class entity extends \block_sharing_cart\app\entity
             'type' => $this->get_type(),
             'name' => $this->get_name(),
             'status' => $this->get_status(),
+            'sortorder' => $this->get_sortorder(),
             'timecreated' => $this->get_timecreated(),
             'timemodified' => $this->get_timemodified(),
         ];
