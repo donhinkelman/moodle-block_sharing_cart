@@ -1,8 +1,9 @@
-import Sortable from 'local_pxsdk/sortablejs';
+import Sortable from '../../lib/sortablejs';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 import {get_string, get_strings} from "core/str";
 import Ajax from "core/ajax";
+import Notification from "core/notification";
 
 export default class BlockElement {
     /**
@@ -51,6 +52,16 @@ export default class BlockElement {
     #canAnonymizeUserdata = false;
 
     /**
+     * @type {Number|null}
+     */
+    #draggedCourseModuleId = null;
+
+    /**
+     * @type {Number|null}
+     */
+    #draggedSectionId = null;
+
+    /**
      * @param {BaseFactory} baseFactory
      * @param {HTMLElement} element
      * @param {Boolean} canBackupUserdata
@@ -67,6 +78,7 @@ export default class BlockElement {
         this.setupCourse();
         this.setupQueue();
         this.setupItems();
+        this.setupDragAndDrop();
     }
 
     setupCourse() {
@@ -93,16 +105,86 @@ export default class BlockElement {
 
         this.#sortable = new Sortable(this.#element.querySelector('.sharing_cart_items'), {
             dataIdAttr: 'data-itemid',
-            onUpdate: (evt) => {
+            onUpdate: () => {
                 Ajax.call([{
                     methodname: 'block_sharing_cart_reorder_sharing_cart_items',
                     args: {
                         item_ids: this.#sortable.toArray(),
                     },
                     fail: (data) => {
-                        console.error(data);
+                        Notification.exception(data);
                     }
                 }]);
+            }
+        });
+    }
+
+    setupDragAndDrop() {
+        const dropZone = this.#element;
+        const draggableCourseModules = document.querySelectorAll('.course-content .activity[data-for="cmitem"][data-id]');
+        const draggableSections = document.querySelectorAll('.course-content .section[data-for="section"][data-id]');
+
+        draggableCourseModules.forEach((courseModule) => {
+            const courseModuleId = Number.parseInt(courseModule.dataset.id);
+            if (!courseModuleId) {
+                return;
+            }
+
+            courseModule.addEventListener('dragstart', () => {
+                this.#draggedCourseModuleId = courseModuleId;
+                dropZone.classList.add('dragging_item');
+            });
+            courseModule.addEventListener('dragend', () => {
+                this.#draggedCourseModuleId = null;
+                dropZone.classList.remove('dragging_item');
+            });
+        });
+        draggableSections.forEach((section) => {
+            const id = Number.parseInt(section.dataset.id);
+            if (!id) {
+                return;
+            }
+
+            const draggable = section.querySelector('.course-section-header');
+
+            draggable.addEventListener('dragstart', () => {
+                this.#draggedSectionId = id;
+                dropZone.classList.add('dragging_item');
+            });
+            draggable.addEventListener('dragend', () => {
+                this.#draggedSectionId = null;
+                dropZone.classList.remove('dragging_item');
+            });
+        });
+
+        dropZone.addEventListener('dragover', (e) => {
+            if (!this.#draggedSectionId && !this.#draggedCourseModuleId) {
+                return;
+            }
+
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        dropZone.addEventListener('dragleave', (e) => {
+            if (!this.#draggedSectionId && !this.#draggedCourseModuleId) {
+                return;
+            }
+
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        dropZone.addEventListener('drop', async (e) => {
+            if (!this.#draggedSectionId && !this.#draggedCourseModuleId) {
+                return;
+            }
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (this.#draggedSectionId) {
+                await this.addSectionBackupToSharingCart(this.#draggedSectionId);
+            } else if (this.#draggedCourseModuleId) {
+                await this.addCourseModuleBackupToSharingCart(this.#draggedCourseModuleId);
             }
         });
     }
@@ -172,11 +254,11 @@ export default class BlockElement {
                             .innerHTML = await get_string('no_items', 'block_sharing_cart');
                     }
                 } else {
-                    console.error('Failed to delete item');
+                    await Notification.alert('Failed to delete item');
                 }
             },
             fail: (data) => {
-                console.error(data);
+                Notification.exception(data);
             }
         }]);
     }
@@ -258,7 +340,7 @@ export default class BlockElement {
                     await this.renderItem(data);
                 },
                 fail: (data) => {
-                    console.error(data);
+                    Notification.exception(data);
                 }
             }]);
         });
@@ -283,7 +365,7 @@ export default class BlockElement {
                     await this.renderItem(data);
                 },
                 fail: (data) => {
-                    console.error(data);
+                    Notification.exception(data);
                 }
             }]);
         });
@@ -375,7 +457,7 @@ export default class BlockElement {
                 }
             },
             fail: (data) => {
-                console.error(data);
+                Notification.exception(data);
             }
         }]);
     }

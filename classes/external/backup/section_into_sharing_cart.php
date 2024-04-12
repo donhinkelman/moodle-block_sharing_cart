@@ -47,6 +47,11 @@ class section_into_sharing_cart extends external_api
             \context_course::instance($course_id)
         );
 
+        $sequence = $DB->get_field('course_sections', 'sequence', ['id' => $params['section_id']], MUST_EXIST);
+        if (empty($sequence)) {
+            throw new \Exception('Section is empty');
+        }
+
         $item = $base_factory->item()->repository()->insert_section(
             $params['section_id'],
             $USER->id,

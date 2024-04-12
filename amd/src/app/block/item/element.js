@@ -1,5 +1,6 @@
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
+import Notification from "core/notification";
 import {get_strings} from "core/str";
 import Ajax from "core/ajax";
 
@@ -40,7 +41,6 @@ export default class ItemElement {
         currentTry += 1;
 
         if (currentTry >= retries) {
-            console.error("Item not finished after " + retries + " retries, giving up.");
             return;
         }
 
@@ -67,7 +67,7 @@ export default class ItemElement {
                 await this.#blockElement.renderItem(item);
             },
             fail: (data) => {
-                console.error(data);
+                Notification.exception(data);
             }
         }]);
     }
@@ -114,7 +114,7 @@ export default class ItemElement {
                 this.#pollItem();
             },
             fail: (data) => {
-                console.error(data);
+                Notification.exception(data);
             }
         }]);
     }

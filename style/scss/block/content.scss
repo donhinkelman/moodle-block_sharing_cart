@@ -1,4 +1,33 @@
 .block.block_sharing_cart {
+  &.dragging_item {
+    z-index: 98;
+    position: relative;
+    animation: drop_area ease-in-out .5s forwards;
+    backdrop-filter: blur(2px);
+
+    .drop_here_text {
+      z-index: 99;
+      display: flex;
+      height: 100%;
+      width: 100%;
+      position: fixed;
+      text-align: center;
+      top: 0;
+      left: 0;
+    }
+  }
+
+  .drop_here_text {
+    display: none;
+    color: white;
+  }
+
+  @keyframes drop_area {
+    100% {
+      background-color: lightslategrey;
+    }
+  }
+
   .sharing_cart_items {
     display: flex;
     flex-direction: column;

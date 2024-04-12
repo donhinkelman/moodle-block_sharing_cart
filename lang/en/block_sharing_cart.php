@@ -8,7 +8,7 @@ $string['items'] = 'Items';
 $string['restores'] = 'Restores';
 $string['no_items'] = '<div class="no-items text-muted">No items.<br>
 <br>
-Click the <i class="fa fa-shopping-basket"></i> icon to add items to the Sharing Cart.</div>';
+Drag & drop activities or sections into the sharing cart or click the <i class="fa fa-shopping-basket"></i> icon, to add items to the Sharing Cart.</div>';
 $string['no_restores'] = '<div class="no-restores text-muted">No restores in progress.<br>
 <br>
 Click the <i class="fa fa-clone"></i> icon to add items from the Sharing Cart to the course.</div>';
@@ -33,6 +33,7 @@ $string['anonymize_user_data'] = 'Do you want to anonymize the user data?';
 $string['atleast_one_course_module_must_be_included'] = 'Atleast one course module must be included, please select at least one course module to include.';
 $string['legacy_section_info'] = 'This is a legacy section. The sharing cart is unable to copy this section, but the individual activities are still available.';
 $string['maybe_the_queue_is_stuck'] = 'If you would like to run the restore now, click the button above.';
+$string['drop_here'] = 'Drop here...';
 
 $string['copy_this_course'] = 'Copy this course';
 
