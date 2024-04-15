@@ -149,6 +149,8 @@ export default class CourseElement {
      * @param {Number} sectionId
      */
     getSectionName(sectionId) {
+        // TODO: Fetch name from webservice to support all course formats
+
         const sectionNameElement = this.#element.querySelector(`[data-for="section"][data-id="${sectionId}"] .sectionname`);
         return sectionNameElement?.innerText.trim() ?? 'Unknown';
     }
