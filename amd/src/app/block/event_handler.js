@@ -14,18 +14,26 @@ export default class EventHandler {
     /**
      * @param {Boolean} canBackupUserdata
      * @param {Boolean} canAnonymizeUserdata
+     * @param {Boolean} showSharingCartBasket
      */
-    onLoad(canBackupUserdata, canAnonymizeUserdata) {
-        this.setupBlock(canBackupUserdata, canAnonymizeUserdata);
+    onLoad(canBackupUserdata, canAnonymizeUserdata, showSharingCartBasket) {
+        this.setupBlock(canBackupUserdata, canAnonymizeUserdata, showSharingCartBasket);
     }
 
     /**
      * @param {Boolean} canBackupUserdata
      * @param {Boolean} canAnonymizeUserdata
+     * @param {Boolean} showSharingCartBasket
      */
-    setupBlock(canBackupUserdata, canAnonymizeUserdata) {
+    setupBlock(canBackupUserdata, canAnonymizeUserdata, showSharingCartBasket) {
         const block = document.querySelector('.block.block_sharing_cart');
 
-        this.#baseFactory.block().element(block, canBackupUserdata, canAnonymizeUserdata).addEventListeners();
+        const blockElement = this.#baseFactory.block().element(
+            block,
+            canBackupUserdata,
+            canAnonymizeUserdata,
+            showSharingCartBasket
+        );
+        blockElement.addEventListeners();
     }
 }

@@ -73,7 +73,16 @@ export default class ItemElement {
     }
 
     #addEventListeners() {
-        this.#element.addEventListener('click', this.toggleCollapseRecursively.bind(this));
+        this.#element.querySelector('.info').addEventListener('click', this.toggleCollapseRecursively.bind(this));
+
+        const checkbox = this.#element.querySelector('input[data-action="bulk_select"][type="checkbox"]');
+        checkbox?.addEventListener('click', () => {
+            const bulkDeleteButton = document.getElementById('block_sharing_cart_bulk_delete_confirm');
+
+            const blockSelector = '.block.block_sharing_cart';
+            const checkboxSelector = blockSelector + ' .sharing_cart_item input[data-action="bulk_select"][type="checkbox"]';
+            bulkDeleteButton.disabled = document.querySelectorAll(checkboxSelector + ':checked').length <= 0;
+        });
 
         const actionsContainer = this.#element.querySelector(':scope > .item-body .sharing_cart_item_actions');
 

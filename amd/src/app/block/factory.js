@@ -50,8 +50,9 @@ export default class Factory {
      * @param {HTMLElement} element
      * @param {Boolean} canBackupUserdata
      * @param {Boolean} canAnonymizeUserdata
+     * @param {Boolean} showSharingCartBasket
      */
-    element(element, canBackupUserdata, canAnonymizeUserdata) {
-        return new BlockElement(this.#baseFactory, element, canBackupUserdata, canAnonymizeUserdata);
+    element(element, canBackupUserdata, canAnonymizeUserdata, showSharingCartBasket) {
+        return new BlockElement(this.#baseFactory, element, canBackupUserdata, canAnonymizeUserdata, showSharingCartBasket);
     }
 }

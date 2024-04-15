@@ -52,6 +52,11 @@ export default class BlockElement {
     #canAnonymizeUserdata = false;
 
     /**
+     * @type {Boolean}
+     */
+    #showSharingCartBasket = false;
+
+    /**
      * @type {Number|null}
      */
     #draggedCourseModuleId = null;
@@ -66,12 +71,14 @@ export default class BlockElement {
      * @param {HTMLElement} element
      * @param {Boolean} canBackupUserdata
      * @param {Boolean} canAnonymizeUserdata
+     * @param {Boolean} showSharingCartBasket
      */
-    constructor(baseFactory, element, canBackupUserdata, canAnonymizeUserdata) {
+    constructor(baseFactory, element, canBackupUserdata, canAnonymizeUserdata, showSharingCartBasket) {
         this.#baseFactory = baseFactory;
         this.#element = element;
         this.#canBackupUserdata = canBackupUserdata;
         this.#canAnonymizeUserdata = canAnonymizeUserdata;
+        this.#showSharingCartBasket = showSharingCartBasket;
     }
 
     addEventListeners() {
@@ -79,13 +86,17 @@ export default class BlockElement {
         this.setupQueue();
         this.setupItems();
         this.setupDragAndDrop();
+        this.setupBulkDelete();
     }
 
     setupCourse() {
         const course = document.querySelector('.course-content');
 
         const courseElement = this.#baseFactory.block().course().element(this, course);
-        courseElement.addBackupToSharingCartButtons();
+
+        if (this.#showSharingCartBasket) {
+            courseElement.addBackupToSharingCartButtons();
+        }
 
         this.#course = courseElement;
     }
@@ -189,6 +200,50 @@ export default class BlockElement {
         });
     }
 
+    setupBulkDelete() {
+        const enableBulkDeleteButton = this.#element.querySelector('#block_sharing_cart_bulk_delete');
+        const disableBulkDeleteButton = this.#element.querySelector('#block_sharing_cart_cancel_bulk_delete');
+        const bulkDeleteButton = this.#element.querySelector('#block_sharing_cart_bulk_delete_confirm');
+
+        const checkboxSelector = '.sharing_cart_item input[data-action="bulk_select"][type="checkbox"]';
+
+        enableBulkDeleteButton.addEventListener('click', () => {
+            enableBulkDeleteButton.classList.add('d-none');
+            disableBulkDeleteButton.classList.remove('d-none');
+            bulkDeleteButton.classList.remove('d-none');
+
+            this.#element.querySelectorAll(checkboxSelector).forEach((checkbox) => {
+                checkbox.classList.remove('d-none');
+                checkbox.checked = false;
+            });
+        });
+
+        disableBulkDeleteButton.addEventListener('click', () => {
+            disableBulkDeleteButton.classList.add('d-none');
+            bulkDeleteButton.classList.add('d-none');
+            bulkDeleteButton.disabled = true;
+            enableBulkDeleteButton.classList.remove('d-none');
+
+            this.#element.querySelectorAll(checkboxSelector).forEach((checkbox) => {
+                checkbox.classList.add('d-none');
+                checkbox.checked = false;
+            });
+        });
+
+        bulkDeleteButton.addEventListener('click', async () => {
+            if (bulkDeleteButton.disabled) {
+                return;
+            }
+
+            const itemIds = [];
+            this.#element.querySelectorAll(checkboxSelector + ':checked').forEach((checkbox) => {
+                itemIds.push(checkbox.value);
+            });
+
+            await this.confirmDeleteItems(itemIds);
+        });
+    }
+
     /**
      * @param {HTMLElement} element
      */
@@ -218,6 +273,39 @@ export default class BlockElement {
     /**
      * @param {ItemElement} item
      */
+    async removeItemElement(item) {
+        const childItems = item.getItemChildrenRecursively();
+        childItems.forEach((childItem) => {
+            const index = this.#items.findIndex((i) => i.getItemId() === Number.parseInt(childItem.dataset.itemid));
+            if (index === -1) {
+                return;
+            }
+
+            if (this.#items[index].getItemId() === this.#clipboardItem?.getItemId()) {
+                this.#course.clearClipboard();
+            }
+
+            this.#items.splice(index, 1);
+            childItem.remove();
+        });
+
+        const index = this.#items.findIndex((i) => i.getItemId() === item.getItemId());
+        if (this.#items[index].getItemId() === this.#clipboardItem?.getItemId()) {
+            this.#course.clearClipboard();
+        }
+
+        this.#items.splice(index, 1);
+        item.remove();
+
+        if (this.#items.length === 0) {
+            this.#element.querySelector('.sharing_cart_items')
+                .innerHTML = await get_string('no_items', 'block_sharing_cart');
+        }
+    }
+
+    /**
+     * @param {ItemElement} item
+     */
     deleteItem(item) {
         Ajax.call([{
             methodname: 'block_sharing_cart_delete_item_from_sharing_cart',
@@ -226,36 +314,41 @@ export default class BlockElement {
             },
             done: async (deleted) => {
                 if (deleted) {
-                    const childItems = item.getItemChildrenRecursively();
-                    childItems.forEach((childItem) => {
-                        const index = this.#items.findIndex((i) => i.getItemId() === Number.parseInt(childItem.dataset.itemid));
-                        if (index === -1) {
-                            return;
-                        }
-
-                        if (this.#items[index].getItemId() === this.#clipboardItem?.getItemId()) {
-                            this.#course.clearClipboard();
-                        }
-
-                        this.#items.splice(index, 1);
-                        childItem.remove();
-                    });
-
-                    const index = this.#items.findIndex((i) => i.getItemId() === item.getItemId());
-                    if (this.#items[index].getItemId() === this.#clipboardItem?.getItemId()) {
-                        this.#course.clearClipboard();
-                    }
-
-                    this.#items.splice(index, 1);
-                    item.remove();
-
-                    if (this.#items.length === 0) {
-                        this.#element.querySelector('.sharing_cart_items')
-                            .innerHTML = await get_string('no_items', 'block_sharing_cart');
-                    }
+                    await this.removeItemElement(item);
                 } else {
                     await Notification.alert('Failed to delete item');
                 }
+            },
+            fail: (data) => {
+                Notification.exception(data);
+            }
+        }]);
+    }
+
+    /**
+     * @param {Array<Number>} itemIds
+     */
+    deleteItems(itemIds) {
+        itemIds = itemIds.map((id) => Number.parseInt(id));
+
+        Ajax.call([{
+            methodname: 'block_sharing_cart_delete_items_from_sharing_cart',
+            args: {
+                item_ids: itemIds,
+            },
+            done: async (deletedItemIds) => {
+                const items = this.#items.filter((i) => itemIds.includes(i.getItemId()));
+                for (const item of items) {
+                    const deleted = deletedItemIds.includes(item.getItemId());
+                    if (!deleted) {
+                        Notification.alert('Failed to delete item: "' + item.getItemName() + '"');
+                        continue;
+                    }
+
+                    await this.removeItemElement(item);
+                }
+
+                document.getElementById('block_sharing_cart_bulk_delete_confirm').disabled = true;
             },
             fail: (data) => {
                 Notification.exception(data);
@@ -516,6 +609,44 @@ export default class BlockElement {
         });
         modal.getRoot().on(ModalEvents.shown, () => this.#baseFactory.moodle().template().runTemplateJS(js));
         modal.getRoot().on(ModalEvents.save, this.importItem.bind(this, item, sectionId, modal.getRoot()[0]));
+        await modal.show();
+    }
+
+    /**
+     * @param {Array<Number>} itemIds
+     */
+    async confirmDeleteItems(itemIds) {
+        const strings = await get_strings([
+            {
+                key: 'delete_items',
+                component: 'block_sharing_cart',
+            },
+            {
+                key: 'confirm_delete_items',
+                component: 'block_sharing_cart',
+            },
+            {
+                key: 'delete',
+                component: 'core',
+            },
+            {
+                key: 'cancel',
+                component: 'core',
+            }
+        ]);
+
+        const modal = await ModalFactory.create({
+            type: ModalFactory.types.DELETE_CANCEL,
+            title: strings[0],
+            body: strings[1],
+            buttons: {
+                delete: strings[2],
+                cancel: strings[3],
+            },
+            removeOnClose: true,
+        });
+
+        modal.getRoot().on(ModalEvents.delete, this.deleteItems.bind(this, itemIds));
         await modal.show();
     }
 }

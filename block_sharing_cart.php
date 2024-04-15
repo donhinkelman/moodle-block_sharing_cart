@@ -38,7 +38,8 @@ class block_sharing_cart extends block_base
             $this->page->requires->css('/blocks/sharing_cart/style/style.css');
             $this->page->requires->js_call_amd('block_sharing_cart/block', 'init', [
                 'canBackupUserdata' => has_capability('moodle/backup:userinfo', $course_context),
-                'canAnonymizeUserdata' => has_capability('moodle/backup:anonymise', $course_context)
+                'canAnonymizeUserdata' => has_capability('moodle/backup:anonymise', $course_context),
+                'showSharingCartBasket' => (bool)get_config('block_sharing_cart', 'show_sharing_cart_basket'),
             ]);
             $this->page->requires->strings_for_js([
                 'copy_item',
@@ -46,7 +47,9 @@ class block_sharing_cart extends block_base
                 'confirm_copy_item_form_text',
                 'into_section',
                 'delete_item',
+                'delete_items',
                 'confirm_delete_item',
+                'confirm_delete_items',
                 'backup_item',
                 'into_sharing_cart',
                 'copy_user_data',

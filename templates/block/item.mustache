@@ -1,6 +1,9 @@
 <div class="sharing_cart_item" data-type="{{type}}" data-itemid="{{id}}" data-status="{{status}}"
      {{^is_module}}data-collapsed="true"{{/is_module}}>
     <div class="item-body">
+        {{#is_root}}
+            <input class="d-none mr-1" type="checkbox" data-action="bulk_select" value="{{id}}"/>
+        {{/is_root}}
         <div class="info">
             {{> block_sharing_cart/block/item/icon }}
             <span class="name">{{name}}</span>

@@ -53,6 +53,14 @@ $functions = [
         'ajax' => true,
         'capabilities' => ''
     ],
+    'block_sharing_cart_delete_items_from_sharing_cart' => [
+        'classname' => \block_sharing_cart\external\item\delete_items_from_sharing_cart::class,
+        'methodname' => 'execute',
+        'description' => 'Deletes items from the sharing cart',
+        'type' => 'write',
+        'ajax' => true,
+        'capabilities' => ''
+    ],
     'block_sharing_cart_get_item_from_sharing_cart' => [
         'classname' => \block_sharing_cart\external\item\get_item_from_sharing_cart::class,
         'methodname' => 'execute',
