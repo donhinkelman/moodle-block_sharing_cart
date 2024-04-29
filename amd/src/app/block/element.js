@@ -422,6 +422,25 @@ export default class BlockElement {
     async addSectionBackupToSharingCart(sectionId) {
         const sectionName = this.#course.getSectionName(sectionId);
 
+        const cms = this.#course.getSectionCourseModules(sectionId);
+
+        if (cms.length === 0) {
+            const strings = await get_strings([
+                {
+                    key: 'no_course_modules_in_section',
+                    component: 'block_sharing_cart',
+                },
+                {
+                    key: 'no_course_modules_in_section_description',
+                    component: 'block_sharing_cart',
+                },
+            ]);
+
+            await Notification.alert(strings[0], strings[1]);
+
+            return;
+        }
+
         const modal = await this.createBackupItemToSharingCartModal(sectionName, (settings) => {
             Ajax.call([{
                 methodname: 'block_sharing_cart_backup_section_into_sharing_cart',

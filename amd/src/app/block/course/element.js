@@ -147,6 +147,7 @@ export default class CourseElement {
 
     /**
      * @param {Number} sectionId
+     * @returns {String}
      */
     getSectionName(sectionId) {
         // TODO: Fetch name from webservice to support all course formats
@@ -156,7 +157,18 @@ export default class CourseElement {
     }
 
     /**
+     * @param {Number} sectionId
+     * @returns {NodeListOf<HTMLElement>}
+     */
+    getSectionCourseModules(sectionId) {
+        return this.#element.querySelectorAll(
+            `[data-for="section"][data-id="${sectionId}"] [data-for="cmlist"] [data-for="cmitem"]`
+        );
+    }
+
+    /**
      * @param {String} courseModuleId
+     * @returns {String}
      */
     getCourseModuleName(courseModuleId) {
         // TODO: Fetch name from webservice to support all course module types example: mod_labels
@@ -165,6 +177,9 @@ export default class CourseElement {
         return courseModule.querySelector(`.instancename`)?.innerText.trim() ?? 'Unknown';
     }
 
+    /**
+     * @returns {NodeListOf<HTMLElement>}
+     */
     getClipboardTargets() {
         return this.#element.querySelectorAll('.clipboard_target');
     }

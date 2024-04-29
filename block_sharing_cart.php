@@ -57,6 +57,8 @@ class block_sharing_cart extends block_base
                 'no_items',
                 'run_now',
                 'atleast_one_course_module_must_be_included',
+                'no_course_modules_in_section',
+                'no_course_modules_in_section_description'
             ], 'block_sharing_cart');
             $this->page->requires->strings_for_js([
                 'import',
