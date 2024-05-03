@@ -85,6 +85,11 @@ export default class QueueElement {
             const sectionIds = [];
             removedElements.forEach((element) => {
                 const sectionId = element.dataset.toSectionId;
+
+                if (!sectionId) {
+                    return;
+                }
+
                 if (sectionIds.indexOf(sectionId) !== -1) {
                     return;
                 }

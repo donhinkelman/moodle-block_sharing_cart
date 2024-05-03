@@ -616,7 +616,7 @@ export default class BlockElement {
             type: ModalFactory.types.SAVE_CANCEL,
             title: strings[0] + ': ' +
                 '"' + item.getItemName().slice(0, 50).trim() + '"' +
-                strings[1] + ': ' +
+                ' ' + strings[1] + ': ' +
                 '"' + sectionName.slice(0, 50).trim() + '"',
             body: html,
             buttons: {

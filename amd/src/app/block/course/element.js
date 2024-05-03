@@ -1,3 +1,5 @@
+import {getCurrentCourseEditor} from "core_courseformat/courseeditor";
+
 export default class CourseElement {
     /**
      * @type {BaseFactory}
@@ -25,6 +27,11 @@ export default class CourseElement {
     #clipboardTargetListenerAbortController = new AbortController();
 
     /**
+     * @type {CourseEditor}
+     */
+    reactive;
+
+    /**
      * @param {BaseFactory} baseFactory
      * @param {BlockElement} blockElement
      * @param {HTMLElement} element
@@ -33,6 +40,7 @@ export default class CourseElement {
         this.#baseFactory = baseFactory;
         this.#blockElement = blockElement;
         this.#element = element;
+        this.reactive = getCurrentCourseEditor();
     }
 
     async renderClipboard() {
@@ -115,10 +123,9 @@ export default class CourseElement {
      * @returns {String}
      */
     getSectionName(sectionId) {
-        // TODO: Fetch name from webservice to support all course formats
+        const section = this.reactive.state.section.get(sectionId);
 
-        const sectionNameElement = this.#element.querySelector(`[data-for="section"][data-id="${sectionId}"] .sectionname`);
-        return sectionNameElement?.innerText.trim() ?? 'Unknown';
+        return section.title ?? 'Unknown';
     }
 
     /**
@@ -136,10 +143,9 @@ export default class CourseElement {
      * @returns {String}
      */
     getCourseModuleName(courseModuleId) {
-        // TODO: Fetch name from webservice to support all course module types example: mod_labels
+        const courseModule = this.reactive.state.cm.get(courseModuleId);
 
-        const courseModule = this.#element.querySelector(`[data-for="cmitem"][data-id="${courseModuleId}"]`);
-        return courseModule.querySelector(`.instancename`)?.innerText.trim() ?? 'Unknown';
+        return courseModule.name ?? 'Unknown';
     }
 
     /**
