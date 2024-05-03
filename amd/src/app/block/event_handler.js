@@ -17,13 +17,14 @@ export default class EventHandler {
      * @param {Boolean} showSharingCartBasket
      */
     onLoad(canBackupUserdata, canAnonymizeUserdata, showSharingCartBasket) {
-        this.setupBlock(canBackupUserdata, canAnonymizeUserdata, showSharingCartBasket);
+        return this.setupBlock(canBackupUserdata, canAnonymizeUserdata, showSharingCartBasket);
     }
 
     /**
      * @param {Boolean} canBackupUserdata
      * @param {Boolean} canAnonymizeUserdata
      * @param {Boolean} showSharingCartBasket
+     * @returns {{course: CourseElement, block: BlockElement, queue: QueueElement}}
      */
     setupBlock(canBackupUserdata, canAnonymizeUserdata, showSharingCartBasket) {
         const block = document.querySelector('.block.block_sharing_cart');
@@ -34,6 +35,6 @@ export default class EventHandler {
             canAnonymizeUserdata,
             showSharingCartBasket
         );
-        blockElement.addEventListeners();
+        return blockElement.addEventListeners();
     }
 }

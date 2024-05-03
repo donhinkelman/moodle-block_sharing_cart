@@ -14,11 +14,13 @@ class content implements \renderable, \core\output\named_templatable
 {
     private base_factory $base_factory;
     private int $user_id;
+    private int $course_id;
 
-    public function __construct(base_factory $base_factory, int $user_id)
+    public function __construct(base_factory $base_factory, int $user_id, int $course_id)
     {
         $this->base_factory = $base_factory;
         $this->user_id = $user_id;
+        $this->course_id = $course_id;
     }
 
     public function get_template_name(\renderer_base $renderer): string
@@ -60,8 +62,13 @@ class content implements \renderable, \core\output\named_templatable
 
     public function export_for_template(\renderer_base $output): array
     {
+        $course_context = \core\context\course::instance($this->course_id);
+
         return [
-            'items' => $this->export_items_for_template()
+            'items' => $this->export_items_for_template(),
+            'canBackupUserdata' => has_capability('moodle/backup:userinfo', $course_context),
+            'canAnonymizeUserdata' => has_capability('moodle/backup:anonymise', $course_context),
+            'showSharingCartBasket' => (bool)get_config('block_sharing_cart', 'show_sharing_cart_basket'),
         ];
     }
 }

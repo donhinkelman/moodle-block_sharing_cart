@@ -35,41 +35,6 @@ export default class CourseElement {
         this.#element = element;
     }
 
-    async addBackupToSharingCartButtons() {
-        const element = await this.#baseFactory.moodle().template().createElementFromTemplate(
-            'block_sharing_cart/block/course/add_to_sharing_cart_button',
-            {}
-        );
-
-        const sectionTitles = this.#element.querySelectorAll('.course-section-header .inplaceeditable');
-        sectionTitles.forEach((sectionTitle) => {
-            const button = element.cloneNode(true);
-
-            sectionTitle.after(button);
-
-            const sectionId = sectionTitle.dataset.itemid;
-
-            button.addEventListener(
-                'click',
-                this.#blockElement.addSectionBackupToSharingCart.bind(this.#blockElement, sectionId)
-            );
-        });
-
-        const courseModuleActionMenus = this.#element.querySelectorAll('.cm_action_menu');
-        courseModuleActionMenus.forEach((courseModuleActionMenu) => {
-            const button = element.cloneNode(true);
-
-            courseModuleActionMenu.append(button);
-
-            const courseModuleId = courseModuleActionMenu.dataset.cmid;
-
-            button.addEventListener(
-                'click',
-                this.#blockElement.addCourseModuleBackupToSharingCart.bind(this.#blockElement, courseModuleId)
-            );
-        });
-    }
-
     async renderClipboard() {
         this.#clipboard = await this.#baseFactory.moodle().template().createElementFromTemplate(
             'block_sharing_cart/block/course/clipboard',

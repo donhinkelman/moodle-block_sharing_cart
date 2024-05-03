@@ -37,5 +37,10 @@ body:has(.block.block_sharing_cart) .course-content {
     align-self: center;
     cursor: pointer;
     margin-left: 0.5rem;
+
+    &.disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
   }
 }

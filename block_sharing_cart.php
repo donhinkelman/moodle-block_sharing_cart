@@ -32,15 +32,8 @@ class block_sharing_cart extends block_base
 
         $base_factory = \block_sharing_cart\app\factory::make();
 
-        $course_context = \core\context\course::instance($COURSE->id);
-
         if ($this->page->user_is_editing()) {
             $this->page->requires->css('/blocks/sharing_cart/style/style.css');
-            $this->page->requires->js_call_amd('block_sharing_cart/block', 'init', [
-                'canBackupUserdata' => has_capability('moodle/backup:userinfo', $course_context),
-                'canAnonymizeUserdata' => has_capability('moodle/backup:anonymise', $course_context),
-                'showSharingCartBasket' => (bool)get_config('block_sharing_cart', 'show_sharing_cart_basket'),
-            ]);
             $this->page->requires->strings_for_js([
                 'copy_item',
                 'confirm_copy_item',
@@ -76,7 +69,7 @@ class block_sharing_cart extends block_base
             return $this->content = '';
         }
 
-        $template = new \block_sharing_cart\output\block\content($base_factory, $USER->id);
+        $template = new \block_sharing_cart\output\block\content($base_factory, $USER->id, $COURSE->id);
 
         return $this->content = (object)[
             'text' => $OUTPUT->render($template)

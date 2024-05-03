@@ -1,4 +1,4 @@
-<div>
+<div id="block_sharing_cart">
     <div class="drop_here_text">
         <strong class="m-auto">{{#str}}drop_here, block_sharing_cart{{/str}}</strong>
     </div>
@@ -39,3 +39,8 @@
         </div>
     </div>
 </div>
+{{#js}}
+    require(['block_sharing_cart/local/block'], function (component) {
+        component.init('block_sharing_cart', {{canBackupUserdata}}, {{canAnonymizeUserdata}}, {{showSharingCartBasket}});
+    });
+{{/js}}

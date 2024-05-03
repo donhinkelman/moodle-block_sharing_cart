@@ -81,24 +81,23 @@ export default class BlockElement {
         this.#showSharingCartBasket = showSharingCartBasket;
     }
 
+    /**
+     * @return {{course: CourseElement, block: BlockElement, queue: QueueElement}}
+     */
     addEventListeners() {
         this.setupCourse();
         this.setupQueue();
         this.setupItems();
         this.setupDragAndDrop();
         this.setupBulkDelete();
+
+        return {course: this.#course, queue: this.#queue, block: this};
     }
 
     setupCourse() {
         const course = document.querySelector('.course-content');
 
-        const courseElement = this.#baseFactory.block().course().element(this, course);
-
-        if (this.#showSharingCartBasket) {
-            courseElement.addBackupToSharingCartButtons();
-        }
-
-        this.#course = courseElement;
+        this.#course = this.#baseFactory.block().course().element(this, course);
     }
 
     setupQueue() {
