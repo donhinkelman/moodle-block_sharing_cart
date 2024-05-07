@@ -1,0 +1,14 @@
+<div class="form-check">
+    <label class="form-check-label">
+        <input type="checkbox" class="form-check-input" data-id="{{id}}" data-type="{{type}}" checked/>
+        {{#mod_icon}}
+            <img src="{{mod_icon}}" alt="" style="height: 1rem;"/>
+        {{/mod_icon}}
+        {{title}}
+    </label>
+    <div class="item-children">
+        {{#course_modules}}
+            {{> block_sharing_cart/modal/import_item_form_element }}
+        {{/course_modules}}
+    </div>
+</div>

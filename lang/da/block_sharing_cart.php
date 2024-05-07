@@ -1,0 +1,53 @@
+<?php
+
+// Moodle strings
+$string['pluginname'] = 'Delingskurv';
+
+// Block
+$string['items'] = 'Backups';
+$string['restores'] = 'Kopieringer';
+$string['no_items'] = '<div class="no-items text-muted">Ingen backups.<br>
+<br>
+Træk og slip aktiviteter eller sektioner ind i delingskurven eller klik på <i class="fa fa-shopping-basket"></i> ikonet, for at tilføje elementer til Delingskurven.</div>';
+$string['no_restores'] = '<div class="no-restores text-muted">Ingen kopieringer i gang.<br>
+<br>
+Klik på <i class="fa fa-clone"></i> ikonet for at tilføje elementer fra Delingskurven til kurset.</div>';
+
+$string['run_now'] = 'Kør nu';
+$string['rename_item'] = 'Omdøb backup';
+
+$string['delete_item'] = 'Slet backup';
+$string['delete_items'] = 'Slet backups';
+$string['confirm_delete_item'] = 'Er du sikker på, at du vil slette denne backup? Alle under-elementer vil også blive slettet.';
+$string['confirm_delete_items'] = 'Er du sikker på, at du vil slette disse backups? Alle under-elementer vil også blive slettet.';
+
+$string['copy_item'] = 'Kopier backup';
+$string['into_section'] = 'ind i sektion';
+$string['confirm_copy_item_form_text'] = 'Er du sikker på, at du vil kopiere denne backup? Nedenfor kan du vælge, hvad der skal inkluderes i kopien.';
+$string['confirm_copy_item'] = 'Er du sikker på, at du vil kopiere denne backup?';
+$string['copying_this_item'] = 'Kopierer denne backup';
+
+$string['backup_item'] = 'Backup element';
+$string['into_sharing_cart'] = 'ind i delingskurv';
+$string['backup_settings'] = 'Backup indstillinger';
+$string['copy_user_data'] = 'Vil du kopiere brugerdata? (f.eks. ordbog/wiki/database indlæg)';
+$string['anonymize_user_data'] = 'Vil du anonymisere brugerdata?';
+$string['atleast_one_course_module_must_be_included'] = 'Mindst et kursusmodul skal inkluderes, vælg venligst mindst et kursusmodul at inkludere.';
+$string['legacy_section_info'] = 'Dette er en gammel sektion. Delingskurven kan ikke kopiere denne sektion, men de enkelte aktiviteter er stadig tilgængelige.';
+$string['maybe_the_queue_is_stuck'] = 'Hvis du vil køre kopieringen nu, skal du klikke på knappen ovenfor.';
+$string['drop_here'] = 'Slip her...';
+
+$string['copy_this_course'] = 'Kopier dette kursus';
+$string['bulk_delete'] = 'Slet flere';
+$string['cancel_bulk_delete'] = 'Annuller';
+$string['delete_marked_items'] = 'Slet valgte elementer';
+
+$string['no_course_modules_in_section'] = 'Ingen kursusmoduler i denne sektion';
+$string['no_course_modules_in_section_description'] = 'Denne sektion indeholder ikke nogen kursusmoduler, og du kan derfor ikke kopiere den.';
+
+// Capabilities
+$string['sharing_cart:addinstance'] = 'Tilføj en ny Delingskurv blok';
+
+// Settings
+$string['settings:show_sharing_cart_basket'] = 'Vis delingskurv kurv';
+$string['settings:show_sharing_cart_basket_desc'] = 'Vis delingskurv kurven på kursussiden, når du er i redigerings tilstand. Dette giver brugerne mulighed for at klikke og kopiere aktiviteter og sektioner ind i delingskurven. Hvis du skjuler kurven, kan brugerne stadig trække og slippe aktiviteter og sektioner ind i delingskurven.';

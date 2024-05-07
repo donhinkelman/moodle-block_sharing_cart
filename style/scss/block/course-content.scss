@@ -1,0 +1,46 @@
+body:has(.block.block_sharing_cart) .course-content {
+  .clipboard {
+    display: flex;
+    border: 2px dashed #999;
+    border-radius: .5rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    font-weight: bold;
+    gap: 0.5rem;
+    align-items: center;
+
+    .info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    [data-action="clear-clipboard"] {
+      cursor: pointer;
+    }
+  }
+
+  .clipboard_target {
+    display: flex;
+    border: 2px dashed #999;
+    border-radius: .5rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    font-size: 2rem;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .add_to_sharing_cart {
+    display: flex;
+    align-self: center;
+    cursor: pointer;
+    margin-left: 0.5rem;
+
+    &.disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+}
