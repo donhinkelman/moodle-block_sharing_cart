@@ -105,8 +105,16 @@ export default class QueueElement {
         this.#element.innerHTML = '';
 
         queueItems.forEach((element) => {
-            element.querySelector('.btn')?.addEventListener('click', () => {
+            const runNowButton = element.querySelector('button.btn');
+
+            if (!runNowButton) {
+                return;
+            }
+
+            runNowButton.addEventListener('click', () => {
                 const taskId = element.dataset.id;
+
+                runNowButton.disabled = true;
 
                 Ajax.call([{
                     methodname: 'block_sharing_cart_run_task_now',
@@ -116,7 +124,7 @@ export default class QueueElement {
                 }]);
 
                 this.loadQueue();
-            });
+            }, {once: true});
         });
 
         elements.forEach((element) => {
