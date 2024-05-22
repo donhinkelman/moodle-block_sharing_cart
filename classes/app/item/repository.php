@@ -96,7 +96,7 @@ class repository extends \block_sharing_cart\app\repository
                     'parent_item_id' => $parent_item_id,
                     'old_instance_id' => $cm_info->id,
                     'type' => "mod_{$cm_info->modname}",
-                    'name' => $cm_info->get_name(),
+                    'name' => $cm_info->get_formatted_name(),
                     'status' => $status,
                     'timecreated' => $time,
                     'timemodified' => $time,
