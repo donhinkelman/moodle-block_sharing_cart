@@ -47,6 +47,8 @@ $string['no_course_modules_in_section_description'] = 'This section does not con
 
 $string['copy_section'] = 'Copy section';
 
+$string['you_may_need_to_reload_the_course_warning'] = 'Element(s) inserted. You may need to reload the course page to see the changes reflected correctly.';
+
 // Capabilities
 $string['sharing_cart:addinstance'] = 'Add a new Sharing Cart block';
 
