@@ -36,6 +36,7 @@ class import_item_modal_body implements \renderable, \core\output\named_templata
         );
         foreach ($sections as $section) {
             foreach ($section->activities as $activity) {
+                $activity->title = format_string($activity->title);
                 $activity->title = strlen($activity->title) > 50 ? substr(
                         $activity->title,
                         0,
@@ -47,6 +48,7 @@ class import_item_modal_body implements \renderable, \core\output\named_templata
                 $activity->course_modules = [];
             }
 
+            $section->title = format_string($section->title);
             $section->title = strlen($section->title) > 50 ? trim(
                     substr($section->title, 0, 50)
                 ) . '...' : $section->title;
