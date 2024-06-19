@@ -45,12 +45,16 @@ $string['delete_marked_items'] = 'Delete marked items';
 $string['no_course_modules_in_section'] = 'No course modules in this section';
 $string['no_course_modules_in_section_description'] = 'This section does not contain any course modules and you are therefore not able to copy it.';
 
+$string['copy_section'] = 'Copy section';
+
 // Capabilities
 $string['sharing_cart:addinstance'] = 'Add a new Sharing Cart block';
 
 // Settings
 $string['settings:show_sharing_cart_basket'] = 'Show the sharing cart basket';
 $string['settings:show_sharing_cart_basket_desc'] = 'Show the sharing cart basket on the course page when in editing mode. This allows users to click and copy activities & sections into the sharing cart. If you hide the basket, users can still drag and drop activities & sections into the sharing cart.';
+$string['settings:show_copy_section_in_block'] = 'Show the "Copy section" in block';
+$string['settings:show_copy_section_in_block_desc'] = 'Show the "Copy section" in the sharing cart block, underneath all modules/activities';
 
 // TODO: Implement the following??
 /*
@@ -59,10 +63,6 @@ $string['settings:workaround_qtypes_desc'] = 'The workaround for question restor
 When the questions to be restored already exist, however, those data look like inconsistent,
 this workaround will try to make another duplicates instead of reusing existing data.
 It may be useful for avoiding some restore errors, such as <i>error_question_match_sub_missing_in_db</i>.';
-
-$string['settings:show_copy_section_in_block'] = 'Show the "Copy section" in block';
-$string['settings:show_copy_section_in_block_desc'] = 'Show the "Copy section" in the sharing cart block, underneath all modules/activities';
-
 $string['settings:show_copy_activity_in_block'] = 'Show the "Copy activity" in block';
 $string['settings:show_copy_activity_in_block_desc'] = 'Show the "Copy activity" in the sharing cart block, underneath all modules/activities - This is only available if the user has the capability to backup activities, but not the capability to manage/move activities';
 */

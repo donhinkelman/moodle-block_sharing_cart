@@ -12,7 +12,7 @@
                 <i class="fa fa-spinner"></i>
             </div>
         </div>
-        <div>
+        <div class="mb-3">
             <div class="d-flex align-items-center">
                 <strong class="mr-auto mb-0">
                     {{#str}}items, block_sharing_cart{{/str}}
@@ -37,6 +37,15 @@
                 <span class="mr-1">{{#str}}delete_marked_items, block_sharing_cart{{/str}}</span><i class="fa fa-trash"></i>
             </button>
         </div>
+        {{#showCopySectionInBlock}}
+            <div id="copy_section_container">
+                <hr>
+                <select class="custom-select w-100">
+                    <option disabled selected>{{#str}}choosedots, core{{/str}}</option>
+                </select>
+                <button type="button" class="btn btn-primary mt-3 w-100">{{#str}}copy_section, block_sharing_cart{{/str}}</button>
+            </div>
+        {{/showCopySectionInBlock}}
     </div>
 </div>
 {{#js}}
