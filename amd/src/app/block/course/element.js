@@ -130,12 +130,10 @@ export default class CourseElement {
 
     /**
      * @param {Number} sectionId
-     * @returns {NodeListOf<HTMLElement>}
+     * @returns {Array<string>}
      */
     getSectionCourseModules(sectionId) {
-        return this.#element.querySelectorAll(
-            `[data-for="section"][data-id="${sectionId}"] [data-for="cmlist"] [data-for="cmitem"]`
-        );
+        return this.reactive.state.section.get(sectionId).cmlist;
     }
 
     /**

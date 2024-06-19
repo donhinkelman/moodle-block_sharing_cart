@@ -144,7 +144,7 @@ class entity extends \block_sharing_cart\app\entity
             'parent_item_id' => $this->get_parent_item_id(),
             'old_instance_id' => $this->get_old_instance_id(),
             'type' => $this->get_type(),
-            'name' => $this->get_name(),
+            'name' => format_string($this->get_name()),
             'status' => $this->get_status(),
             'sortorder' => $this->get_sortorder(),
             'timecreated' => $this->get_timecreated(),

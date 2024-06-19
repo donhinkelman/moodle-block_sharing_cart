@@ -194,6 +194,13 @@ export default class ItemElement {
     }
 
     /**
+     * @return {Number}
+     */
+    getItemOldInstanceId() {
+        return Number.parseInt(this.#element.dataset.oldinstanceid);
+    }
+
+    /**
      * @return {HTMLElement}
      */
     getItemInfo() {

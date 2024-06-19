@@ -69,6 +69,7 @@ class content implements \renderable, \core\output\named_templatable
             'canBackupUserdata' => has_capability('moodle/backup:userinfo', $course_context),
             'canAnonymizeUserdata' => has_capability('moodle/backup:anonymise', $course_context),
             'showSharingCartBasket' => (bool)get_config('block_sharing_cart', 'show_sharing_cart_basket'),
+            'showCopySectionInBlock' => (bool)get_config('block_sharing_cart', 'show_copy_section_in_block'),
         ];
     }
 }

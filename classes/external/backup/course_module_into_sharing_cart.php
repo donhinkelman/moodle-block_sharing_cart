@@ -67,6 +67,7 @@ class course_module_into_sharing_cart extends external_api
             'user_id' => new external_value(PARAM_INT, 'The id of the user who owns the item', VALUE_REQUIRED),
             'file_id' => new external_value(PARAM_INT, 'The id of the backup file', VALUE_OPTIONAL),
             'parent_item_id' => new external_value(PARAM_INT, 'The id of the parent item', VALUE_OPTIONAL),
+            'old_instance_id' => new external_value(PARAM_INT, 'The old instance id', VALUE_REQUIRED),
             'task_id' => new external_value(PARAM_INT, 'The task id of backup adhoc task', VALUE_REQUIRED),
             'type' => new external_value(PARAM_TEXT, 'The type of the item', VALUE_REQUIRED),
             'name' => new external_value(PARAM_TEXT, 'The name of the item', VALUE_REQUIRED),

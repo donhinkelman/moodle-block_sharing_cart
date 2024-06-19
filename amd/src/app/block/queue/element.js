@@ -1,5 +1,7 @@
 import {getCurrentCourseEditor} from "core_courseformat/courseeditor";
 import Ajax from "core/ajax";
+import * as Toast from 'core/toast';
+import {get_string as getString} from "core/str";
 
 export default class QueueElement {
     /**
@@ -98,7 +100,13 @@ export default class QueueElement {
             });
 
             if (sectionIds.length > 0) {
-                this.#reactive.dispatch('sectionState', sectionIds);
+                this.#reactive.dispatch('sectionState', sectionIds).then(() => {
+                    Toast.add(getString('you_may_need_to_reload_the_course_warning', 'block_sharing_cart'), {
+                        closeButton: true,
+                        autohide: false,
+                        type: 'warning'
+                    });
+                });
             }
         }
 

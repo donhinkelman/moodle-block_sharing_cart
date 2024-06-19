@@ -27,7 +27,9 @@ export default class Block extends BaseComponent {
         // Optional component name for debugging.
         this.name = 'sharing_cart_block';
         // Default query selectors.
-        this.selectors = {};
+        this.selectors = {
+            COPY_SECTION_CONTAINER: '#copy_section_container',
+        };
 
         this.canBackupUserdata = descriptor.canBackupUserdata ?? false;
         this.canAnonymizeUserdata = descriptor.canAnonymizeUserdata ?? false;
@@ -81,6 +83,17 @@ export default class Block extends BaseComponent {
                 this._refreshCourseModule({element: courseModule});
             });
         }
+
+        const showCopySectionInBlockSegment = this.getElement(this.selectors.COPY_SECTION_CONTAINER);
+        if (showCopySectionInBlockSegment) {
+            this._refreshCopySectionOptions();
+
+            const select = showCopySectionInBlockSegment.querySelector('select');
+            const copySectionButton = showCopySectionInBlockSegment.querySelector('button');
+            copySectionButton.addEventListener('click', async () => {
+                await this.block.addSectionBackupToSharingCart(select.value);
+            });
+        }
     }
 
     /**
@@ -108,12 +121,51 @@ export default class Block extends BaseComponent {
         return this._sharingCartButton.cloneNode(true);
     }
 
+    async _refreshCopySectionOptions() {
+        const showCopySectionInBlockSegment = this.getElement(this.selectors.COPY_SECTION_CONTAINER);
+        if (!showCopySectionInBlockSegment) {
+            return;
+        }
+
+        const select = showCopySectionInBlockSegment.querySelector('select');
+        const selectedValue = select.value;
+
+        const noCourseModulesInSections = await getString('no_course_modules_in_section', 'block_sharing_cart');
+
+        const div = document.createElement('div');
+
+        const option = document.createElement('option');
+        option.disabled = true;
+        option.text = await getString('choosedots', 'core');
+        div.appendChild(option);
+
+        this.reactive.state.section.forEach((section) => {
+            const option = document.createElement('option');
+
+            const sectionIsEmpty = section.cmlist.length === 0;
+            if (sectionIsEmpty) {
+                option.disabled = true;
+                option.title = noCourseModulesInSections;
+            }
+
+            option.value = section.id;
+            option.text = section.title;
+            option.selected = Number.parseInt(section.id) === Number.parseInt(selectedValue);
+
+            div.appendChild(option);
+        });
+
+        select.innerHTML = div.innerHTML;
+    }
+
     /**
      * Refresh the section.
      * @param {Object} param
      * @param {Object} param.element
      */
     async _refreshSection({element}) {
+        this._refreshCopySectionOptions();
+
         if (this.showSharingCartBasket) {
             let backupButton = await this.getBackupToSharingCartButton();
 

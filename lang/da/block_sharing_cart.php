@@ -45,9 +45,26 @@ $string['delete_marked_items'] = 'Slet valgte elementer';
 $string['no_course_modules_in_section'] = 'Ingen kursusmoduler i denne sektion';
 $string['no_course_modules_in_section_description'] = 'Denne sektion indeholder ikke nogen kursusmoduler, og du kan derfor ikke kopiere den.';
 
+$string['copy_section'] = 'Kopiér sektion';
+
+$string['you_may_need_to_reload_the_course_warning'] = 'Element(er) indsat. Du skal muligvis genindlæse kursussiden for at se ændringerne afspejlet korrekt.';
+
 // Capabilities
 $string['sharing_cart:addinstance'] = 'Tilføj en ny Delingskurv blok';
 
 // Settings
 $string['settings:show_sharing_cart_basket'] = 'Vis delingskurv kurv';
 $string['settings:show_sharing_cart_basket_desc'] = 'Vis delingskurv kurven på kursussiden, når du er i redigerings tilstand. Dette giver brugerne mulighed for at klikke og kopiere aktiviteter og sektioner ind i delingskurven. Hvis du skjuler kurven, kan brugerne stadig trække og slippe aktiviteter og sektioner ind i delingskurven.';
+$string['settings:show_copy_section_in_block'] = 'Vis "Kopiér sektion" knap i blokken';
+$string['settings:show_copy_section_in_block_desc'] = 'Vis "Kopiér sektion" knap i Delingskurv blokken. Hvis du skjuler knappen, kan brugerne stadig kopiere sektioner ved at trække og slippe dem ind i Delingskurven.';
+
+// Privacy
+$string['privacy:metadata:sharing_cart_items:user_id'] = 'Bruger-ID\'et, som elementet tilhører';
+$string['privacy:metadata:sharing_cart_items:file_id'] = 'Fil-ID\'et for backuppen';
+$string['privacy:metadata:sharing_cart_items:parent_item_id'] = 'Forældre elementets ID for elementet';
+$string['privacy:metadata:sharing_cart_items:old_instance_id'] = 'Det gamle instans-ID for elementet';
+$string['privacy:metadata:sharing_cart_items:type'] = 'Typen af elementet';
+$string['privacy:metadata:sharing_cart_items:name'] = 'Navnet på elementet';
+$string['privacy:metadata:sharing_cart_items:status'] = 'Status for elementet';
+$string['privacy:metadata:sharing_cart_items:timecreated'] = 'Tidspunktet for oprettelsen af elementet';
+$string['privacy:metadata:sharing_cart_items:timemodified'] = 'Tidspunktet for ændringen af elementet';

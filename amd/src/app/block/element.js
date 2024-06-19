@@ -517,6 +517,7 @@ export default class BlockElement {
                 name: item.name,
                 type: item.type,
                 status: 0,
+                old_instance_id: item.old_instance_id,
                 status_awaiting: true,
                 has_run_now: true,
                 task_id: item.task_id ?? null,
@@ -553,6 +554,10 @@ export default class BlockElement {
                 item.reportValidity();
             });
             return false;
+        }
+
+        if (item.isModule()) {
+            courseModuleIds.push(item.getItemOldInstanceId());
         }
 
         Ajax.call([{

@@ -47,6 +47,7 @@ Change Log
             * All ajax calls are now done using the Moodle core external functions.
             * As everything is now done asynchronously, you should have a much better experience when using the
               sharing cart. - Not having to reload the whole page all the time...
+            * Supports the filter_multilang as well now.
         * Changes
             * It is no longer possible to move single activities between sections in the sharing cart.
             * All backups/restores are now done asynchronously. If you have a lot of adhoc tasks running on your site,
