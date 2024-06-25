@@ -25,6 +25,16 @@ export default class QueueElement {
     #reactive;
 
     /**
+     * @type {Promise<void>|null}
+     */
+    #loadQueuePromise = null;
+
+    /**
+     * @type {boolean}
+     */
+    #preventReload = false;
+
+    /**
      *
      * @param {BaseFactory} baseFactory
      * @param {BlockElement} blockElement
@@ -36,14 +46,10 @@ export default class QueueElement {
         this.#element = element;
         this.#reactive = getCurrentCourseEditor();
 
-        this.loadQueue();
+        this.tryReloadQueue(true);
 
         setInterval(() => {
-            if (this.getQueueItems().length === 0) {
-                return;
-            }
-
-            this.loadQueue();
+            this.tryReloadQueue();
         }, 4000);
     }
 
@@ -54,6 +60,33 @@ export default class QueueElement {
         return this.#element.querySelectorAll('.queue-item');
     }
 
+    /**
+     * @param {boolean} ignoreQueueItemsCount
+     */
+    tryReloadQueue(ignoreQueueItemsCount = false) {
+        if (ignoreQueueItemsCount === false && this.getQueueItems().length === 0) {
+            return;
+        }
+
+        if (this.#loadQueuePromise !== null) {
+            this.#loadQueuePromise.then(() => {
+                this.tryReloadQueue();
+            });
+            return;
+        }
+
+        this.#loadQueuePromise = this.loadQueue();
+        this.#loadQueuePromise.then(() => {
+            this.#loadQueuePromise = null;
+        }).catch(() => {
+            this.#loadQueuePromise = null;
+        });
+    }
+
+    /**
+     * @param {Boolean} showSpinner
+     * @return {Promise<void>}
+     */
     async loadQueue(showSpinner = false) {
         const oldChildren = this.#element.children;
         const oldQueueItemsCount = this.getQueueItems().length;
@@ -124,6 +157,11 @@ export default class QueueElement {
 
                 runNowButton.disabled = true;
 
+                this.#preventReload = true;
+                if (this.#loadQueuePromise !== null) {
+                    this.#loadQueuePromise.abort();
+                }
+
                 Ajax.call([{
                     methodname: 'block_sharing_cart_run_task_now',
                     args: {
@@ -131,7 +169,10 @@ export default class QueueElement {
                     }
                 }]);
 
-                this.loadQueue();
+                setTimeout(() => {
+                    this.#preventReload = false;
+                    this.tryReloadQueue(true);
+                }, 2000);
             }, {once: true});
         });
 

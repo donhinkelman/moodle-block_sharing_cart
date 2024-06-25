@@ -122,7 +122,7 @@ class asynchronous_restore_task extends \core\task\adhoc_task
             }
 
             $course_modules_to_include = array_map('intval', $backup_settings->course_modules_to_include ?? []);
-            if (!empty($course_modules_to_include)) {
+            if (!empty($course_modules_to_include) && $course_modules_to_include !== [0]) {
                 $this->only_include_specified_course_modules($restore_controller, $course_modules_to_include);
             }
 
