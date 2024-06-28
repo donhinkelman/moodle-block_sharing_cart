@@ -112,6 +112,7 @@ export default class ItemElement {
         e.stopPropagation();
 
         const currentTarget = e.currentTarget;
+        currentTarget.disabled = true;
 
         Ajax.call([{
             methodname: 'block_sharing_cart_run_task_now',
@@ -124,6 +125,7 @@ export default class ItemElement {
             },
             fail: (data) => {
                 Notification.exception(data);
+                currentTarget.disabled = false;
             }
         }]);
     }
