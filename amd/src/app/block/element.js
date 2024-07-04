@@ -372,7 +372,7 @@ export default class BlockElement {
             },
             {
                 key: 'backup',
-                component: 'core',
+                component: 'block_sharing_cart',
             },
             {
                 key: 'cancel',

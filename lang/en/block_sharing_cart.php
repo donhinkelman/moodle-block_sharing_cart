@@ -27,6 +27,7 @@ $string['confirm_copy_item_form_text'] = 'Are you sure you want to copy this ite
 $string['confirm_copy_item'] = 'Are you sure you want to copy this item?';
 $string['copying_this_item'] = 'Copying this item';
 
+$string['backup'] = 'Backup';
 $string['backup_item'] = 'Backup item';
 $string['into_sharing_cart'] = 'into Sharing Cart';
 $string['backup_settings'] = 'Backup settings';
