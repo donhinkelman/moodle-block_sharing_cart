@@ -43,6 +43,7 @@ class block_sharing_cart extends block_base
                 'delete_items',
                 'confirm_delete_item',
                 'confirm_delete_items',
+                'backup',
                 'backup_item',
                 'into_sharing_cart',
                 'copy_user_data',
@@ -56,7 +57,6 @@ class block_sharing_cart extends block_base
             $this->page->requires->strings_for_js([
                 'import',
                 'delete',
-                'backup',
                 'cancel',
             ], 'core');
         }
