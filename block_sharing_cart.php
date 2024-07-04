@@ -65,7 +65,10 @@ class block_sharing_cart extends block_base
             return $this->content;
         }
 
-        if (!$this->page->user_is_editing() || !has_capability('moodle/backup:backupactivity', $this->context)) {
+        if (!$this->page->user_is_editing() || !has_capability(
+                'moodle/backup:backupactivity',
+                \context_course::instance($COURSE->id)
+            )) {
             return $this->content = '';
         }
 
