@@ -27,6 +27,7 @@ $string['confirm_copy_item_form_text'] = 'Er du sikker på, at du vil kopiere de
 $string['confirm_copy_item'] = 'Er du sikker på, at du vil kopiere denne backup?';
 $string['copying_this_item'] = 'Kopierer denne backup';
 
+$string['backup_without_user_data'] = 'Backup uden brugerdata.';
 $string['backup'] = 'Backup';
 $string['backup_item'] = 'Backup element';
 $string['into_sharing_cart'] = 'ind i delingskurv';

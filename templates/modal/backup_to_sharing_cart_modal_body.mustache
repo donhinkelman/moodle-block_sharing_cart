@@ -1,6 +1,6 @@
 <div>
-    <h6>{{#str}}backup_settings, block_sharing_cart{{/str}}:</h6>
     {{#show_user_data_backup}}
+        <h6>{{#str}}backup_settings, block_sharing_cart{{/str}}:</h6>
         <div class="form-check">
             <input type="checkbox" id="modal-userdata-checkbox" class="form-check-input"/>
             <label for="modal-userdata-checkbox" class="form-check-label">{{#str}}
@@ -13,6 +13,9 @@
                     anonymize_user_data, block_sharing_cart{{/str}}</label>
             </div>
         {{/show_anonymize_user_data}}
+    {{/show_user_data_backup}}
+    {{^show_user_data_backup}}
+        <span>{{#str}}backup_without_user_data, block_sharing_cart{{/str}}</span>
     {{/show_user_data_backup}}
 </div>
 

@@ -407,8 +407,8 @@ export default class BlockElement {
             const modalAnonymizeCheckbox = document.getElementById('modal-anonymize-checkbox');
 
             onSave({
-                users: modalUserdataCheckbox.checked ?? false,
-                anonymize: modalAnonymizeCheckbox.checked ?? false
+                users: modalUserdataCheckbox?.checked ?? false,
+                anonymize: modalAnonymizeCheckbox?.checked ?? false
             });
         });
 
