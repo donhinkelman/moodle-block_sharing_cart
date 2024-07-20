@@ -98,14 +98,8 @@ export const init = function(addMethod) {
             if (obj.checkbox) {
                 obj.body +=
                     '<div class="modal-checbox-wrapper modal-sharing_cart">' +
-                    '<div class="form-check">' +
-                    '<input type="checkbox" id="modal-userdata-checkbox" class="form-check-input">' +
-                    '<label for="modal-userdata-checkbox" class="form-check-label">' + str('modal_checkbox') + '</label>' +
-                    '</div>' +
-                    '<div class="form-check">' +
-                    '<input type="checkbox" id="modal-anonymize-checkbox" class="form-check-input" disabled>' +
-                    '<label for="modal-anonymize-checkbox" class="form-check-label">' + str('modal_checkbox_anonymize') + '</label>' +
-                    '</div>' +
+                    '<input type="checkbox" id="modal-checkbox" class="modal-checkbox">' +
+                    '<label for="modal-checkbox">' + str('modal_checkbox') + '</label>' +
                     '</div>';
             }
 
@@ -118,22 +112,11 @@ export const init = function(addMethod) {
                 let is_submitted = false;
                 modal.setSaveButtonText(obj.save_button);
 
-                const userdata_checkbox = $(modal.getRoot()).find('#modal-userdata-checkbox');
-                const anonymize_checkbox = $(modal.getRoot()).find('#modal-anonymize-checkbox');
-
-                userdata_checkbox.on('change', (e) => {
-                    if (e.currentTarget.checked) {
-                        anonymize_checkbox.attr('disabled', null);
-                    } else {
-                        anonymize_checkbox.prop('checked', false).attr('disabled', true);
-                    }
-                });
-
                 // On save save check - if checkbox is checked.
                 modal.getRoot().on(ModalEvents.save, function(e) {
+
                     const response = {
-                        'userdata': userdata_checkbox.is(':checked'),
-                        'anonymize': anonymize_checkbox.is(':checked'),
+                        'checkbox': $(e.target).find('.modal-checkbox').is(':checked'),
                     };
 
                     obj.next(response);
@@ -203,9 +186,9 @@ export const init = function(addMethod) {
                     'checkbox': checkbox,
                     'next': function(data) {
                         if (isSection === true) {
-                            backup_section(post_data.sectionid, post_data.sectionnumber, post_data.courseid, data.userdata, data.anonymize);
+                            backup_section(post_data.sectionid, post_data.sectionnumber, post_data.courseid, data.checkbox);
                         } else {
-                            backup(post_data.cmid, data.userdata, data.anonymize);
+                            backup(post_data.cmid, data.checkbox);
                         }
 
                         shake_basket();
@@ -387,9 +370,8 @@ export const init = function(addMethod) {
          *
          *  @param {int} cmid
          *  @param {Boolean} userdata
-         *  @param {Boolean} anonymize
          */
-        function backup(cmid, userdata, anonymize) {
+        function backup(cmid, userdata) {
             let $commands = $('#module-' + cmid + ' .actions');
             if (!$commands.length) {
                 $commands = $('[data-owner="#module-' + cmid + '"]');
@@ -403,7 +385,6 @@ export const init = function(addMethod) {
                     "action": "backup",
                     "cmid": cmid,
                     "userdata": userdata,
-                    "anonymize": anonymize,
                     "sesskey": M.cfg.sesskey,
                     "courseid": course.id
                 },
@@ -427,9 +408,8 @@ export const init = function(addMethod) {
          *  @param {int} sectionNumber
          *  @param {int} courseId
          *  @param {Boolean} userdata
-         *  @param {Boolean} anonymize
          */
-        function backup_section(sectionId, sectionNumber, courseId, userdata, anonymize) {
+        function backup_section(sectionId, sectionNumber, courseId, userdata) {
             const $commands = $('span.inplaceeditable[data-itemtype=sectionname][data-itemid=' + sectionId + ']');
             const $section = $commands.closest("li.section.main");
             let sectionName = $section.attr('aria-label') || $section.find('.sectionname').text().trim();
@@ -453,7 +433,6 @@ export const init = function(addMethod) {
                     "courseid": courseId,
                     "sectionname": sectionName,
                     "userdata": userdata,
-                    "anonymize": anonymize,
                     "sesskey": M.cfg.sesskey
                 },
                 function() {
@@ -755,7 +734,7 @@ export const init = function(addMethod) {
                 } else {
                     const $container = $('.course-content');
                     $container.prepend($clipboard);
-                    $container.find(M.course.format.get_section_wrapper(null)).each(function (index, sectionDOM) {
+                    $container.find('li.section').each(function (index, sectionDOM) {
                         const $section = $(sectionDOM);
                         const section = $section.attr('id').match(/(\d+)$/)[1];
                         $section.find('ul.section').first().append(create_target(id, section));
