@@ -33,9 +33,11 @@ abstract class repository
 
     public function get_by_id(int $id): false|entity
     {
-        return $this->map_record_to_entity(
-            $this->db->get_record($this->get_table(), ['id' => $id])
-        );
+        $record = $this->db->get_record($this->get_table(), ['id' => $id]);
+        if (!$record) {
+            return false;
+        }
+        return $this->map_record_to_entity($record);
     }
 
     public function insert(entity $entity): int

@@ -36,6 +36,9 @@ GPL v3
 Change Log
 ----------
 
+* 5.0, release 2 2024.07.25
+    * Fixed issue with the sharing cart unable to handle non-exists task when pressing "Run now" button.
+    * Fixed error when sharing cart try to request a non-exists item from plugin.
 * 5.0, release 1 2024.03.21
     * Total refactor of the whole plugin:
         * Improvements
