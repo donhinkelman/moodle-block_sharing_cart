@@ -1,7 +1,7 @@
 Sharing Cart
 ============
 
-**Sharing Cart 4.4 released (4.2 version skipped). Sharing cart basket icon now visible by default since 4.1, release 3**  To drag item directly into your sharing cart, change the settings. 
+**Sharing Cart 4.4 released.** Sharing cart basket icon now visible by default since 4.1, release 3.  To drag item directly into your sharing cart, change the settings. 
 The old way of clicking the basket icon is now default. - Users who have already upgraded to 4.0, release 1 will need to manually change it back to the old way in settings.
 
 Current Version 4.4, release 5 - 2024.07.29
