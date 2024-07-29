@@ -1,10 +1,10 @@
 Sharing Cart
 ============
 
-**Sharing Cart 4.3 released (4.2 version skipped). Sharing cart basket icon now visible by default since 4.1, release 3**  To drag item directly into your sharing cart, change the settings. 
+**Sharing Cart 4.4 released (4.2 version skipped). Sharing cart basket icon now visible by default since 4.1, release 3**  To drag item directly into your sharing cart, change the settings. 
 The old way of clicking the basket icon is now default. - Users who have already upgraded to 4.0, release 1 will need to manually change it back to the old way in settings.
 
-Version 4.3, release 1 - 2023.11.01
+Current Version 4.4, release 5 - 2024.07.29
 
 The "master" branch requires Moodle 4.2 or newer.
 
@@ -16,7 +16,8 @@ Warning: PHP versions 7.4 and older are deprecated, and will cause problems, unr
 
 Change Log
 ----------
-- 4.4, release 4 2024.02.06
+* 4.4, release 5  2024.07.29
+* 4.4, release 4 2024.02.06
   * Added an anonymize userdata checkbox to the confirm modal
 * 4.4, release 3 2024.02.05
   * various fixes by Frederik
