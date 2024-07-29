@@ -10,8 +10,6 @@ defined('MOODLE_INTERNAL') || die();
 use core_external\external_api;
 use core_external\external_description;
 use core_external\external_function_parameters;
-use core_external\external_single_structure;
-use core_external\external_multiple_structure;
 use core_external\external_value;
 
 class run_now extends external_api
@@ -44,9 +42,12 @@ class run_now extends external_api
                 'faildelay' => 0,
                 'timestarted' => null,
                 'userid' => $USER->id
-            ],
-            strictness: MUST_EXIST
+            ]
         );
+
+        if (!$task) {
+            return false;
+        }
 
         ob_start();
         \core\task\manager::run_adhoc_from_cli($task->id);
