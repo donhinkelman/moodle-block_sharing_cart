@@ -17,6 +17,7 @@ Warning: PHP versions 7.4 and older are deprecated, and will cause problems, unr
 Change Log
 ----------
 * 4.4, release 5  2024.07.29
+  * Fixed missing dotted box when copying
 * 4.4, release 4 2024.02.06
   * Added an anonymize userdata checkbox to the confirm modal
 * 4.4, release 3 2024.02.05
