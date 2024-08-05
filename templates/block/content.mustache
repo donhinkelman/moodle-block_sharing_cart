@@ -1,0 +1,55 @@
+<div id="block_sharing_cart">
+    <div class="drop_here_text">
+        <strong class="m-auto">{{#str}}drop_here, block_sharing_cart{{/str}}</strong>
+    </div>
+    <div class="block-content">
+        <div class="mb-3">
+            <strong>
+                {{#str}}restores, block_sharing_cart{{/str}}
+            </strong>
+            <hr>
+            <div class="sharing_cart_queue">
+                <i class="fa fa-spinner"></i>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="d-flex align-items-center">
+                <strong class="mr-auto mb-0">
+                    {{#str}}items, block_sharing_cart{{/str}}
+                </strong>
+                <span role="button" class="d-none" id="block_sharing_cart_cancel_bulk_delete">
+                    <span class="mr-1">{{#str}}cancel_bulk_delete, block_sharing_cart{{/str}}</span>
+                </span>
+                <span role="button" id="block_sharing_cart_bulk_delete">
+                    <span class="mr-1">{{#str}}bulk_delete, block_sharing_cart{{/str}}</span><i class="fa fa-trash"></i>
+                </span>
+            </div>
+            <hr>
+            <div class="sharing_cart_items">
+                {{#items}}
+                    {{> block_sharing_cart/block/item}}
+                {{/items}}
+                {{^items.0}}
+                    {{#str}}no_items, block_sharing_cart{{/str}}
+                {{/items.0}}
+            </div>
+            <button type="button" class="btn btn-primary mt-3 w-100 d-none" id="block_sharing_cart_bulk_delete_confirm" disabled>
+                <span class="mr-1">{{#str}}delete_marked_items, block_sharing_cart{{/str}}</span><i class="fa fa-trash"></i>
+            </button>
+        </div>
+        {{#showCopySectionInBlock}}
+            <div id="copy_section_container">
+                <hr>
+                <select class="custom-select w-100">
+                    <option disabled selected>{{#str}}choosedots, core{{/str}}</option>
+                </select>
+                <button type="button" class="btn btn-primary mt-3 w-100">{{#str}}copy_section, block_sharing_cart{{/str}}</button>
+            </div>
+        {{/showCopySectionInBlock}}
+    </div>
+</div>
+{{#js}}
+    require(['block_sharing_cart/local/block'], function (component) {
+        component.init('block_sharing_cart', {{canBackupUserdata}}, {{canAnonymizeUserdata}}, {{showSharingCartBasket}});
+    });
+{{/js}}

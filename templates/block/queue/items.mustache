@@ -1,0 +1,27 @@
+{{#queue_items}}
+    <div class="queue-item alert
+        {{#is_running}}alert-warning{{/is_running}}
+        {{#is_failed}}alert-danger{{/is_failed}}
+        {{^is_running}}
+            {{^is_failed}}alert-info{{/is_failed}}
+        {{/is_running}}"
+         data-id="{{id}}" data-to-section-id="{{to_section_id}}"
+    >
+        <div class="d-flex align-items-center mb-1">
+            <i class="fa fa-spinner m-0"></i>
+            <span class="ml-2 mr-1">{{{name}}}</span>
+
+            {{#show_run_now}}
+                <button class="btn btn-secondary text-nowrap ml-auto" type="button">{{#str}}run_now, block_sharing_cart{{/str}}</button>
+            {{/show_run_now}}
+        </div>
+        <div>
+            {{#show_run_now}}
+                <small>{{#str}}maybe_the_queue_is_stuck, block_sharing_cart{{/str}}</small>
+            {{/show_run_now}}
+        </div>
+    </div>
+{{/queue_items}}
+{{^queue_items.0}}
+    {{#str}}no_restores, block_sharing_cart{{/str}}
+{{/queue_items.0}}

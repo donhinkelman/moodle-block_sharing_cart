@@ -1,0 +1,16 @@
+<div class="import_form">
+    <p>{{#str}}confirm_copy_item_form_text, block_sharing_cart{{/str}}</p>
+    {{#sections}}
+        <div class="form-check">
+            <label class="form-check-label">
+                <i class="fa fa-folder-o"></i>
+                {{{title}}}
+            </label>
+            <div class="item-children form-check">
+                {{#course_modules}}
+                    {{> block_sharing_cart/modal/import_item_form_element }}
+                {{/course_modules}}
+            </div>
+        </div>
+    {{/sections}}
+</div>
