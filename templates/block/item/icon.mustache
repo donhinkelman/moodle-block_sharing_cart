@@ -1,0 +1,20 @@
+{{#status_awaiting}}
+    <i class="fa fa-spinner"></i>
+{{/status_awaiting}}
+{{#status_finished}}
+    {{#is_section}}
+        {{#has_file_id}}
+            <i class="fa fa-folder-o"></i>
+        {{/has_file_id}}
+        {{^has_file_id}}
+            <i class="fa fa-exclamation-triangle text-warning"
+               title="{{#str}}legacy_section_info, block_sharing_cart{{/str}}"></i>
+        {{/has_file_id}}
+    {{/is_section}}
+    {{#is_module}}
+        <img src="{{mod_icon}}" alt=""/>
+    {{/is_module}}
+{{/status_finished}}
+{{#status_failed}}
+    <i class="fa fa-exclamation-circle text-danger"></i>
+{{/status_failed}}
