@@ -1,35 +1,11 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- *  Sharing Cart
- *
- * @package    block_sharing_cart
- * @copyright  2017 (C) VERSION2, INC.
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+// @codeCoverageIgnoreStart
+defined('MOODLE_INTERNAL') || die();
+// @codeCoverageIgnoreEnd
 
-defined('MOODLE_INTERNAL') || die;
-
-/**
- *  Sharing Cart upgrade
- *
- * @global moodle_database $DB
- */
-function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
+function xmldb_block_sharing_cart_upgrade($oldversion = 0): bool
+{
     global $DB;
 
     $dbman = $DB->get_manager();
@@ -79,7 +55,7 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
     if ($oldversion < 2016032900) {
         // Define key userid (foreign) to be added to block_sharing_cart.
         $table = new xmldb_table('block_sharing_cart');
-        $key = new xmldb_key('userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
+        $key = new xmldb_key('userid', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
 
         // Launch add key userid.
         $dbman->add_key($table, $key);
@@ -92,7 +68,7 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
         $table = new xmldb_table('block_sharing_cart');
 
         $field = new xmldb_field('course', XMLDB_TYPE_INTEGER, 10, null, XMLDB_NOTNULL, null, 0);
-        $key = new xmldb_key('course', XMLDB_KEY_FOREIGN, array('course'), 'course', array('id'));
+        $key = new xmldb_key('course', XMLDB_KEY_FOREIGN, ['course'], 'course', ['id']);
 
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
@@ -116,7 +92,7 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
             $table->add_field('summary', XMLDB_TYPE_TEXT, null, null, null, null, null, 'name');
             $table->add_field('summaryformat', XMLDB_TYPE_INTEGER, 2, null, XMLDB_NOTNULL, false, 0, 'summary');
 
-            $table->add_key('id', XMLDB_KEY_PRIMARY, array('id'));
+            $table->add_key('id', XMLDB_KEY_PRIMARY, ['id']);
             $dbman->create_table($table);
         }
 
@@ -130,7 +106,9 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
         if ($dbman->table_exists($table)) {
             $field_name = new xmldb_field('name', XMLDB_TYPE_CHAR, 255);
             $field_summary = new xmldb_field('summary', XMLDB_TYPE_TEXT, null, null, null, null, null, 'name');
-            $field_summaryformat = new xmldb_field('summaryformat', XMLDB_TYPE_INTEGER, 2, null, XMLDB_NOTNULL, false, 0, 'summary');
+            $field_summaryformat = new xmldb_field(
+                'summaryformat', XMLDB_TYPE_INTEGER, 2, null, XMLDB_NOTNULL, false, 0, 'summary'
+            );
 
             if ($dbman->field_exists($table, $field_name)) {
                 $dbman->change_field_default($table, $field_name);
@@ -150,7 +128,9 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
         $table = new xmldb_table('block_sharing_cart_sections');
 
         if ($dbman->table_exists($table)) {
-            $field_availability = new xmldb_field('availability', XMLDB_TYPE_TEXT, null, null, false, false, null, 'summaryformat');
+            $field_availability = new xmldb_field(
+                'availability', XMLDB_TYPE_TEXT, null, null, false, false, null, 'summaryformat'
+            );
             if (!$dbman->field_exists($table, $field_availability)) {
                 $dbman->add_field($table, $field_availability);
             }
@@ -160,7 +140,6 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
     }
 
     if ($oldversion < 2022111100) {
-
         // Remove redundant table, if it was created.
         $table = new xmldb_table('block_sharing_cart_log');
 
@@ -177,7 +156,6 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
     }
 
     if ($oldversion < 2024011800) {
-
         // Remove records that have no owner.
         // (This could have been the leftover from the version before privacy api was introduced.)
         $sql = "SELECT i.id FROM {block_sharing_cart} i
@@ -192,13 +170,7 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
         // Begin upgrade block_sharing_cart table.
         $table = new xmldb_table('block_sharing_cart');
         $field = new xmldb_field(
-            'fileid',
-            XMLDB_TYPE_INTEGER,
-            '10',
-            null,
-            XMLDB_NOTNULL,
-            null,
-            0
+            'fileid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0
         );
 
         // Add file id field to sharing cart table - for accelerating backup file selection.
@@ -242,8 +214,8 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
                     $context = context_user::instance($record->userid);
                     $files = $storage->get_area_files(
                         $context->id,
-                        \block_sharing_cart\storage::COMPONENT,
-                        \block_sharing_cart\storage::FILEAREA,
+                        'user',
+                        'backup',
                         false,
                         'id',
                         false
@@ -251,8 +223,7 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
                     foreach ($files as $file) {
                         $user_backup_files[$record->userid][$file->get_filename()] = $file->get_id();
                     }
-                }
-                catch (moodle_exception $exception) {
+                } catch (moodle_exception $exception) {
                     if ($exception->errorcode === 'invaliduser') {
                         $deleted_sharing_cart_files[] = $record->id;
                         continue;
@@ -264,8 +235,7 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
             if (isset($user_backup_files[$record->userid][$record->filename])) {
                 $record->fileid = $user_backup_files[$record->userid][$record->filename];
                 $DB->update_record('block_sharing_cart', $record);
-            }
-            else {
+            } else {
                 $deleted_sharing_cart_files[] = $record->id;
             }
         }
@@ -277,6 +247,232 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0) {
         }
 
         upgrade_block_savepoint(true, 2024011800, 'sharing_cart');
+    }
+
+    if ($oldversion < 2024032100) {
+        /**
+         * Create block_sharing_cart_items table.
+         */
+        $xmldb_table = new xmldb_table('block_sharing_cart_items');
+
+        $xmldb_table->add_field('id', XMLDB_TYPE_INTEGER, '10', true, true, true);
+        $xmldb_table->add_field('user_id', XMLDB_TYPE_INTEGER, '10', true, true);
+        $xmldb_table->add_field('file_id', XMLDB_TYPE_INTEGER, '10', true, false);
+        $xmldb_table->add_field('parent_item_id', XMLDB_TYPE_INTEGER, '10', true, false);
+        $xmldb_table->add_field('old_instance_id', XMLDB_TYPE_INTEGER, '10', true, true);
+        $xmldb_table->add_field('type', XMLDB_TYPE_CHAR, '255', notnull: true);
+        $xmldb_table->add_field('name', XMLDB_TYPE_CHAR, '255', notnull: true);
+        $xmldb_table->add_field('status', XMLDB_TYPE_INTEGER, '10', true, true);
+        $xmldb_table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', notnull: true);
+        $xmldb_table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', notnull: true);
+
+        $xmldb_table->add_key('id', XMLDB_KEY_PRIMARY, ['id']);
+
+        $xmldb_table->add_index('user_id', XMLDB_INDEX_NOTUNIQUE, ['user_id']);
+        $xmldb_table->add_index('file_id', XMLDB_INDEX_UNIQUE, ['file_id']);
+        $xmldb_table->add_index('parent_item_id', XMLDB_INDEX_NOTUNIQUE, ['parent_item_id']);
+        $xmldb_table->add_index('type', XMLDB_INDEX_NOTUNIQUE, ['type']);
+        $xmldb_table->add_index('status', XMLDB_INDEX_NOTUNIQUE, ['status']);
+
+        if (!$dbman->table_exists($xmldb_table)) {
+            $dbman->create_table($xmldb_table);
+        }
+
+        /**
+         * Migrate data from block_sharing_cart_sections & block_sharing_cart to block_sharing_cart_items.
+         */
+
+        /**
+         * @var \file_storage $fs
+         */
+        $fs = get_file_storage();
+
+        if ($dbman->table_exists(new \xmldb_table('block_sharing_cart_sections')) && $dbman->table_exists(
+                new \xmldb_table('block_sharing_cart')
+            )) {
+            $old_section_records = $DB->get_recordset('block_sharing_cart_sections');
+            foreach ($old_section_records as $old_section_record) {
+                $time = time();
+
+                $old_activity_records = $DB->get_recordset('block_sharing_cart', [
+                    'section' => $old_section_record->id
+                ]);
+
+                $old_activity_records_by_user_id = [];
+                $user_ids = [];
+                foreach ($old_activity_records as $old_activity_record) {
+                    $old_activity_records_by_user_id[(int)$old_activity_record->userid][] = $old_activity_record;
+                    $user_ids[(int)$old_activity_record->userid] = (int)$old_activity_record->userid;
+                }
+                $old_activity_records->close();
+                unset($old_activity_records);
+
+                foreach ($user_ids as $user_id) {
+                    try {
+                        $old_activity_records = $old_activity_records_by_user_id[$user_id] ?? [];
+                        if (empty($old_activity_records)) {
+                            continue;
+                        }
+
+                        $new_section_record = (object)[
+                            'user_id' => $user_id,
+                            'file_id' => null,
+                            'parent_item_id' => null,
+                            'old_instance_id' => 0,
+                            'type' => \block_sharing_cart\app\item\entity::TYPE_SECTION,
+                            'name' => $old_section_record->name,
+                            'status' => \block_sharing_cart\app\item\entity::STATUS_BACKEDUP,
+                            'timecreated' => $time,
+                            'timemodified' => $time,
+                        ];
+                        $section_item_id = $DB->insert_record('block_sharing_cart_items', $new_section_record);
+
+                        foreach ($old_activity_records as $old_activity_record) {
+                            try {
+                                if ($old_activity_record->fileid === 0) {
+                                    continue;
+                                }
+
+                                $backup_file = $fs->get_file_by_id($old_activity_record->fileid);
+                                if ($backup_file === false) {
+                                    continue;
+                                }
+
+                                $new_activity_record = (object)[
+                                    'user_id' => $user_id,
+                                    'file_id' => null,
+                                    'parent_item_id' => $section_item_id,
+                                    'old_instance_id' => 0,
+                                    'type' => "mod_{$old_activity_record->modname}",
+                                    'name' => strip_tags($old_activity_record->modtext ?? 'Unknown'),
+                                    'status' => \block_sharing_cart\app\item\entity::STATUS_BACKUP_FAILED,
+                                    'timecreated' => $time,
+                                    'timemodified' => $time,
+                                ];
+                                $new_activity_record->id = $DB->insert_record(
+                                    'block_sharing_cart_items',
+                                    $new_activity_record
+                                );
+
+                                $new_file = $fs->create_file_from_storedfile([
+                                    'contextid' => \core\context\user::instance($user_id)->id,
+                                    'component' => 'block_sharing_cart',
+                                    'filearea' => 'backup',
+                                    'itemid' => $new_activity_record->id,
+                                    'filepath' => '/',
+                                    'filename' => $backup_file->get_filename(),
+                                ], $backup_file);
+
+                                $new_activity_record->file_id = $new_file->get_id();
+                                $new_activity_record->status = \block_sharing_cart\app\item\entity::STATUS_BACKEDUP;
+
+                                $DB->update_record('block_sharing_cart_items', $new_activity_record);
+                            } catch (\Exception) {
+                                if (isset($new_activity_record->id)) {
+                                    $DB->update_record(
+                                        'block_sharing_cart_items',
+                                        (object)[
+                                            'id' => $new_activity_record->id,
+                                            'status' => \block_sharing_cart\app\item\entity::STATUS_BACKUP_FAILED
+                                        ]
+                                    );
+                                }
+                            }
+                        }
+                    } catch (\Exception) {
+                    }
+                }
+            }
+            $old_section_records->close();
+
+            $old_activity_records = $DB->get_recordset('block_sharing_cart', [
+                'section' => 0
+            ]);
+            foreach ($old_activity_records as $old_activity_record) {
+                try {
+                    if ($old_activity_record->fileid === 0) {
+                        continue;
+                    }
+
+                    $backup_file = $fs->get_file_by_id($old_activity_record->fileid);
+                    if ($backup_file === false) {
+                        continue;
+                    }
+
+                    if (file_exists($fs->get_file_system()->get_remote_path_from_storedfile($backup_file)) === false) {
+                        continue;
+                    }
+
+                    $time = time();
+
+                    $new_activity_record = (object)[
+                        'user_id' => $old_activity_record->userid,
+                        'file_id' => null,
+                        'parent_item_id' => null,
+                        'old_instance_id' => 0,
+                        'type' => "mod_{$old_activity_record->modname}",
+                        'name' => strip_tags($old_activity_record->modtext ?? 'Unknown'),
+                        'status' => \block_sharing_cart\app\item\entity::STATUS_BACKUP_FAILED,
+                        'timecreated' => $time,
+                        'timemodified' => $time,
+                    ];
+                    $new_activity_record->id = $DB->insert_record(
+                        'block_sharing_cart_items',
+                        $new_activity_record
+                    );
+
+                    $new_file = $fs->create_file_from_storedfile([
+                        'contextid' => \core\context\user::instance($old_activity_record->userid)->id,
+                        'component' => 'block_sharing_cart',
+                        'filearea' => 'backup',
+                        'itemid' => $new_activity_record->id,
+                        'filepath' => '/',
+                        'filename' => $backup_file->get_filename(),
+                    ], $backup_file);
+
+                    $new_activity_record->file_id = $new_file->get_id();
+                    $new_activity_record->status = \block_sharing_cart\app\item\entity::STATUS_BACKEDUP;
+
+                    $DB->update_record('block_sharing_cart_items', $new_activity_record);
+                } catch (\Exception) {
+                    if (isset($new_activity_record->id)) {
+                        $DB->update_record(
+                            'block_sharing_cart_items',
+                            (object)[
+                                'id' => $new_activity_record->id,
+                                'status' => \block_sharing_cart\app\item\entity::STATUS_BACKUP_FAILED
+                            ]
+                        );
+                    }
+                }
+            }
+            $old_activity_records->close();
+        }
+
+        $table = new xmldb_table('block_sharing_cart');
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+        $table = new xmldb_table('block_sharing_cart_sections');
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+        $table = new xmldb_table('block_sharing_cart_plugins');
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+
+        upgrade_block_savepoint(true, 2024032100, 'sharing_cart');
+    }
+
+    if ($oldversion < 2024032101) {
+        $xmldb_table = new xmldb_table('block_sharing_cart_items');
+        $dbman->add_field(
+            $xmldb_table,
+            new xmldb_field(
+                'sortorder', XMLDB_TYPE_INTEGER, '10', notnull: false
+            )
+        );
     }
 
     return true;
