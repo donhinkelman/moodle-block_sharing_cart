@@ -1,8 +1,8 @@
 /* eslint-disable */
 /**!
  * Sortable 1.15.0
- * @author	RubaXa   <trash@rubaxa.org>
- * @author	owenm    <owen23355@gmail.com>
+ * @author    RubaXa   <trash@rubaxa.org>
+ * @author    owenm    <owen23355@gmail.com>
  * @license MIT
  * @link https://github.com/SortableJS/Sortable/blob/master/modular/sortable.complete.esm.js
  */
@@ -328,6 +328,7 @@ function getWindowScrollingElement() {
         return document.documentElement;
     }
 }
+
 /**
  * Returns the "bounding client rect" of given element
  * @param  {HTMLElement} el                       The element whose boundingClientRect is wanted
@@ -407,6 +408,7 @@ function getRect(el, relativeToContainingBlock, relativeToNonStaticParent, undoS
         height: height
     };
 }
+
 /**
  * Checks if a side of an element is scrolled past a side of its parents
  * @param  {HTMLElement}  el           The element who's side being scrolled out of view is in question
@@ -438,6 +440,7 @@ function isScrolledPast(el, elSide, parentSide) {
 
     return false;
 }
+
 /**
  * Gets nth child of el, ignoring hidden children, sortable's elements (does not ignore clone if it's visible)
  * and non-draggable elements
@@ -467,6 +470,7 @@ function getChild(el, childNum, options, includeDragEl) {
 
     return null;
 }
+
 /**
  * Gets the last child in the el, ignoring ghostEl or invisible elements (clones)
  * @param  {HTMLElement} el       Parent element
@@ -484,6 +488,7 @@ function lastChild(el, selector) {
 
     return last || null;
 }
+
 /**
  * Returns the index of an element within its parent for a selected set of
  * elements
@@ -510,6 +515,7 @@ function index(el, selector) {
 
     return index;
 }
+
 /**
  * Returns the scroll offset of the given element, added with all the scroll offsets of parent elements.
  * The value is returned in real pixels.
@@ -535,6 +541,7 @@ function getRelativeScrollOffset(el) {
 
     return [offsetLeft, offsetTop];
 }
+
 /**
  * Returns the index of the object within the given array
  * @param  {Array} arr   Array that may or may not hold the object
@@ -1212,6 +1219,7 @@ var _checkOutsideTargetEl = function _checkOutsideTargetEl(evt) {
         dragEl.parentNode[expando]._isOutsideThisEl(evt.target);
     }
 };
+
 /**
  * @class  Sortable
  * @param  {HTMLElement}  el
@@ -1592,7 +1600,8 @@ Sortable.prototype =
                 } else {
                     window.getSelection().removeAllRanges();
                 }
-            } catch (err) {}
+            } catch (err) {
+            }
         },
         _dragStarted: function _dragStarted(fallback, evt) {
 
@@ -2630,6 +2639,7 @@ function _getSwapDirection(evt, target, targetRect, vertical, swapThreshold, inv
 
     return 0;
 }
+
 /**
  * Gets the direction dragEl must be swapped relative to target in order to make it
  * seem that dragEl has been "inserted" into that element's position
@@ -2645,6 +2655,7 @@ function _getInsertDirection(target) {
         return -1;
     }
 }
+
 /**
  * Generate id
  * @param   {HTMLElement} el
@@ -3011,7 +3022,8 @@ var drop = function drop(_ref) {
     }
 };
 
-function Revert() {}
+function Revert() {
+}
 
 Revert.prototype = {
     startIndex: null,
@@ -3049,7 +3061,8 @@ _extends(Revert, {
     pluginName: 'revertOnSpill'
 });
 
-function Remove() {}
+function Remove() {
+}
 
 Remove.prototype = {
     onSpill: function onSpill(_ref4) {
@@ -3754,6 +3767,7 @@ function insertMultiDragElements(clonesInserted, rootEl) {
         }
     });
 }
+
 /**
  * Insert multi-drag clones
  * @param  {[Boolean]} elementsInserted  Whether the multi-drag elements are inserted
