@@ -1,4 +1,6 @@
 <div class="sharing_cart_item" data-type="{{type}}" data-itemid="{{id}}" data-oldinstanceid="{{old_instance_id}}"
+     {{#module_is_disabled_on_site}}title="{{#str}}module_is_disabled_on_site, block_sharing_cart{{/str}}"{{/module_is_disabled_on_site}}
+     data-module_is_disabled_on_site="{{#module_is_disabled_on_site}}1{{/module_is_disabled_on_site}}{{^module_is_disabled_on_site}}0{{/module_is_disabled_on_site}}"
      data-status="{{status}}"
      {{^is_module}}data-collapsed="true"{{/is_module}}>
     <div class="item-body">
@@ -17,8 +19,10 @@
                 {{/is_root}}
                 {{#status_finished}}
                     {{#has_file_id}}
-                        <i class="fa fa-clone" data-action="copy_to_course"
-                           title="{{#str}}copy_item, block_sharing_cart{{/str}}"></i>
+                        {{^module_is_disabled_on_site}}
+                            <i class="fa fa-clone" data-action="copy_to_course"
+                               title="{{#str}}copy_item, block_sharing_cart{{/str}}"></i>
+                        {{/module_is_disabled_on_site}}
                     {{/has_file_id}}
                 {{/status_finished}}
             {{/status_awaiting}}

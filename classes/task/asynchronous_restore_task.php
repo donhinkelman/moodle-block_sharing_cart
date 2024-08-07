@@ -102,8 +102,15 @@ class asynchronous_restore_task extends \core\task\adhoc_task
     private function after_restore_finished_hook(\restore_controller $restore_controller): void
     {
         try {
+            mtrace('Executing after_restore_finished_hook...');
+
             $customdata = $this->get_custom_data();
+
+            mtrace('Executing after_restore_finished_hook completed...');
         } catch (\Exception $e) {
+            mtrace("An error occurred: " . $e->getMessage());
+            mtrace($e->getTraceAsString());
+
             // Uh uhh, something went wrong.
             throw $e;
         }
@@ -112,6 +119,8 @@ class asynchronous_restore_task extends \core\task\adhoc_task
     private function before_restore_finished_hook(\restore_controller $restore_controller): void
     {
         try {
+            mtrace('Executing before_restore_finished_hook...');
+
             $customdata = $this->get_custom_data();
 
             $backup_settings = $customdata->backup_settings ?? null;
@@ -137,7 +146,12 @@ class asynchronous_restore_task extends \core\task\adhoc_task
             if (!$has_atleast_one_course_module_included) {
                 throw new \Exception('No course modules were included in the restore.');
             }
+
+            mtrace('Executing before_restore_finished_hook completed, continuing with restore');
         } catch (\Exception $e) {
+            mtrace("An error occurred: " . $e->getMessage());
+            mtrace($e->getTraceAsString());
+
             // Uh uhh, something went wrong.
             throw $e;
         }

@@ -99,7 +99,7 @@ export default class QueueElement {
      * @return {Promise<void>}
      */
     async loadQueue(showSpinner = false, token = {}) {
-        return new Promise(async(resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             token.abort = () => {
                 reject();
             };

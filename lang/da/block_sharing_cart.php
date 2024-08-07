@@ -13,6 +13,8 @@ $string['no_restores'] = '<div class="no-restores text-muted">Ingen kopieringer 
 <br>
 Klik på <i class="fa fa-clone"></i> ikonet for at tilføje elementer fra Delingskurven til kurset.</div>';
 
+$string['module_is_disabled_on_site'] = 'Dette modul er blevet deaktiveret på siden, og du vil ikke kunne gendanne det.';
+
 $string['run_now'] = 'Kør nu';
 $string['rename_item'] = 'Omdøb backup';
 
