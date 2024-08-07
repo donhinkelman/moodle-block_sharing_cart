@@ -27,7 +27,7 @@ function block_sharing_cart_output_fragment_item($args)
 
     $template = new \block_sharing_cart\output\block\item($base_factory, $item);
 
-    return $OUTPUT->render($template);
+    return fix_utf8($OUTPUT->render($template));
 }
 
 function block_sharing_cart_output_fragment_item_restore_form($args)
@@ -55,7 +55,7 @@ function block_sharing_cart_output_fragment_item_restore_form($args)
 
     $template = new \block_sharing_cart\output\modal\import_item_modal_body($base_factory, $item);
 
-    return $OUTPUT->render($template);
+    return fix_utf8($OUTPUT->render($template));
 }
 
 function block_sharing_cart_output_fragment_item_queue($args)
@@ -66,5 +66,5 @@ function block_sharing_cart_output_fragment_item_queue($args)
 
     $template = new \block_sharing_cart\output\block\queue\items($base_factory);
 
-    return $OUTPUT->render($template);
+    return fix_utf8($OUTPUT->render($template));
 }
