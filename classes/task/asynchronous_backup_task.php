@@ -29,6 +29,12 @@ class asynchronous_backup_task extends \core\task\adhoc_task
     {
         global $DB;
 
+        /*
+         * This task cannot be rerun, so we need to handle all exceptions.
+         * If an exception occurs and the item exists, we need to set the status of the item to failed.
+         * If an exception occurs and the item does not exist, we need to log the error and abort.
+         * By catching all exceptions, we can ensure that the task will always complete and not rerun, which would always fail.
+         */
         try {
             $started = time();
 
@@ -84,7 +90,8 @@ class asynchronous_backup_task extends \core\task\adhoc_task
         } catch (\Exception $e) {
             mtrace($e->getMessage());
             mtrace($e->getTraceAsString());
-            throw $e;
+
+            $this->fail_task();
         }
     }
 
@@ -141,21 +148,13 @@ class asynchronous_backup_task extends \core\task\adhoc_task
 
             mtrace('Executing before_backup_started_hook completed, continuing with backup...');
         } catch (\Exception $e) {
-            mtrace("An error occurred during before_backup_started_hook: " . $e->getMessage());
-            mtrace($e->getTraceAsString());
-
-            $this->fail_task();
+            mtrace("An error occurred during before_backup_started_hook");
+            throw $e;
         }
     }
 
     private function after_backup_finished_hook(\backup_controller $backup_controller): void
     {
-        /*
-         * This task cannot be rerun, so we need to handle all exceptions.
-         * If an exception occurs and the item exists, we need to set the status of the item to failed.
-         * If an exception occurs and the item does not exist, we need to log the error and abort.
-         * By catching all exceptions, we can ensure that the task will always complete and not rerun, which would always fail.
-         */
         try {
             mtrace('Executing after_backup_finished_hook...');
 
@@ -197,10 +196,8 @@ class asynchronous_backup_task extends \core\task\adhoc_task
 
             mtrace('Executing after_backup_finished_hook completed...');
         } catch (\Exception $e) {
-            mtrace("An error occurred: " . $e->getMessage());
-            mtrace($e->getTraceAsString());
-
-            $this->fail_task();
+            mtrace("An error occurred during after_backup_finished_hook");
+            throw $e;
         }
     }
 
