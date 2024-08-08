@@ -170,7 +170,7 @@ export default class Block extends BaseComponent {
             let backupButton = await this.getBackupToSharingCartButton();
 
             const sectionTitle = document.querySelector(
-                '.course-content .course-section-header .inplaceeditable[data-itemid="' + element.id + '"]'
+                '.course-content [data-for="section_title"] .inplaceeditable[data-itemid="' + element.id + '"]'
             );
             if (sectionTitle) {
                 const hasBackupButton = sectionTitle.parentElement.querySelector('.add_to_sharing_cart');

@@ -155,7 +155,7 @@ export default class BlockElement {
                 return;
             }
 
-            const draggable = section.querySelector('.course-section-header');
+            const draggable = section.querySelector('[data-for="section_title"]');
 
             draggable.addEventListener('dragstart', () => {
                 this.#draggedSectionId = id;
