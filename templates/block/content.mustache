@@ -33,8 +33,10 @@
                     {{#str}}no_items, block_sharing_cart{{/str}}
                 {{/items.0}}
             </div>
-            <button type="button" class="btn btn-primary mt-3 w-100 d-none" id="block_sharing_cart_bulk_delete_confirm" disabled>
-                <span class="mr-1">{{#str}}delete_marked_items, block_sharing_cart{{/str}}</span><i class="fa fa-trash"></i>
+            <button type="button" class="btn btn-primary mt-3 w-100 d-none" id="block_sharing_cart_bulk_delete_confirm"
+                    disabled>
+                <span class="mr-1">{{#str}}delete_marked_items, block_sharing_cart{{/str}}</span><i
+                    class="fa fa-trash"></i>
             </button>
         </div>
         {{#showCopySectionInBlock}}
@@ -43,13 +45,14 @@
                 <select class="custom-select w-100">
                     <option disabled selected>{{#str}}choosedots, core{{/str}}</option>
                 </select>
-                <button type="button" class="btn btn-primary mt-3 w-100">{{#str}}copy_section, block_sharing_cart{{/str}}</button>
+                <button type="button" class="btn btn-primary mt-3 w-100">{{#str}}
+                    copy_section, block_sharing_cart{{/str}}</button>
             </div>
         {{/showCopySectionInBlock}}
     </div>
 </div>
 {{#js}}
     require(['block_sharing_cart/local/block'], function (component) {
-        component.init('block_sharing_cart', {{canBackupUserdata}}, {{canAnonymizeUserdata}}, {{showSharingCartBasket}});
+    component.init('block_sharing_cart', {{canBackupUserdata}}, {{canAnonymizeUserdata}}, {{showSharingCartBasket}}, {{courseContextId}});
     });
 {{/js}}
