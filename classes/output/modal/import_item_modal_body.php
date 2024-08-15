@@ -29,38 +29,46 @@ class import_item_modal_body implements \renderable, \core\output\named_templata
 
     public function export_for_template(\renderer_base $output): array
     {
-        $sections = array_values(
+        global $DB;
+
+        $section = array_values(
             $this->base_factory->backup()->handler()->get_backup_item_tree(
                 $this->base_factory->item()->repository()->get_stored_file_by_item($this->item)
             )
-        );
-        foreach ($sections as $section) {
-            foreach ($section->activities as $activity) {
-                $activity->title = format_string($activity->title);
-                $activity->title = strlen($activity->title) > 50 ? substr(
-                        $activity->title,
-                        0,
-                        50
-                    ) . '...' : $activity->title;
-                $activity->id = $activity->moduleid;
-                $activity->type = 'coursemodule';
-                $activity->mod_icon = $output->image_url('icon', "mod_{$activity->modulename}");
-                $activity->course_modules = [];
-            }
+        )[0];
 
-            $section->title = format_string($section->title);
-            $section->title = strlen($section->title) > 50 ? trim(
-                    substr($section->title, 0, 50)
-                ) . '...' : $section->title;
-            $section->id = $section->sectionid;
-            $section->type = 'section';
-            $section->mod_icon = null;
-            $section->course_modules = array_values($section->activities);
-            unset($section->sectionid, $section->activities);
+        foreach ($section->activities as $activity) {
+            $activity->title = format_string($activity->title);
+            $activity->title = strlen($activity->title) > 50 ? substr(
+                    $activity->title,
+                    0,
+                    50
+                ) . '...' : $activity->title;
+            $activity->id = $activity->moduleid;
+            $activity->type = 'coursemodule';
+            $activity->mod_icon = $output->image_url('icon', "mod_{$activity->modulename}");
+            $activity->course_modules = [];
+            $activity->module_is_disabled_on_site = $DB->get_record('modules', [
+                'name' => $activity->modulename,
+                'visible' => false
+            ]);
         }
 
+        $section->title = $this->item->get_name();
+        $section->title = strlen($section->title) > 50 ? trim(
+                substr($section->title, 0, 50)
+            ) . '...' : $section->title;
+        $section->id = $section->sectionid;
+        $section->type = 'section';
+        $section->mod_icon = null;
+        $section->course_modules = array_values($section->activities);
+        $section->module_is_disabled_on_site = false;
+        unset($section->sectionid, $section->activities);
+
         return [
-            'sections' => $sections
+            'sections' => [
+                $section
+            ]
         ];
     }
 }

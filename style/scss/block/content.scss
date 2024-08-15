@@ -51,7 +51,7 @@
         cursor: auto;
       }
 
-      &[data-status="0"] {
+      &[data-status="0"], &[data-module_is_disabled_on_site="1"] {
         .item-body {
           .info {
             color: rgba(0, 0, 0, .5);
