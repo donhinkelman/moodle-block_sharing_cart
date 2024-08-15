@@ -90,7 +90,11 @@ class item implements \renderable, \core\output\named_templatable
             'userid' => $USER->id,
             'classname' => "\\block_sharing_cart\\task\\asynchronous_backup_task",
             'timestarted' => null
-        ], fields: "id, JSON_EXTRACT(customdata, '$.item.id') as item_id");
+        ], fields: "id, customdata");
+        array_walk($not_running_backup_tasks, static function ($task) {
+            $task->item_id = json_decode($task->customdata)?->item?->id;
+            unset($task->customdata);
+        });
         $not_running_backup_tasks = array_combine(
             array_column($not_running_backup_tasks, 'item_id'),
             $not_running_backup_tasks
