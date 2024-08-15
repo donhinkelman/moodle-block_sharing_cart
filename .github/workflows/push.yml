@@ -53,7 +53,7 @@ jobs:
           - os: ubuntu-22.04
             php: 8.2
             db: mysqli
-            moodle: master
+            moodle: main
             experimental: true
 
     steps:
