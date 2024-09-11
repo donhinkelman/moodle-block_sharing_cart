@@ -105,6 +105,10 @@ export default class Block extends BaseComponent {
         return [
             {watch: `section:created`, handler: this._refreshSection},
             {watch: `section:updated`, handler: this._refreshSection},
+            {watch: `section.dragging:created`, handler: this._onDraggingSection},
+            {watch: `section.dragging:updated`, handler: this._onDraggingSection},
+            {watch: `cm.dragging:created`, handler: this._onDraggingCourseModule},
+            {watch: `cm.dragging:updated`, handler: this._onDraggingCourseModule},
             {watch: `cm:created`, handler: this._refreshCourseModule},
             {watch: `cm:updated`, handler: this._refreshCourseModule},
         ];
@@ -226,6 +230,36 @@ export default class Block extends BaseComponent {
                     this.block.addCourseModuleBackupToSharingCart.bind(this.block, element.id)
                 );
             }
+        }
+    }
+
+    /**
+     * On dragging section
+     * @param {Object} param
+     * @param {Object} param.element
+     */
+    async _onDraggingSection({element}) {
+        if (element.dragging) {
+            this.block.getElement().classList.add('dragging_item');
+            this.block.setDraggedSectionId(element.id);
+        } else {
+            this.block.getElement().classList.remove('dragging_item');
+            this.block.setDraggedSectionId(null);
+        }
+    }
+
+    /**
+     * On dragging course module
+     * @param {Object} param
+     * @param {Object} param.element
+     */
+    async _onDraggingCourseModule({element}) {
+        if (element.dragging) {
+            this.block.getElement().classList.add('dragging_item');
+            this.block.setDraggedCourseModuleId(element.id);
+        } else {
+            this.block.getElement().classList.remove('dragging_item');
+            this.block.setDraggedCourseModuleId(null);
         }
     }
 }
