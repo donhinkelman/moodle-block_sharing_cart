@@ -40,11 +40,15 @@ $string['atleast_one_course_module_must_be_included'] = 'Atleast one course modu
 $string['legacy_section_info'] = 'This is a legacy section. The sharing cart is unable to copy this section, but the individual activities are still available.';
 $string['maybe_the_queue_is_stuck'] = 'If you would like to run the restore now, click the button above.';
 $string['drop_here'] = 'Drop here...';
+$string['original_course'] = 'Original course:';
 
 $string['copy_this_course'] = 'Copy this course';
 $string['bulk_delete'] = 'Bulk delete';
 $string['cancel_bulk_delete'] = 'Cancel';
 $string['delete_marked_items'] = 'Delete marked items';
+
+$string['select_all'] = 'Select all';
+$string['deselect_all'] = 'Deselect all';
 
 $string['no_course_modules_in_section'] = 'No course modules in this section';
 $string['no_course_modules_in_section_description'] = 'This section does not contain any course modules and you are therefore not able to copy it.';
@@ -62,16 +66,6 @@ $string['settings:show_sharing_cart_basket_desc'] = 'Show the sharing cart baske
 $string['settings:show_copy_section_in_block'] = 'Show the "Copy section" in block';
 $string['settings:show_copy_section_in_block_desc'] = 'Show the "Copy section" in the sharing cart block, underneath all modules/activities';
 
-// TODO: Implement the following??
-/*
-$string['settings:workaround_qtypes'] = 'Workaround for question types';
-$string['settings:workaround_qtypes_desc'] = 'The workaround for question restore issue will be performed if its question type is checked.
-When the questions to be restored already exist, however, those data look like inconsistent,
-this workaround will try to make another duplicates instead of reusing existing data.
-It may be useful for avoiding some restore errors, such as <i>error_question_match_sub_missing_in_db</i>.';
-$string['settings:show_copy_activity_in_block'] = 'Show the "Copy activity" in block';
-$string['settings:show_copy_activity_in_block_desc'] = 'Show the "Copy activity" in the sharing cart block, underneath all modules/activities - This is only available if the user has the capability to backup activities, but not the capability to manage/move activities';
-*/
 
 // Privacy
 $string['privacy:metadata:sharing_cart_items:user_id'] = 'The user ID which the item belongs to';

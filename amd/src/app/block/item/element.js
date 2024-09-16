@@ -77,11 +77,8 @@ export default class ItemElement {
 
         const checkbox = this.#element.querySelector('input[data-action="bulk_select"][type="checkbox"]');
         checkbox?.addEventListener('click', () => {
-            const bulkDeleteButton = document.getElementById('block_sharing_cart_bulk_delete_confirm');
-
-            const blockSelector = '.block.block_sharing_cart';
-            const checkboxSelector = blockSelector + ' .sharing_cart_item input[data-action="bulk_select"][type="checkbox"]';
-            bulkDeleteButton.disabled = document.querySelectorAll(checkboxSelector + ':checked').length <= 0;
+            this.#blockElement.updateSelectAllState();
+            this.#blockElement.updateBulkDeleteButtonState();
         });
 
         const actionsContainer = this.#element.querySelector(':scope > .item-body .sharing_cart_item_actions');
@@ -179,6 +176,10 @@ export default class ItemElement {
      */
     getItemElement() {
         return this.#element;
+    }
+
+    getStatus() {
+        return this.#element.dataset.status;
     }
 
     /**

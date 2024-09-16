@@ -40,11 +40,15 @@ $string['atleast_one_course_module_must_be_included'] = 'Mindst et kursusmodul s
 $string['legacy_section_info'] = 'Dette er en gammel sektion. Delingskurven kan ikke kopiere denne sektion, men de enkelte aktiviteter er stadig tilgængelige.';
 $string['maybe_the_queue_is_stuck'] = 'Hvis du vil køre kopieringen nu, skal du klikke på knappen ovenfor.';
 $string['drop_here'] = 'Slip her...';
+$string['original_course'] = 'Originalt kursus:';
 
 $string['copy_this_course'] = 'Kopier dette kursus';
 $string['bulk_delete'] = 'Slet flere';
 $string['cancel_bulk_delete'] = 'Annuller';
 $string['delete_marked_items'] = 'Slet valgte elementer';
+
+$string['select_all'] = 'Vælg alle';
+$string['deselect_all'] = 'Fravælg alle';
 
 $string['no_course_modules_in_section'] = 'Ingen kursusmoduler i denne sektion';
 $string['no_course_modules_in_section_description'] = 'Denne sektion indeholder ikke nogen kursusmoduler, og du kan derfor ikke kopiere den.';
