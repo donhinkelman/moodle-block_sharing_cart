@@ -249,7 +249,7 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0): bool
         upgrade_block_savepoint(true, 2024011800, 'sharing_cart');
     }
 
-    if ($oldversion < 2024032100) {
+    if ($oldversion < 2024072900) {
         /**
          * Create block_sharing_cart_items table.
          */
@@ -462,17 +462,22 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0): bool
             $dbman->drop_table($table);
         }
 
-        upgrade_block_savepoint(true, 2024032100, 'sharing_cart');
+        upgrade_block_savepoint(true, 2024072900, 'sharing_cart');
     }
 
-    if ($oldversion < 2024032101) {
+    if ($oldversion < 2024072900) {
         $xmldb_table = new xmldb_table('block_sharing_cart_items');
-        $dbman->add_field(
-            $xmldb_table,
-            new xmldb_field(
-                'sortorder', XMLDB_TYPE_INTEGER, '10', notnull: false
-            )
-        );
+
+        if (!$dbman->field_exists($xmldb_table, 'sortorder')) {
+            $dbman->add_field(
+                $xmldb_table,
+                new xmldb_field(
+                    'sortorder', XMLDB_TYPE_INTEGER, '10', notnull: false
+                )
+            );
+        }
+
+        upgrade_block_savepoint(true, 2024072900, 'sharing_cart');
     }
 
     return true;
