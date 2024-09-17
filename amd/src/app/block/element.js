@@ -131,41 +131,6 @@ export default class BlockElement {
 
     setupDragAndDrop() {
         const dropZone = this.#element;
-        const draggableCourseModules = document.querySelectorAll('.course-content .activity[data-for="cmitem"][data-id]');
-        const draggableSections = document.querySelectorAll('.course-content .section[data-for="section"][data-id]');
-
-        draggableCourseModules.forEach((courseModule) => {
-            const courseModuleId = Number.parseInt(courseModule.dataset.id);
-            if (!courseModuleId) {
-                return;
-            }
-
-            courseModule.addEventListener('dragstart', () => {
-                this.#draggedCourseModuleId = courseModuleId;
-                dropZone.classList.add('dragging_item');
-            });
-            courseModule.addEventListener('dragend', () => {
-                this.#draggedCourseModuleId = null;
-                dropZone.classList.remove('dragging_item');
-            });
-        });
-        draggableSections.forEach((section) => {
-            const id = Number.parseInt(section.dataset.id);
-            if (!id) {
-                return;
-            }
-
-            const draggable = section.querySelector('[data-for="section_title"]');
-
-            draggable.addEventListener('dragstart', () => {
-                this.#draggedSectionId = id;
-                dropZone.classList.add('dragging_item');
-            });
-            draggable.addEventListener('dragend', () => {
-                this.#draggedSectionId = null;
-                dropZone.classList.remove('dragging_item');
-            });
-        });
 
         dropZone.addEventListener('dragover', (e) => {
             if (!this.#draggedSectionId && !this.#draggedCourseModuleId) {
@@ -270,6 +235,20 @@ export default class BlockElement {
     }
 
     /**
+     * @param {Number|null} id
+     */
+    setDraggedSectionId(id) {
+        this.#draggedSectionId = id;
+    }
+
+    /**
+     * @param {Number|null} id
+     */
+    setDraggedCourseModuleId(id) {
+        this.#draggedCourseModuleId = id;
+    }
+
+    /**
      * @param {ItemElement} item
      */
     async removeItemElement(item) {
@@ -353,6 +332,10 @@ export default class BlockElement {
                 Notification.exception(data);
             }
         }]);
+    }
+
+    getElement() {
+        return this.#element;
     }
 
     /**
