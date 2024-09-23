@@ -81,5 +81,6 @@ $string['privacy:metadata:sharing_cart_items:old_instance_id'] = 'The old instan
 $string['privacy:metadata:sharing_cart_items:type'] = 'The type of the item';
 $string['privacy:metadata:sharing_cart_items:name'] = 'The name of the item';
 $string['privacy:metadata:sharing_cart_items:status'] = 'The status of the item';
+$string['privacy:metadata:sharing_cart_items:tabledesc'] = 'The table that stores sharing cart items';
 $string['privacy:metadata:sharing_cart_items:timecreated'] = 'The time this item was created';
 $string['privacy:metadata:sharing_cart_items:timemodified'] = 'The time this item was modified';
