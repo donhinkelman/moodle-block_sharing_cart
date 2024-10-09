@@ -34,6 +34,24 @@ class run_now extends external_api
             \context_user::instance($USER->id)
         );
 
+        if (CLI_MAINTENANCE) {
+            throw new \Exception(
+                get_string('sitemaintenance', 'admin')
+            );
+        }
+
+        if (moodle_needs_upgrading()) {
+            throw new \Exception(
+                get_string('cliupgradepending', 'admin')
+            );
+        }
+
+        if (!get_config('core', 'cron_enabled')) {
+            throw new \Exception(
+                get_string('crondisabled', 'tool_task')
+            );
+        }
+
         $task = $DB->get_record(
             'task_adhoc',
             [

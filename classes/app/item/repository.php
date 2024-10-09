@@ -157,6 +157,9 @@ class repository extends \block_sharing_cart\app\repository
         $root_item->set_file_id($file->get_id());
         $root_item->set_timemodified(time());
 
+        $course_info = $this->base_factory->backup()->handler()->get_backup_course_info($file);
+        $root_item->set_original_course_fullname($course_info['fullname'] ?? null);
+
         $this->update($root_item);
 
         if ($root_item->get_type() !== entity::TYPE_SECTION) {
