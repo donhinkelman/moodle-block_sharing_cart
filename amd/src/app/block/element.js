@@ -567,7 +567,7 @@ export default class BlockElement {
             this.#element.querySelector('.sharing_cart_items').replaceChild(element, oldElement);
             this.#items[existingItemIndex] = this.#baseFactory.block().item().element(this, element);
 
-            await this.setupItem(element); // test
+            await this.setupItem(element);
             for (const subItem of element.querySelectorAll('.sharing_cart_item')) {
                 await this.setupItem(subItem);
             }
