@@ -37,25 +37,25 @@ Change Log
 ----------
 
 * 5.0, release 1 2024.08.05
-     * Total refactor of the whole plugin:
-         * Improvements
-             * Simplified the database structure.
-             * Code is now much more readable and maintainable.
-             * All HTML have been moved to mustache templates.
-             * We now use the Moodle core backup and restore system for sections as well. This means that we can now
-               restore sections and keep related access restrictions.
-             * All ajax calls are now done using the Moodle core external functions.
-             * As everything is now done asynchronously, you should have a much better experience when using the
-               sharing cart. - Not having to reload the whole page all the time...
-             * Supports the filter_multilang as well now.
-         * Changes
-             * It is no longer possible to move single activities between sections in the sharing cart.
-             * All backups/restores are now done asynchronously. If you have a lot of adhoc tasks running on your site,
-               it's also possible to manually run them.
-         * Old sharing cart items
-             * Will be converted to the new format when you upgrade the plugin.
-             * You won't be able to restore these items all at once like before, but you can restore them one by one.
-             * Old sections will be marked as legacy with a yellow warning icon.
+    * Total refactor of the whole plugin:
+        * Improvements
+            * Simplified the database structure.
+            * Code is now much more readable and maintainable.
+            * All HTML have been moved to mustache templates.
+            * We now use the Moodle core backup and restore system for sections as well. This means that we can now
+              restore sections and keep related access restrictions.
+            * All ajax calls are now done using the Moodle core external functions.
+            * As everything is now done asynchronously, you should have a much better experience when using the
+              sharing cart. - Not having to reload the whole page all the time...
+            * Supports the filter_multilang as well now.
+        * Changes
+            * It is no longer possible to move single activities between sections in the sharing cart.
+            * All backups/restores are now done asynchronously. If you have a lot of adhoc tasks running on your site,
+              it's also possible to manually run them.
+        * Old sharing cart items
+            * Will be converted to the new format when you upgrade the plugin.
+            * You won't be able to restore these items all at once like before, but you can restore them one by one.
+            * Old sections will be marked as legacy with a yellow warning icon.
 * 4.4, release 4 2024.02.06
     * Added an anonymize userdata checkbox to the confirm modal.
 * 4.4, release 3 2024.02.05
