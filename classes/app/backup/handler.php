@@ -24,6 +24,20 @@ class handler
         $this->base_factory = $base_factory;
     }
 
+    private function get_backup_info(\stored_file $file): object
+    {
+        /**
+         * @var \file_storage $fs
+         */
+        $fs = get_file_storage();
+        $file_path = $fs->get_file_system()->get_local_path_from_storedfile($file);
+
+        /** @var object $info */
+        $info = \backup_general_helper::get_backup_information_from_mbz($file_path);
+
+        return $info;
+    }
+
     public function backup_course_module(
         int $course_module_id,
         entity $root_item,
@@ -53,18 +67,20 @@ class handler
         return $this->queue_async_backup($backup_controller, $root_item, $settings);
     }
 
+    public function get_backup_course_info(\stored_file $file): array
+    {
+        $info = $this->get_backup_info($file);
+
+        return [
+            'id' => $info->original_course_id,
+            'fullname' => $info->original_course_fullname
+        ];
+    }
     public function get_backup_item_tree(\stored_file $file): array
     {
         $tree = [];
 
-        /**
-         * @var \file_storage $fs
-         */
-        $fs = get_file_storage();
-        $file_path = $fs->get_file_system()->get_local_path_from_storedfile($file);
-
-        /** @var object $info */
-        $info = \backup_general_helper::get_backup_information_from_mbz($file_path);
+        $info = $this->get_backup_info($file);
 
         foreach ($info->sections as $section) {
             $tree[$section->sectionid] = (object)[

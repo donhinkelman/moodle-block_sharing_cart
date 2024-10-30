@@ -2,7 +2,9 @@
      {{#module_is_disabled_on_site}}title="{{#str}}module_is_disabled_on_site, block_sharing_cart{{/str}}"{{/module_is_disabled_on_site}}
      data-module_is_disabled_on_site="{{#module_is_disabled_on_site}}1{{/module_is_disabled_on_site}}{{^module_is_disabled_on_site}}0{{/module_is_disabled_on_site}}"
      data-status="{{status}}"
-     {{^is_module}}data-collapsed="true"{{/is_module}}>
+     {{^is_module}}data-collapsed="true"{{/is_module}}
+    {{#original_course_fullname}}title="{{#str}}original_course, block_sharing_cart{{/str}} {{.}}"{{/original_course_fullname}}
+>
     <div class="item-body">
         {{#is_root}}
             <input class="d-none mr-1" type="checkbox" data-action="bulk_select" value="{{id}}"/>
