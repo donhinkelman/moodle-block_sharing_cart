@@ -8,7 +8,17 @@
          data-id="{{id}}" data-to-section-id="{{to_section_id}}"
     >
         <div class="d-flex align-items-center mb-1">
-            <i class="fa fa-spinner m-0"></i>
+            <i class="fa m-0
+                {{#is_running}}fa-spinner{{/is_running}}
+                {{#is_failed}}fa-exclamation-circle text-danger{{/is_failed}}
+                {{^is_running}}
+                    {{^is_failed}}fa-spinner{{/is_failed}}
+                {{/is_running}}
+            "
+               {{#is_failed}}
+               title="{{#str}}restore_failed, block_sharing_cart, {{id}}{{/str}}"
+               {{/is_failed}}
+            ></i>
             <span class="ml-2 mr-1">{{{name}}}</span>
 
             {{#show_run_now}}
