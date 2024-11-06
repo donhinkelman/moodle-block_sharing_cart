@@ -124,7 +124,7 @@ export default class BlockElement {
                 Ajax.call([{
                     methodname: 'block_sharing_cart_reorder_sharing_cart_items',
                     args: {
-                        item_ids: this.#sortable.toArray(),
+                        item_ids: this.#sortable.toArray().filter((id) => !isNaN(id)),
                     },
                     fail: (data) => {
                         Notification.exception(data);
