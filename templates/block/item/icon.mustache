@@ -16,5 +16,6 @@
     {{/is_module}}
 {{/status_finished}}
 {{#status_failed}}
-    <i class="fa fa-exclamation-circle text-danger"></i>
+    <i class="fa fa-exclamation-circle text-danger"
+       title="{{#str}}backup_failed, block_sharing_cart, {{task_id}}{{/str}}"></i>
 {{/status_failed}}

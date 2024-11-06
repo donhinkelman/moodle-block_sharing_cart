@@ -124,7 +124,7 @@ export default class BlockElement {
                 Ajax.call([{
                     methodname: 'block_sharing_cart_reorder_sharing_cart_items',
                     args: {
-                        item_ids: this.#sortable.toArray(),
+                        item_ids: this.#sortable.toArray().filter((id) => !isNaN(id)),
                     },
                     fail: (data) => {
                         Notification.exception(data);
@@ -252,9 +252,14 @@ export default class BlockElement {
             checkbox?.classList?.remove('d-none');
         }
 
-        this.#element.querySelector('.no-items')?.remove();
+        this.#element.querySelector('.no-items').classList.add('d-none');
 
-        this.#items.push(itemElement);
+        const existingItemIndex = this.#items.findIndex((i) => i.getItemId() === itemElement.getItemId());
+        if (existingItemIndex !== -1) {
+            this.#items[existingItemIndex] = itemElement;
+        } else {
+            this.#items.push(itemElement);
+        }
 
         this.updateBulkDeleteButtonState();
         this.updateSelectAllState();
@@ -348,8 +353,7 @@ export default class BlockElement {
         item.remove();
 
         if (this.#items.length === 0) {
-            this.#element.querySelector('.sharing_cart_items')
-                .innerHTML = await get_string('no_items', 'block_sharing_cart');
+            this.#element.querySelector('.no-items').classList.remove('d-none');
         }
     }
 
@@ -365,6 +369,7 @@ export default class BlockElement {
             done: async (deleted) => {
                 if (deleted) {
                     await this.removeItemElement(item);
+                    this.updateSelectAllState();
                 } else {
                     await Notification.alert('Failed to delete item');
                 }

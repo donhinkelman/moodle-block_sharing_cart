@@ -36,9 +36,10 @@
                     {{#items}}
                         {{> block_sharing_cart/block/item}}
                     {{/items}}
-                    {{^items}}
+
+                    <div class="no-items text-muted {{#items}}d-none{{/items}}">
                         {{#str}}no_items, block_sharing_cart{{/str}}
-                    {{/items}}
+                    </div>
                 </div>
             </div>
             <button type="button" class="btn btn-primary mt-3 w-100 d-none" id="block_sharing_cart_bulk_delete_confirm"

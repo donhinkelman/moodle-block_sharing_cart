@@ -6,9 +6,9 @@ $string['pluginname'] = 'Delingskurv';
 // Block
 $string['items'] = 'Backups';
 $string['restores'] = 'Kopieringer';
-$string['no_items'] = '<div class="no-items text-muted">Ingen backups.<br>
+$string['no_items'] = 'Ingen backups.<br>
 <br>
-Træk og slip aktiviteter eller sektioner ind i delingskurven eller klik på <i class="fa fa-shopping-basket"></i> ikonet, for at tilføje elementer til Delingskurven.</div>';
+Træk og slip aktiviteter eller sektioner ind i delingskurven eller klik på <i class="fa fa-shopping-basket"></i> ikonet, for at tilføje elementer til Delingskurven.';
 $string['no_restores'] = '<div class="no-restores text-muted">Ingen kopieringer i gang.<br>
 <br>
 Klik på <i class="fa fa-clone"></i> ikonet for at tilføje elementer fra Delingskurven til kurset.</div>';
@@ -38,6 +38,8 @@ $string['copy_user_data'] = 'Vil du kopiere brugerdata? (f.eks. ordbog/wiki/data
 $string['anonymize_user_data'] = 'Vil du anonymisere brugerdata?';
 $string['atleast_one_course_module_must_be_included'] = 'Mindst et kursusmodul skal inkluderes, vælg venligst mindst et kursusmodul at inkludere.';
 $string['legacy_section_info'] = 'Dette er en gammel sektion. Delingskurven kan ikke kopiere denne sektion, men de enkelte aktiviteter er stadig tilgængelige.';
+$string['restore_failed'] = 'Gendannelsen mislykkedes (task id: {$a}). Denne besked vil forsvinde efter et stykke tid.';
+$string['backup_failed'] = 'Backuppen mislykkedes. Du kan slette elementet fra Delingskurven og prøve igen.';
 $string['maybe_the_queue_is_stuck'] = 'Hvis du vil køre kopieringen nu, skal du klikke på knappen ovenfor.';
 $string['drop_here'] = 'Slip her...';
 $string['original_course'] = 'Originalt kursus:';

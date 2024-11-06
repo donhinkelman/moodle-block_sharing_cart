@@ -95,6 +95,11 @@ class asynchronous_backup_task extends \core\task\adhoc_task
         }
     }
 
+    public function retry_until_success(): bool
+    {
+        return false;
+    }
+
     private function before_backup_started_hook(\backup_controller $backup_controller): void
     {
         try {
