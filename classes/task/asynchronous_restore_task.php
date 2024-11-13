@@ -99,6 +99,11 @@ class asynchronous_restore_task extends \core\task\adhoc_task
         }
     }
 
+    public function retry_until_success(): bool
+    {
+        return false;
+    }
+
     private function after_restore_finished_hook(\restore_controller $restore_controller): void
     {
         try {

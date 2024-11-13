@@ -17,21 +17,30 @@
                 <strong class="mr-auto mb-0">
                     {{#str}}items, block_sharing_cart{{/str}}
                 </strong>
-                <span role="button" class="d-none" id="block_sharing_cart_cancel_bulk_delete">
+                <span role="button" class="user-select-none d-none" id="block_sharing_cart_cancel_bulk_delete">
                     <span class="mr-1">{{#str}}cancel_bulk_delete, block_sharing_cart{{/str}}</span>
                 </span>
-                <span role="button" id="block_sharing_cart_bulk_delete">
+                <span role="button" class="user-select-none" id="block_sharing_cart_bulk_delete">
                     <span class="mr-1">{{#str}}bulk_delete, block_sharing_cart{{/str}}</span><i class="fa fa-trash"></i>
                 </span>
             </div>
             <hr>
-            <div class="sharing_cart_items">
-                {{#items}}
-                    {{> block_sharing_cart/block/item}}
-                {{/items}}
-                {{^items.0}}
-                    {{#str}}no_items, block_sharing_cart{{/str}}
-                {{/items.0}}
+            <div class="sharing_cart_items_wrapper">
+                <div id="select_all_container" class="d-none">
+                    <input type="checkbox" id="select_all_box" class="ml-2">
+                    <label class="font-weight-bold ml-1" for="select_all_box" id="select_all_label">
+                        {{#str}}select_all, block_sharing_cart{{/str}}
+                    </label>
+                </div>
+                <div class="sharing_cart_items">
+                    {{#items}}
+                        {{> block_sharing_cart/block/item}}
+                    {{/items}}
+
+                    <div class="no-items text-muted {{#items}}d-none{{/items}}">
+                        {{#str}}no_items, block_sharing_cart{{/str}}
+                    </div>
+                </div>
             </div>
             <button type="button" class="btn btn-primary mt-3 w-100 d-none" id="block_sharing_cart_bulk_delete_confirm"
                     disabled>
@@ -52,7 +61,7 @@
     </div>
 </div>
 {{#js}}
-    require(['block_sharing_cart/local/block'], function (component) {
+    require(['block_sharing_cart/local/block'], (component) => {
     component.init('block_sharing_cart', {{canBackupUserdata}}, {{canAnonymizeUserdata}}, {{showSharingCartBasket}}, {{courseContextId}});
     });
 {{/js}}

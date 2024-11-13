@@ -67,6 +67,11 @@ export default class BlockElement {
     #draggedSectionId = null;
 
     /**
+     * @type {boolean}
+     */
+    #bulkDeleteEnabled = false;
+
+    /**
      * @param {BaseFactory} baseFactory
      * @param {HTMLElement} element
      * @param {Boolean} canBackupUserdata
@@ -106,12 +111,12 @@ export default class BlockElement {
         this.#queue = this.#baseFactory.block().queue().element(this, queue);
     }
 
-    setupItems() {
+    async setupItems() {
         const items = this.#element.querySelectorAll('.sharing_cart_item');
 
-        items.forEach((element) => {
-            this.setupItem(element);
-        });
+        for (const element of items) {
+            await this.setupItem(element);
+        }
 
         this.#sortable = new Sortable(this.#element.querySelector('.sharing_cart_items'), {
             dataIdAttr: 'data-itemid',
@@ -119,7 +124,7 @@ export default class BlockElement {
                 Ajax.call([{
                     methodname: 'block_sharing_cart_reorder_sharing_cart_items',
                     args: {
-                        item_ids: this.#sortable.toArray(),
+                        item_ids: this.#sortable.toArray().filter((id) => !isNaN(id)),
                     },
                     fail: (data) => {
                         Notification.exception(data);
@@ -169,14 +174,37 @@ export default class BlockElement {
         const disableBulkDeleteButton = this.#element.querySelector('#block_sharing_cart_cancel_bulk_delete');
         const bulkDeleteButton = this.#element.querySelector('#block_sharing_cart_bulk_delete_confirm');
 
-        const checkboxSelector = '.sharing_cart_item input[data-action="bulk_select"][type="checkbox"]';
+        const selectAllContainer = this.#element.querySelector('#select_all_container');
+        const selectAllCheckbox = this.#element.querySelector('#select_all_box');
+
+        selectAllCheckbox.addEventListener('click', async () => {
+            const itemCheckboxes = this.getItemCheckboxes();
+            const allSelected = Array.from(itemCheckboxes).every(checkbox => checkbox.checked);
+            itemCheckboxes.forEach(checkbox => {
+                checkbox.checked = !allSelected;
+            });
+            itemCheckboxes.forEach(checkbox => checkbox.addEventListener('change', async () => {
+                this.updateSelectAllState();
+            }));
+
+            this.updateSelectAllState();
+            this.updateBulkDeleteButtonState();
+        });
 
         enableBulkDeleteButton.addEventListener('click', () => {
+            if (this.#items.length === 0) {
+                return;
+            }
+
+            this.#bulkDeleteEnabled = true;
+
             enableBulkDeleteButton.classList.add('d-none');
             disableBulkDeleteButton.classList.remove('d-none');
+
+            selectAllContainer.classList.remove('d-none');
             bulkDeleteButton.classList.remove('d-none');
 
-            this.#element.querySelectorAll(checkboxSelector).forEach((checkbox) => {
+            this.getItemCheckboxes().forEach((checkbox) => {
                 checkbox.classList.remove('d-none');
                 checkbox.checked = false;
             });
@@ -187,8 +215,9 @@ export default class BlockElement {
             bulkDeleteButton.classList.add('d-none');
             bulkDeleteButton.disabled = true;
             enableBulkDeleteButton.classList.remove('d-none');
+            selectAllContainer.classList.add('d-none');
 
-            this.#element.querySelectorAll(checkboxSelector).forEach((checkbox) => {
+            this.getItemCheckboxes().forEach((checkbox) => {
                 checkbox.classList.add('d-none');
                 checkbox.checked = false;
             });
@@ -200,7 +229,11 @@ export default class BlockElement {
             }
 
             const itemIds = [];
-            this.#element.querySelectorAll(checkboxSelector + ':checked').forEach((checkbox) => {
+            this.getItemCheckboxes().forEach((checkbox) => {
+                if (!checkbox.checked) {
+                    return;
+                }
+
                 itemIds.push(checkbox.value);
             });
 
@@ -211,14 +244,58 @@ export default class BlockElement {
     /**
      * @param {HTMLElement} element
      */
-    setupItem(element) {
+    async setupItem(element) {
         const itemElement = this.#baseFactory.block().item().element(this, element);
 
-        this.#element.querySelector('.no-items')?.remove();
+        if (itemElement.getStatus() !== '0' && this.isBulkDeleteEnabled()) {
+            const checkbox = element.querySelector('input[data-action="bulk_select"][type="checkbox"]');
+            checkbox?.classList?.remove('d-none');
+        }
 
-        this.#items.push(
-            itemElement
-        );
+        this.#element.querySelector('.no-items').classList.add('d-none');
+
+        const existingItemIndex = this.#items.findIndex((i) => i.getItemId() === itemElement.getItemId());
+        if (existingItemIndex !== -1) {
+            this.#items[existingItemIndex] = itemElement;
+        } else {
+            this.#items.push(itemElement);
+        }
+
+        this.updateBulkDeleteButtonState();
+        this.updateSelectAllState();
+    }
+
+    getItemCheckboxes() {
+        const checkboxSelector = '.sharing_cart_item:not([data-status="0"]) input[data-action="bulk_select"][type="checkbox"]';
+        return this.#element.querySelectorAll(checkboxSelector);
+    }
+
+    updateBulkDeleteButtonState() {
+        const bulkDeleteButton = this.#element.querySelector('#block_sharing_cart_bulk_delete_confirm');
+        bulkDeleteButton.disabled = !Array.from(this.getItemCheckboxes()).some(checkbox => checkbox.checked);
+    }
+
+    updateSelectAllState() {
+        const selectAllCheckbox = this.#element.querySelector('#select_all_box');
+        const selectAllLabel = this.#element.querySelector('#select_all_label');
+
+        const itemCheckboxes = this.getItemCheckboxes();
+        const allSelected = Array.from(itemCheckboxes).every(checkbox => checkbox.checked);
+        const someSelected = Array.from(itemCheckboxes).some(checkbox => checkbox.checked);
+
+        const strPromise = allSelected ?
+            get_string('deselect_all', 'block_sharing_cart') :
+            get_string('select_all', 'block_sharing_cart');
+        strPromise.then((str) => {
+            selectAllLabel.textContent = str;
+        });
+
+        selectAllCheckbox.checked = allSelected;
+        selectAllCheckbox.indeterminate = !allSelected && someSelected;
+    }
+
+    isBulkDeleteEnabled() {
+        return this.#bulkDeleteEnabled;
     }
 
     /**
@@ -276,8 +353,7 @@ export default class BlockElement {
         item.remove();
 
         if (this.#items.length === 0) {
-            this.#element.querySelector('.sharing_cart_items')
-                .innerHTML = await get_string('no_items', 'block_sharing_cart');
+            this.#element.querySelector('.no-items').classList.remove('d-none');
         }
     }
 
@@ -293,6 +369,7 @@ export default class BlockElement {
             done: async (deleted) => {
                 if (deleted) {
                     await this.removeItemElement(item);
+                    this.updateSelectAllState();
                 } else {
                     await Notification.alert('Failed to delete item');
                 }
@@ -325,6 +402,7 @@ export default class BlockElement {
 
                     await this.removeItemElement(item);
                 }
+                this.updateSelectAllState();
 
                 document.getElementById('block_sharing_cart_bulk_delete_confirm').disabled = true;
             },
@@ -472,7 +550,10 @@ export default class BlockElement {
     async renderItem(item) {
         const existingItemIndex = this.#items.findIndex((i) => i.getItemId() === item.id);
         const existingItem = this.#items[existingItemIndex] ?? false;
-        const oldElement = this.#element.querySelector('.sharing_cart_items .sharing_cart_item[data-itemid="' + item.id + '"]');
+        const getOldElement = () => {
+            return this.#element.querySelector('.sharing_cart_items .sharing_cart_item[data-itemid="' + item.id + '"]');
+        };
+        const oldElement = getOldElement();
         if (existingItem && oldElement) {
             const element = await this.#baseFactory.moodle().template().createElementFromFragment(
                 'block_sharing_cart',
@@ -483,12 +564,18 @@ export default class BlockElement {
                 }
             );
 
+            // Early exit if the element has been removed from the DOM in between rendering and checking earlier.
+            if (getOldElement() !== oldElement) {
+                return;
+            }
+
             this.#element.querySelector('.sharing_cart_items').replaceChild(element, oldElement);
             this.#items[existingItemIndex] = this.#baseFactory.block().item().element(this, element);
 
-            element.querySelectorAll('.sharing_cart_item').forEach((subItem) => {
-                this.setupItem(subItem);
-            });
+            await this.setupItem(element);
+            for (const subItem of element.querySelectorAll('.sharing_cart_item')) {
+                await this.setupItem(subItem);
+            }
 
             return;
         }
@@ -513,7 +600,7 @@ export default class BlockElement {
         );
         this.#element.querySelector('.sharing_cart_items').prepend(element);
 
-        this.setupItem(element);
+        await this.setupItem(element);
     }
 
     /**

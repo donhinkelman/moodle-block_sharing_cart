@@ -6,9 +6,9 @@ $string['pluginname'] = 'Delingskurv';
 // Block
 $string['items'] = 'Backups';
 $string['restores'] = 'Kopieringer';
-$string['no_items'] = '<div class="no-items text-muted">Ingen backups.<br>
+$string['no_items'] = 'Ingen backups.<br>
 <br>
-Træk og slip aktiviteter eller sektioner ind i delingskurven eller klik på <i class="fa fa-shopping-basket"></i> ikonet, for at tilføje elementer til Delingskurven.</div>';
+Træk og slip aktiviteter eller sektioner ind i delingskurven eller klik på <i class="fa fa-shopping-basket"></i> ikonet, for at tilføje elementer til Delingskurven.';
 $string['no_restores'] = '<div class="no-restores text-muted">Ingen kopieringer i gang.<br>
 <br>
 Klik på <i class="fa fa-clone"></i> ikonet for at tilføje elementer fra Delingskurven til kurset.</div>';
@@ -38,13 +38,19 @@ $string['copy_user_data'] = 'Vil du kopiere brugerdata? (f.eks. ordbog/wiki/data
 $string['anonymize_user_data'] = 'Vil du anonymisere brugerdata?';
 $string['atleast_one_course_module_must_be_included'] = 'Mindst et kursusmodul skal inkluderes, vælg venligst mindst et kursusmodul at inkludere.';
 $string['legacy_section_info'] = 'Dette er en gammel sektion. Delingskurven kan ikke kopiere denne sektion, men de enkelte aktiviteter er stadig tilgængelige.';
+$string['restore_failed'] = 'Gendannelsen mislykkedes (task id: {$a}). Denne besked vil forsvinde efter et stykke tid.';
+$string['backup_failed'] = 'Backuppen mislykkedes. Du kan slette elementet fra Delingskurven og prøve igen.';
 $string['maybe_the_queue_is_stuck'] = 'Hvis du vil køre kopieringen nu, skal du klikke på knappen ovenfor.';
 $string['drop_here'] = 'Slip her...';
+$string['original_course'] = 'Originalt kursus:';
 
 $string['copy_this_course'] = 'Kopier dette kursus';
 $string['bulk_delete'] = 'Slet flere';
 $string['cancel_bulk_delete'] = 'Annuller';
 $string['delete_marked_items'] = 'Slet valgte elementer';
+
+$string['select_all'] = 'Vælg alle';
+$string['deselect_all'] = 'Fravælg alle';
 
 $string['no_course_modules_in_section'] = 'Ingen kursusmoduler i denne sektion';
 $string['no_course_modules_in_section_description'] = 'Denne sektion indeholder ikke nogen kursusmoduler, og du kan derfor ikke kopiere den.';
@@ -63,6 +69,7 @@ $string['settings:show_copy_section_in_block'] = 'Vis "Kopiér sektion" knap i b
 $string['settings:show_copy_section_in_block_desc'] = 'Vis "Kopiér sektion" knap i Delingskurv blokken. Hvis du skjuler knappen, kan brugerne stadig kopiere sektioner ved at trække og slippe dem ind i Delingskurven.';
 
 // Privacy
+$string['privacy:metadata:sharing_cart_items:tabledesc'] = 'Tabellen, der gemmer delingskurv elementer';
 $string['privacy:metadata:sharing_cart_items:user_id'] = 'Bruger-ID\'et, som elementet tilhører';
 $string['privacy:metadata:sharing_cart_items:file_id'] = 'Fil-ID\'et for backuppen';
 $string['privacy:metadata:sharing_cart_items:parent_item_id'] = 'Forældre elementets ID for elementet';
@@ -70,5 +77,7 @@ $string['privacy:metadata:sharing_cart_items:old_instance_id'] = 'Det gamle inst
 $string['privacy:metadata:sharing_cart_items:type'] = 'Typen af elementet';
 $string['privacy:metadata:sharing_cart_items:name'] = 'Navnet på elementet';
 $string['privacy:metadata:sharing_cart_items:status'] = 'Status for elementet';
+$string['privacy:metadata:sharing_cart_items:sortorder'] = 'Sorteringsrækkefølgen for elementet';
+$string['privacy:metadata:sharing_cart_items:original_course_fullname'] = 'Det fulde navn på det originale kursus';
 $string['privacy:metadata:sharing_cart_items:timecreated'] = 'Tidspunktet for oprettelsen af elementet';
 $string['privacy:metadata:sharing_cart_items:timemodified'] = 'Tidspunktet for ændringen af elementet';

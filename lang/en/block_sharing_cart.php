@@ -6,9 +6,9 @@ $string['pluginname'] = 'Sharing Cart';
 // Block
 $string['items'] = 'Items';
 $string['restores'] = 'Restores';
-$string['no_items'] = '<div class="no-items text-muted">No items.<br>
+$string['no_items'] = 'No items.<br>
 <br>
-Drag & drop activities or sections into the sharing cart or click the <i class="fa fa-shopping-basket"></i> icon, to add items to the Sharing Cart.</div>';
+Drag & drop activities or sections into the sharing cart or click the <i class="fa fa-shopping-basket"></i> icon, to add items to the Sharing Cart.';
 $string['no_restores'] = '<div class="no-restores text-muted">No restores in progress.<br>
 <br>
 Click the <i class="fa fa-clone"></i> icon to add items from the Sharing Cart to the course.</div>';
@@ -38,13 +38,19 @@ $string['copy_user_data'] = 'Do you want to copy user data? (Eg. glossary/wiki/d
 $string['anonymize_user_data'] = 'Do you want to anonymize the user data?';
 $string['atleast_one_course_module_must_be_included'] = 'Atleast one course module must be included, please select at least one course module to include.';
 $string['legacy_section_info'] = 'This is a legacy section. The sharing cart is unable to copy this section, but the individual activities are still available.';
+$string['restore_failed'] = 'The restore failed (task id: {$a}). This message will disappear after a while.';
+$string['backup_failed'] = 'The backup failed. You can delete the item from the Sharing Cart and try again.';
 $string['maybe_the_queue_is_stuck'] = 'If you would like to run the restore now, click the button above.';
 $string['drop_here'] = 'Drop here...';
+$string['original_course'] = 'Original course:';
 
 $string['copy_this_course'] = 'Copy this course';
 $string['bulk_delete'] = 'Bulk delete';
 $string['cancel_bulk_delete'] = 'Cancel';
 $string['delete_marked_items'] = 'Delete marked items';
+
+$string['select_all'] = 'Select all';
+$string['deselect_all'] = 'Deselect all';
 
 $string['no_course_modules_in_section'] = 'No course modules in this section';
 $string['no_course_modules_in_section_description'] = 'This section does not contain any course modules and you are therefore not able to copy it.';
@@ -62,18 +68,9 @@ $string['settings:show_sharing_cart_basket_desc'] = 'Show the sharing cart baske
 $string['settings:show_copy_section_in_block'] = 'Show the "Copy section" in block';
 $string['settings:show_copy_section_in_block_desc'] = 'Show the "Copy section" in the sharing cart block, underneath all modules/activities';
 
-// TODO: Implement the following??
-/*
-$string['settings:workaround_qtypes'] = 'Workaround for question types';
-$string['settings:workaround_qtypes_desc'] = 'The workaround for question restore issue will be performed if its question type is checked.
-When the questions to be restored already exist, however, those data look like inconsistent,
-this workaround will try to make another duplicates instead of reusing existing data.
-It may be useful for avoiding some restore errors, such as <i>error_question_match_sub_missing_in_db</i>.';
-$string['settings:show_copy_activity_in_block'] = 'Show the "Copy activity" in block';
-$string['settings:show_copy_activity_in_block_desc'] = 'Show the "Copy activity" in the sharing cart block, underneath all modules/activities - This is only available if the user has the capability to backup activities, but not the capability to manage/move activities';
-*/
 
 // Privacy
+$string['privacy:metadata:sharing_cart_items:tabledesc'] = 'The table that stores sharing cart items';
 $string['privacy:metadata:sharing_cart_items:user_id'] = 'The user ID which the item belongs to';
 $string['privacy:metadata:sharing_cart_items:file_id'] = 'The file ID of the backup';
 $string['privacy:metadata:sharing_cart_items:parent_item_id'] = 'The parent item ID of the item';
@@ -81,5 +78,7 @@ $string['privacy:metadata:sharing_cart_items:old_instance_id'] = 'The old instan
 $string['privacy:metadata:sharing_cart_items:type'] = 'The type of the item';
 $string['privacy:metadata:sharing_cart_items:name'] = 'The name of the item';
 $string['privacy:metadata:sharing_cart_items:status'] = 'The status of the item';
+$string['privacy:metadata:sharing_cart_items:sortorder'] = 'The sort order of the item';
+$string['privacy:metadata:sharing_cart_items:original_course_fullname'] = 'The full name of the original course';
 $string['privacy:metadata:sharing_cart_items:timecreated'] = 'The time this item was created';
 $string['privacy:metadata:sharing_cart_items:timemodified'] = 'The time this item was modified';
