@@ -135,6 +135,17 @@ class entity extends \block_sharing_cart\app\entity
         return !$this->is_section();
     }
 
+    public function get_original_course_fullname(): ?string
+    {
+        return $this->record['original_course_fullname'] ?? null;
+    }
+
+    public function set_original_course_fullname(?string $value): self
+    {
+        $this->record['original_course_fullname'] = $value;
+        return $this;
+    }
+
     public function to_array(): array
     {
         return [
@@ -147,6 +158,7 @@ class entity extends \block_sharing_cart\app\entity
             'name' => format_string($this->get_name()),
             'status' => $this->get_status(),
             'sortorder' => $this->get_sortorder(),
+            'original_course_fullname' => $this->get_original_course_fullname(),
             'timecreated' => $this->get_timecreated(),
             'timemodified' => $this->get_timemodified(),
         ];

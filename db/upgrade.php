@@ -10,6 +10,8 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0): bool
 
     $dbman = $DB->get_manager();
 
+    $base_factory = \block_sharing_cart\app\factory::make();
+
     if ($oldversion < 2011111100) {
         $table = new xmldb_table('sharing_cart');
 
@@ -478,6 +480,87 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0): bool
         }
 
         upgrade_block_savepoint(true, 2024072900, 'sharing_cart');
+    }
+
+    if ($oldversion < 2024101800) {
+        $xmldb_table = new xmldb_table('block_sharing_cart_items');
+
+        if (!$dbman->field_exists($xmldb_table, 'original_course_fullname')) {
+            $dbman->add_field(
+                $xmldb_table,
+                new xmldb_field(
+                    'original_course_fullname', XMLDB_TYPE_CHAR, 255, notnull: false
+                )
+            );
+        }
+
+        $item_record_set = $DB->get_recordset('block_sharing_cart_items', [
+            'status' => \block_sharing_cart\app\item\entity::STATUS_BACKEDUP,
+            'parent_item_id' => null
+        ]);
+        foreach ($item_record_set as $item) {
+            try {
+                /**
+                 * @var \file_storage $fs
+                 */
+                $fs = get_file_storage();
+                $file = $fs->get_file_by_id($item->file_id);
+                if (!$file) {
+                    continue;
+                }
+
+                $course_info = $base_factory->backup()->handler()->get_backup_course_info($file);
+                $item->original_course_fullname = $course_info['fullname'] ?? null;
+
+                $DB->update_record(
+                    'block_sharing_cart_items',
+                    $item
+                );
+            } catch (\Exception) {
+            }
+        }
+        $item_record_set->close();
+
+        upgrade_block_savepoint(true, 2024101800, 'sharing_cart');
+    }
+
+    if ($oldversion < 2024111302) {
+        $xmldb_table = new xmldb_table('block_sharing_cart_items');
+        if ($dbman->table_exists($xmldb_table)) {
+            $xmldb_index = new xmldb_index('file_id');
+            if ($dbman->index_exists($xmldb_table, $xmldb_index)) {
+                $dbman->drop_index(
+                    $xmldb_table,
+                    $xmldb_index
+                );
+            }
+
+            $xmldb_index = new xmldb_index('user_id');
+            if ($dbman->index_exists($xmldb_table, $xmldb_index)) {
+                $dbman->drop_index(
+                    $xmldb_table,
+                    $xmldb_index
+                );
+            }
+
+            $xmldb_index = new xmldb_index('user_id', XMLDB_INDEX_NOTUNIQUE, ['user_id']);
+            if (!$dbman->index_exists($xmldb_table, $xmldb_index)) {
+                $dbman->add_index(
+                    $xmldb_table,
+                    $xmldb_index
+                );
+            }
+
+            $xmldb_index = new xmldb_index('file_id', XMLDB_INDEX_UNIQUE, ['file_id']);
+            if (!$dbman->index_exists($xmldb_table, $xmldb_index)) {
+                $dbman->add_index(
+                    $xmldb_table,
+                    $xmldb_index
+                );
+            }
+        }
+
+        upgrade_block_savepoint(true, 2024111302, 'sharing_cart');
     }
 
     return true;

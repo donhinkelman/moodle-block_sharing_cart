@@ -99,6 +99,7 @@ export default class QueueElement {
      * @return {Promise<void>}
      */
     async loadQueue(showSpinner = false, token = {}) {
+        // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             token.abort = () => {
                 reject();

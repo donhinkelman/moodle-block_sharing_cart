@@ -4,6 +4,8 @@ import Notification from "core/notification";
 import {get_strings} from "core/str";
 import Ajax from "core/ajax";
 
+const polls = [];
+
 export default class ItemElement {
     /**
      * @type {BaseFactory}
@@ -37,10 +39,22 @@ export default class ItemElement {
         this.#addEventListeners();
     }
 
-    #pollItem(currentTry = 0, retries = 10) {
+    #pollItem(currentTry = 0, retries = -1, uuid = null) {
+        if (uuid === null) {
+            uuid = crypto.randomUUID();
+
+            if (polls[this.getItemId()]) {
+                return;
+            }
+
+            polls[this.getItemId()] = uuid;
+        } else if (polls[this.getItemId()] !== uuid) {
+            return;
+        }
+
         currentTry += 1;
 
-        if (currentTry >= retries) {
+        if (retries !== -1 && currentTry >= retries) {
             return;
         }
 
@@ -49,20 +63,19 @@ export default class ItemElement {
             args: {
                 item_id: this.getItemId(),
             },
-            done: async (item) => {
+            done: async(item) => {
                 if (item.status === 0) {
-                    new Promise(
-                        (resolve) => {
-                            setTimeout(resolve, currentTry * 1000);
-                        }
-                    ).then(
-                        () => {
-                            this.#pollItem(currentTry, retries);
-                        }
-                    );
+                    // Cap the timeout at 10 seconds
+                    const timeOut = currentTry > 10 ? 10000 : currentTry * 1000;
 
+                    setTimeout(() => {
+                        this.#pollItem(currentTry, retries, uuid);
+                    }, timeOut);
                     return;
                 }
+
+                // Remove the item from the polls array
+                polls.splice(this.getItemId(), 1);
 
                 await this.#blockElement.renderItem(item);
             },
@@ -76,12 +89,11 @@ export default class ItemElement {
         this.#element.querySelector('.info').addEventListener('click', this.toggleCollapseRecursively.bind(this));
 
         const checkbox = this.#element.querySelector('input[data-action="bulk_select"][type="checkbox"]');
-        checkbox?.addEventListener('click', () => {
-            const bulkDeleteButton = document.getElementById('block_sharing_cart_bulk_delete_confirm');
+        checkbox?.addEventListener('click', (e) => {
+            e.stopImmediatePropagation();
 
-            const blockSelector = '.block.block_sharing_cart';
-            const checkboxSelector = blockSelector + ' .sharing_cart_item input[data-action="bulk_select"][type="checkbox"]';
-            bulkDeleteButton.disabled = document.querySelectorAll(checkboxSelector + ':checked').length <= 0;
+            this.#blockElement.updateSelectAllState();
+            this.#blockElement.updateBulkDeleteButtonState();
         });
 
         const actionsContainer = this.#element.querySelector(':scope > .item-body .sharing_cart_item_actions');
@@ -103,6 +115,7 @@ export default class ItemElement {
     async copyItemToCourse(e) {
         e.preventDefault();
         e.stopPropagation();
+        e.stopImmediatePropagation();
 
         await this.#blockElement.setClipboard(this);
     }
@@ -110,6 +123,7 @@ export default class ItemElement {
     async runNow(e) {
         e.preventDefault();
         e.stopPropagation();
+        e.stopImmediatePropagation();
 
         const currentTarget = e.currentTarget;
         currentTarget.disabled = true;
@@ -133,6 +147,7 @@ export default class ItemElement {
     async confirmDeleteItem(e) {
         e.preventDefault();
         e.stopPropagation();
+        e.stopImmediatePropagation();
 
         const strings = await get_strings([
             {
@@ -179,6 +194,10 @@ export default class ItemElement {
      */
     getItemElement() {
         return this.#element;
+    }
+
+    getStatus() {
+        return this.#element.dataset.status;
     }
 
     /**
@@ -247,6 +266,7 @@ export default class ItemElement {
     toggleCollapseRecursively(e) {
         e.preventDefault();
         e.stopPropagation();
+        e.stopImmediatePropagation();
 
         if (this.isModule() || this.#element.dataset.status !== '1') {
             return;
