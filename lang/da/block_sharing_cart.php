@@ -69,6 +69,7 @@ $string['settings:show_copy_section_in_block'] = 'Vis "Kopiér sektion" knap i b
 $string['settings:show_copy_section_in_block_desc'] = 'Vis "Kopiér sektion" knap i Delingskurv blokken. Hvis du skjuler knappen, kan brugerne stadig kopiere sektioner ved at trække og slippe dem ind i Delingskurven.';
 
 // Privacy
+$string['privacy:metadata:sharing_cart_items:tabledesc'] = 'Tabellen, der gemmer delingskurv elementer';
 $string['privacy:metadata:sharing_cart_items:user_id'] = 'Bruger-ID\'et, som elementet tilhører';
 $string['privacy:metadata:sharing_cart_items:file_id'] = 'Fil-ID\'et for backuppen';
 $string['privacy:metadata:sharing_cart_items:parent_item_id'] = 'Forældre elementets ID for elementet';
@@ -76,5 +77,7 @@ $string['privacy:metadata:sharing_cart_items:old_instance_id'] = 'Det gamle inst
 $string['privacy:metadata:sharing_cart_items:type'] = 'Typen af elementet';
 $string['privacy:metadata:sharing_cart_items:name'] = 'Navnet på elementet';
 $string['privacy:metadata:sharing_cart_items:status'] = 'Status for elementet';
+$string['privacy:metadata:sharing_cart_items:sortorder'] = 'Sorteringsrækkefølgen for elementet';
+$string['privacy:metadata:sharing_cart_items:original_course_fullname'] = 'Det fulde navn på det originale kursus';
 $string['privacy:metadata:sharing_cart_items:timecreated'] = 'Tidspunktet for oprettelsen af elementet';
 $string['privacy:metadata:sharing_cart_items:timemodified'] = 'Tidspunktet for ændringen af elementet';

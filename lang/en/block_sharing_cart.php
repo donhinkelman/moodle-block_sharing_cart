@@ -70,6 +70,7 @@ $string['settings:show_copy_section_in_block_desc'] = 'Show the "Copy section" i
 
 
 // Privacy
+$string['privacy:metadata:sharing_cart_items:tabledesc'] = 'The table that stores sharing cart items';
 $string['privacy:metadata:sharing_cart_items:user_id'] = 'The user ID which the item belongs to';
 $string['privacy:metadata:sharing_cart_items:file_id'] = 'The file ID of the backup';
 $string['privacy:metadata:sharing_cart_items:parent_item_id'] = 'The parent item ID of the item';
@@ -77,5 +78,7 @@ $string['privacy:metadata:sharing_cart_items:old_instance_id'] = 'The old instan
 $string['privacy:metadata:sharing_cart_items:type'] = 'The type of the item';
 $string['privacy:metadata:sharing_cart_items:name'] = 'The name of the item';
 $string['privacy:metadata:sharing_cart_items:status'] = 'The status of the item';
+$string['privacy:metadata:sharing_cart_items:sortorder'] = 'The sort order of the item';
+$string['privacy:metadata:sharing_cart_items:original_course_fullname'] = 'The full name of the original course';
 $string['privacy:metadata:sharing_cart_items:timecreated'] = 'The time this item was created';
 $string['privacy:metadata:sharing_cart_items:timemodified'] = 'The time this item was modified';

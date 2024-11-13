@@ -524,5 +524,44 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0): bool
         upgrade_block_savepoint(true, 2024101800, 'sharing_cart');
     }
 
+    if ($oldversion < 2024111302) {
+        $xmldb_table = new xmldb_table('block_sharing_cart_items');
+        if ($dbman->table_exists($xmldb_table)) {
+            $xmldb_index = new xmldb_index('file_id');
+            if ($dbman->index_exists($xmldb_table, $xmldb_index)) {
+                $dbman->drop_index(
+                    $xmldb_table,
+                    $xmldb_index
+                );
+            }
+
+            $xmldb_index = new xmldb_index('user_id');
+            if ($dbman->index_exists($xmldb_table, $xmldb_index)) {
+                $dbman->drop_index(
+                    $xmldb_table,
+                    $xmldb_index
+                );
+            }
+
+            $xmldb_index = new xmldb_index('user_id', XMLDB_INDEX_NOTUNIQUE, ['user_id']);
+            if (!$dbman->index_exists($xmldb_table, $xmldb_index)) {
+                $dbman->add_index(
+                    $xmldb_table,
+                    $xmldb_index
+                );
+            }
+
+            $xmldb_index = new xmldb_index('file_id', XMLDB_INDEX_UNIQUE, ['file_id']);
+            if (!$dbman->index_exists($xmldb_table, $xmldb_index)) {
+                $dbman->add_index(
+                    $xmldb_table,
+                    $xmldb_index
+                );
+            }
+        }
+
+        upgrade_block_savepoint(true, 2024111302, 'sharing_cart');
+    }
+
     return true;
 }

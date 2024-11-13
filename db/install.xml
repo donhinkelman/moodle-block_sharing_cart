@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/sharing_cart/db" VERSION="2017122000" COMMENT="XMLDB file for Moodle sharing cart"
+<XMLDB PATH="blocks/sharing_cart/db" VERSION="2024111302" COMMENT="XMLDB file for Moodle sharing cart"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -23,7 +23,7 @@
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
             </KEYS>
             <INDEXES>
-                <INDEX NAME="user_id" UNIQUE="false" FIELDS="file_id"/>
+                <INDEX NAME="user_id" UNIQUE="false" FIELDS="user_id"/>
                 <INDEX NAME="file_id" UNIQUE="true" FIELDS="file_id"/>
                 <INDEX NAME="parent_item_id" UNIQUE="false" FIELDS="parent_item_id"/>
                 <INDEX NAME="type" UNIQUE="false" FIELDS="type"/>
