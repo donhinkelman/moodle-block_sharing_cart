@@ -18,10 +18,14 @@ require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 class handler
 {
     private base_factory $base_factory;
+    private \moodle_database $db;
 
     public function __construct(base_factory $base_factory)
     {
+        Global $DB;
+
         $this->base_factory = $base_factory;
+        $this->db = $DB;
     }
 
     private function get_backup_info(\stored_file $file): object
@@ -45,9 +49,11 @@ class handler
     ): asynchronous_backup_task {
         global $USER;
 
+        $course_id = $this->db->get_record('course_modules', ['id' =>  $course_module_id], 'course',MUST_EXIST)->course;
+
         $backup_controller = $this->base_factory->backup()->backup_controller(
-            \backup::TYPE_1ACTIVITY,
-            $course_module_id,
+            \backup::TYPE_1COURSE,
+            $course_id,
             $USER->id
         );
 
@@ -58,9 +64,11 @@ class handler
     {
         global $USER;
 
+        $course_id = $this->db->get_record('course_sections', ['id' =>  $section_id], 'course',MUST_EXIST)->course;
+
         $backup_controller = $this->base_factory->backup()->backup_controller(
-            \backup::TYPE_1SECTION,
-            $section_id,
+            \backup::TYPE_1COURSE,
+            $course_id,
             $USER->id
         );
 
@@ -107,7 +115,6 @@ class handler
         array $settings = []
     ): asynchronous_backup_task {
         $asynctask = new asynchronous_backup_task();
-        $asynctask->set_blocking(false);
         $asynctask->set_custom_data([
             'backupid' => $backup_controller->get_backupid(),
             'item' => $root_item->to_array(),

@@ -35,7 +35,11 @@ GPL v3
 
 Change Log
 ----------
-
+* X.X, release x 2025.XX.XX
+    * Changed the section and activity backups to make a course backup instead,
+      that only containing the section or activity
+    * Added test to getting the settings for selecting sections and activities
+    * Removed multiple deprecations
 * 5.0, release 1 2024.08.05
     * Total refactor of the whole plugin:
         * Improvements

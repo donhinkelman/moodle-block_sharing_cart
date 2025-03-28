@@ -10,6 +10,7 @@ defined('MOODLE_INTERNAL') || die();
 use block_sharing_cart\app\factory;
 use async_helper;
 use block_sharing_cart\app\item\entity;
+use block_sharing_cart\task\backup_settings_helper;
 
 global $CFG;
 require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
@@ -134,6 +135,8 @@ class asynchronous_backup_task extends \core\task\adhoc_task
 
                 $settings['anonymize'] = true;
             }
+            $helper = new backup_settings_helper();
+            $settings += $helper->get_course_settings_by_item($custom_data->item, $settings['users']);
 
             $plan = $backup_controller->get_plan();
             foreach ($settings as $name => $value) {
@@ -256,11 +259,11 @@ class asynchronous_backup_task extends \core\task\adhoc_task
                         'name' => $modulename,
                         'visible' => true
                     ]) !== false;
-                mtrace(
-                    '...' . ($include_activity ? "Including activity: (id: $cm_id)" : "Excluding activity: (id: $cm_id)")
-                );
 
-                $task->get_setting('included')->set_value($include_activity);
+                if ($include_activity === false){
+                    mtrace('...' . ("Excluding activity: (id: $cm_id)"));
+                    $task->get_setting('included')->set_value(false);
+                }
             }
         }
     }
