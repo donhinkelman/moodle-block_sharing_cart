@@ -50,6 +50,7 @@ class item implements \renderable, \core\output\named_templatable
             )->get_parent_item_recursively_by_item($item)->get_file_id() !== null;
         $item_context->status_finished = $item->get_status() === entity::STATUS_BACKEDUP;
         $item_context->status_failed = $item->get_status() === entity::STATUS_BACKUP_FAILED;
+        $item_context->is_current_version = $item->get_version() === entity::CURRENT_BACKUP_VERSION;
 
         $item_context->module_is_disabled_on_site = $item->is_module() === true && $DB->get_record('modules', [
                 'name' => str_replace('mod_', '', $item->get_type()),

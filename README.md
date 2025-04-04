@@ -35,11 +35,20 @@ GPL v3
 
 Change Log
 ----------
-* X.X, release x 2025.XX.XX
-    * Changed the section and activity backups to make a course backup instead,
-      that only containing the section or activity
-    * Added test to getting the settings for selecting sections and activities
-    * Removed multiple deprecations
+* 6.0, release 1 2025.04.03
+    * Major changes
+        * Changed the section and activity backups to use the course type backup.
+        * Added test to getting the settings for selecting sections and activities.
+        * Added version field to block_sharing_cart_items.
+    * Minor changes
+        * Fixed various deprecations.
+        * Fixed visual errors.
+    * Old sharing cart items
+        * No changes have been made to the restore part of the plugin, so older sharing cart items still works
+          the same way they did before. (previously failing modules will still fail.)
+        * Old sharing cart items will be given a version number (1 or 2),
+          depended on if they were inserted doing the upgrade that also created the block_sharing_cart_items or later.
+        * Old sharing cart items and sections will be marked with a blue info icon.
 * 5.0, release 1 2024.08.05
     * Total refactor of the whole plugin:
         * Improvements

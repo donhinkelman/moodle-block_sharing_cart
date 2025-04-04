@@ -3,16 +3,29 @@
 {{/status_awaiting}}
 {{#status_finished}}
     {{#is_section}}
-        {{#has_file_id}}
+        {{#is_current_version}}
             <i class="fa fa-folder-o"></i>
-        {{/has_file_id}}
-        {{^has_file_id}}
-            <i class="fa fa-exclamation-triangle text-warning"
-               title="{{#str}}legacy_section_info, block_sharing_cart{{/str}}"></i>
-        {{/has_file_id}}
+        {{/is_current_version}}
+        {{^is_current_version}}
+            {{#has_file_id}}
+                <i class="fa fa-exclamation-circle text-info"
+                   title="{{#str}}old_version_section_info, block_sharing_cart{{/str}}"></i>
+
+            {{/has_file_id}}
+            {{^has_file_id}}
+                <i class="fa fa-exclamation-triangle text-warning"
+                    title="{{#str}}legacy_section_info, block_sharing_cart{{/str}}"></i>
+            {{/has_file_id}}
+        {{/is_current_version}}
     {{/is_section}}
     {{#is_module}}
-        <img src="{{mod_icon}}" alt=""/>
+        {{#is_current_version}}
+            <img src="{{mod_icon}}" alt=""/>
+        {{/is_current_version}}
+        {{^is_current_version}}
+            <i class="fa fa-exclamation-circle text-info"
+               title="{{#str}}old_version_module_info, block_sharing_cart{{/str}}"></i>
+        {{/is_current_version}}
     {{/is_module}}
 {{/status_finished}}
 {{#status_failed}}

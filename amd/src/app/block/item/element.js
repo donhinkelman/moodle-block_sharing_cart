@@ -1,4 +1,4 @@
-import ModalFactory from 'core/modal_factory';
+import ModalDeleteCancel from 'core/modal_delete_cancel';
 import ModalEvents from 'core/modal_events';
 import Notification from "core/notification";
 import {get_strings} from "core/str";
@@ -168,8 +168,7 @@ export default class ItemElement {
             }
         ]);
 
-        const modal = await ModalFactory.create({
-            type: ModalFactory.types.DELETE_CANCEL,
+        const modal = await ModalDeleteCancel.create({
             title: strings[0] + ': "' + this.getItemName().slice(0, 50).trim() + '"',
             body: strings[1],
             buttons: {
@@ -246,7 +245,10 @@ export default class ItemElement {
         }
 
         const iconElement = item.querySelector('.info > i');
-        if (!iconElement.classList.contains('fa-exclamation-triangle')) {
+        if (
+            !iconElement.classList.contains('fa-exclamation-triangle') &&
+            !iconElement.classList.contains('fa-exclamation-circle')
+        ) {
             iconElement.classList.remove('fa-folder-o', 'fa-folder-open-o');
             iconElement.classList.add(item.dataset.collapsed === 'true' ? 'fa-folder-o' : 'fa-folder-open-o');
         }

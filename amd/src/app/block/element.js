@@ -1,5 +1,6 @@
 import Sortable from '../../lib/sortablejs';
-import ModalFactory from 'core/modal_factory';
+import ModalDeleteCancel from 'core/modal_delete_cancel';
+import ModalSaveCancel from 'core/modal_save_cancel';
 import ModalEvents from 'core/modal_events';
 import {get_string, get_strings} from "core/str";
 import Ajax from "core/ajax";
@@ -206,7 +207,6 @@ export default class BlockElement {
 
             this.getItemCheckboxes().forEach((checkbox) => {
                 checkbox.classList.remove('d-none');
-                checkbox.checked = false;
             });
         });
 
@@ -216,11 +216,13 @@ export default class BlockElement {
             bulkDeleteButton.disabled = true;
             enableBulkDeleteButton.classList.remove('d-none');
             selectAllContainer.classList.add('d-none');
+            this.#bulkDeleteEnabled = false;
 
             this.getItemCheckboxes().forEach((checkbox) => {
                 checkbox.classList.add('d-none');
                 checkbox.checked = false;
             });
+            this.updateSelectAllState();
         });
 
         bulkDeleteButton.addEventListener('click', async () => {
@@ -452,8 +454,7 @@ export default class BlockElement {
         /**
          * @type {Modal}
          */
-        const modal = await ModalFactory.create({
-            type: ModalFactory.types.SAVE_CANCEL,
+        const modal = await ModalSaveCancel.create({
             title: strings[0] + ': "' + itemName.slice(0, 50).trim() + '" ' + strings[1],
             body: html,
             buttons: {
@@ -687,8 +688,7 @@ export default class BlockElement {
             }
         );
 
-        const modal = await ModalFactory.create({
-            type: ModalFactory.types.SAVE_CANCEL,
+        const modal = await ModalSaveCancel.create({
             title: strings[0] + ': ' +
                 '"' + item.getItemName().slice(0, 50).trim() + '"' +
                 ' ' + strings[1] + ': ' +
@@ -728,8 +728,7 @@ export default class BlockElement {
             }
         ]);
 
-        const modal = await ModalFactory.create({
-            type: ModalFactory.types.DELETE_CANCEL,
+        const modal = await ModalDeleteCancel.create({
             title: strings[0],
             body: strings[1],
             buttons: {
