@@ -103,4 +103,4 @@ jobs:
       - name: Running PHPUnit tests
         env:
           dbtype: ${{ matrix.db }}
-        run: $GITHUB_WORKSPACE/vendor/bin/phpunit -c $GITHUB_WORKSPACE/phpunit.xml --testsuite=block_sharing_cart_testsuite -v --testdox
+        run: $GITHUB_WORKSPACE/vendor/bin/phpunit -c $GITHUB_WORKSPACE/phpunit.xml --testsuite=block_sharing_cart_testsuite --testdox
