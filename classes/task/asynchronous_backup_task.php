@@ -106,6 +106,7 @@ class asynchronous_backup_task extends \core\task\adhoc_task
         try {
             mtrace('Executing before_backup_started_hook...');
             $custom_data = $this->get_custom_data();
+            $item_entity = factory::make()->item()->repository()->get_by_id($custom_data->item->id);
 
             $settings = [
                 'role_assignments' => false,
@@ -136,7 +137,7 @@ class asynchronous_backup_task extends \core\task\adhoc_task
                 $settings['anonymize'] = true;
             }
             $helper = new backup_settings_helper();
-            $settings += $helper->get_course_settings_by_item($custom_data->item, $settings['users']);
+            $settings += $helper->get_course_settings_by_item($item_entity, $settings['users']);
 
             $plan = $backup_controller->get_plan();
             foreach ($settings as $name => $value) {
