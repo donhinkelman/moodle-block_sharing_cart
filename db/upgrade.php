@@ -563,7 +563,7 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0): bool
         upgrade_block_savepoint(true, 2024111302, 'sharing_cart');
     }
 
-    if ($oldversion < 2025040400) {
+    if ($oldversion < 2025040700) {
         $xmldb_table = new xmldb_table('block_sharing_cart_items');
         if (!$dbman->field_exists($xmldb_table, 'version')) {
             $dbman->add_field(
@@ -608,7 +608,7 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0): bool
         }
 
         // Sharing_cart savepoint reached.
-        upgrade_block_savepoint(true, 2025040400, 'sharing_cart');
+        upgrade_block_savepoint(true, 2025040700, 'sharing_cart');
     }
 
     return true;

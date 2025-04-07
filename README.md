@@ -29,19 +29,33 @@ Capabilities
 - moodle/backup:anonymise
     - Required to be able to anonymize user data. (A checkbox will appear when copying an activity or section)
 
+Versions
+-------
+* Version 1:
+  * Items added from block_sharing_cart_sections & block_sharing_cart (pre-5.0 upgrade).
+    Activities are grouped to simulate sections. Backups are individual files.
+* Version 2:
+  * Items added in 5.0 release 1. Uses TYPE_1SECTION for sections and TYPE_1ACTIVITY for activities.
+* Version 3:
+  * Items added in 6.0 release 1+. Uses TYPE_1COURSE for both sections and activities. TYPE_1SECTION and
+    TYPE_1ACTIVITY backups have proven unreliable; TYPE_1COURSE offers more stable backup/restore functionality.
+
+Important: This versioning helps users identify legacy sharing cart items.
+As of 6.0 release 1, restoration of Legacy items is still supported.
+
 License
 -------
 GPL v3
 
 Change Log
 ----------
-* 6.0, release 1 2025.04.03
+* 6.0, release 1 2025.04.07
     * Major changes
         * Changed the section and activity backups to use the course type backup.
         * Added test to getting the settings for selecting sections and activities.
         * Added version field to block_sharing_cart_items.
     * Minor changes
-        * Fixed various deprecations.
+        * Fixed deprecation.
         * Fixed visual errors.
     * Old sharing cart items
         * No changes have been made to the restore part of the plugin, so older sharing cart items still works

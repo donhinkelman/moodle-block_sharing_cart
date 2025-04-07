@@ -7,10 +7,10 @@ defined('MOODLE_INTERNAL') || die();
 
 // @codeCoverageIgnoreEnd
 
-use block_sharing_cart\app\factory;
 use async_helper;
+use block_sharing_cart\app\backup\backup_settings_helper;
+use block_sharing_cart\app\factory;
 use block_sharing_cart\app\item\entity;
-use block_sharing_cart\task\backup_settings_helper;
 
 global $CFG;
 require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');

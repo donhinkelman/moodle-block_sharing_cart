@@ -1,4 +1,4 @@
-import ModalDeleteCancel from 'core/modal_delete_cancel';
+import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 import Notification from "core/notification";
 import {get_strings} from "core/str";
@@ -168,7 +168,8 @@ export default class ItemElement {
             }
         ]);
 
-        const modal = await ModalDeleteCancel.create({
+        const modal = await ModalFactory.create({
+            type: ModalFactory.types.DELETE_CANCEL,
             title: strings[0] + ': "' + this.getItemName().slice(0, 50).trim() + '"',
             body: strings[1],
             buttons: {

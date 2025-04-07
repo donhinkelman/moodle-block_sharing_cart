@@ -1,6 +1,5 @@
 import Sortable from '../../lib/sortablejs';
-import ModalDeleteCancel from 'core/modal_delete_cancel';
-import ModalSaveCancel from 'core/modal_save_cancel';
+import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 import {get_string, get_strings} from "core/str";
 import Ajax from "core/ajax";
@@ -454,7 +453,8 @@ export default class BlockElement {
         /**
          * @type {Modal}
          */
-        const modal = await ModalSaveCancel.create({
+        const modal = await ModalFactory.create({
+            type: ModalFactory.types.SAVE_CANCEL,
             title: strings[0] + ': "' + itemName.slice(0, 50).trim() + '" ' + strings[1],
             body: html,
             buttons: {
@@ -688,7 +688,8 @@ export default class BlockElement {
             }
         );
 
-        const modal = await ModalSaveCancel.create({
+        const modal = await ModalFactory.create({
+            type: ModalFactory.types.SAVE_CANCEL,
             title: strings[0] + ': ' +
                 '"' + item.getItemName().slice(0, 50).trim() + '"' +
                 ' ' + strings[1] + ': ' +
@@ -728,7 +729,8 @@ export default class BlockElement {
             }
         ]);
 
-        const modal = await ModalDeleteCancel.create({
+        const modal = await ModalFactory.create({
+            type: ModalFactory.types.DELETE_CANCEL,
             title: strings[0],
             body: strings[1],
             buttons: {

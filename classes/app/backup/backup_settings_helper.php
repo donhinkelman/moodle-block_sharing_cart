@@ -14,11 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace block_sharing_cart\task;
+namespace block_sharing_cart\app\backup;
+
+use block_sharing_cart\app\item\entity;
 
 class backup_settings_helper
 {
-    public function get_course_settings_by_item(object $item, bool $users): array
+    public function get_course_settings_by_item(entity $item, bool $users): array
     {
         $settings = [];
 
@@ -35,7 +37,7 @@ class backup_settings_helper
         return $settings;
     }
 
-    private function get_ids_by_item(object $item): array
+    private function get_ids_by_item(entity $item): array
     {
         $module_id = null;
 
@@ -66,8 +68,8 @@ class backup_settings_helper
             'section_id' => $section_id
         ];
         $output = $DB->get_records_sql($sql, $params);
-        if ($output === []) {
-            throw new \Exception('No section found with that id.');
+        if (empty($output)) {
+            throw new \Exception('No sections found by section id: ' . $section_id);
         }
         return $output;
     }
@@ -86,7 +88,7 @@ class backup_settings_helper
             'section_id' => $section_id
         ];
         $output = $DB->get_records_sql($sql, $params);
-        if ($output === []){
+        if (empty($output)){
             throw new \Exception('Course have no modules.');
         }
         return $output;
@@ -108,7 +110,7 @@ class backup_settings_helper
         return $settings;
     }
 
-    private function get_module_settings(array $modules, int $section_id, int|null $module_id, bool $users): array
+    private function get_module_settings(array $modules, int $section_id, ?int $module_id, bool $users): array
     {
         $settings = [];
         foreach ($modules as $module) {
@@ -130,7 +132,7 @@ class backup_settings_helper
             });
         }
 
-        if ($keep_modules === []){
+        if (empty($keep_modules)){
             throw new \Exception('No modules to include in section.');
         }
 

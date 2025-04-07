@@ -14,37 +14,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace block_sharing_cart\integration\task;
+namespace block_sharing_cart\integration\app\backup;
 
 // @codeCoverageIgnoreStart
 defined('MOODLE_INTERNAL') || die();
 
 // @codeCoverageIgnoreEnd
 
-use block_accessreview\external\get_module_data;
+use block_sharing_cart\app\backup\backup_settings_helper;
 use block_sharing_cart\app\item\entity;
-use block_sharing_cart\task\backup_settings_helper;
-use core\context\module;
-use core\session\exception;
 
 
 class backup_settings_helper_test extends \advanced_testcase
 {
     protected backup_settings_helper $helper;
 
-    protected \stdClass $course1;
-    protected \stdClass $course2;
-    protected \stdClass $course3;
+    protected object $course1;
+    protected object $course2;
+    protected object $course3;
 
-    protected \stdClass $section1;
-    protected \stdClass $section2;
-    protected \stdClass $section3;
-    protected \stdClass $section4;
-
-    protected \stdClass $module1;
-    protected \stdClass $module2;
-    protected \stdClass $module3;
-    protected \stdClass $module4;
+    protected object $section1;
+    protected object $section2;
+    protected object $section3;
+    protected object $section4;
+    protected object $module1;
+    protected object $module2;
+    protected object $module3;
+    protected object $module4;
 
     protected function setUp(): void
     {
@@ -230,7 +226,7 @@ class backup_settings_helper_test extends \advanced_testcase
         try {
             $this->helper->get_course_settings_by_item($item, true);
         }catch (\Exception $e){
-            $this->assertEquals('No section found with that id.',$e->getMessage());
+            $this->assertEquals('No sections found by section id: ' . $this->module1->cmid ,$e->getMessage());
             throw new \Exception('');
         }
     }
@@ -313,22 +309,22 @@ class backup_settings_helper_test extends \advanced_testcase
         $this->section4 = $DB->get_record('course_sections',['course' => $this->course3->id,'section' => 0]);
     }
 
-    protected function get_module_include(\stdClass $module): string
+    protected function get_module_include(object $module): string
     {
         return 'page_' . $module->cmid . '_included';
     }
 
-    private function get_module_userinfo(\stdClass $module): string
+    private function get_module_userinfo(object $module): string
     {
         return 'page_' . $module->cmid . '_userinfo';
     }
 
-    protected function get_section_include(\stdClass $section): string
+    protected function get_section_include(object $section): string
     {
         return 'section_' . $section->id . '_included';
     }
 
-    private function get_section_userinfo(\stdClass $section): string
+    private function get_section_userinfo(object $section): string
     {
         return 'section_' . $section->id . '_userinfo';
     }
