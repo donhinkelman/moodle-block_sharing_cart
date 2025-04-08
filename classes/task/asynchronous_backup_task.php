@@ -8,8 +8,7 @@ defined('MOODLE_INTERNAL') || die();
 // @codeCoverageIgnoreEnd
 
 use async_helper;
-use block_sharing_cart\app\backup\backup_settings_helper;
-use block_sharing_cart\app\factory;
+use block_sharing_cart\app\factory as base_factory;
 use block_sharing_cart\app\item\entity;
 
 global $CFG;
@@ -18,6 +17,8 @@ require_once($CFG->dirroot . '/backup/moodle2/backup_plan_builder.class.php');
 
 class asynchronous_backup_task extends \core\task\adhoc_task
 {
+    protected base_factory $base_factory;
+
     /**
      * Should always resemble
      * @see \core\task\asynchronous_backup_task::execute
@@ -28,7 +29,8 @@ class asynchronous_backup_task extends \core\task\adhoc_task
      */
     public function execute(): void
     {
-        global $DB;
+        $this->base_factory = base_factory::make();
+        $db = $this->base_factory->moodle()->db();
 
         /*
          * This task cannot be rerun, so we need to handle all exceptions.
@@ -40,7 +42,7 @@ class asynchronous_backup_task extends \core\task\adhoc_task
             $started = time();
 
             $backupid = $this->get_custom_data()->backupid;
-            $backuprecord = $DB->get_record(
+            $backuprecord = $db->get_record(
                 'backup_controllers',
                 ['backupid' => $backupid],
                 'id, controller',
@@ -106,7 +108,15 @@ class asynchronous_backup_task extends \core\task\adhoc_task
         try {
             mtrace('Executing before_backup_started_hook...');
             $custom_data = $this->get_custom_data();
-            $item_entity = factory::make()->item()->repository()->get_by_id($custom_data->item->id);
+
+            $db = $this->base_factory->moodle()->db();
+            $item_entity = $this->base_factory->item()->repository()->get_by_id($custom_data->item->id);
+
+            if ($item_entity->get_type() === 'section') {
+                $db->get_record('course_sections',['id' => $item_entity->get_old_instance_id()] , strictness: MUST_EXIST);
+            } else {
+                $db->get_record('course_modules',['id' => $item_entity->get_old_instance_id()] , strictness: MUST_EXIST);
+            }
 
             $settings = [
                 'role_assignments' => false,
@@ -136,8 +146,7 @@ class asynchronous_backup_task extends \core\task\adhoc_task
 
                 $settings['anonymize'] = true;
             }
-            $helper = new backup_settings_helper();
-            $settings += $helper->get_course_settings_by_item($item_entity, $settings['users']);
+            $settings += $this->base_factory->backup()->settings_helper()->get_course_settings_by_item($item_entity, $settings['users']);
 
             $plan = $backup_controller->get_plan();
             foreach ($settings as $name => $value) {
@@ -167,11 +176,9 @@ class asynchronous_backup_task extends \core\task\adhoc_task
         try {
             mtrace('Executing after_backup_finished_hook...');
 
-            $base_factory = factory::make();
-
             $custom_data = $this->get_custom_data();
             $item = $custom_data->item ?? null;
-            $root_item = $base_factory->item()->repository()->get_by_id($item->id);
+            $root_item = $this->base_factory->item()->repository()->get_by_id($item->id);
             if (!$root_item) {
                 throw new \Exception(
                     "Couldn't fetch item (id: {$item->id})"
@@ -198,7 +205,7 @@ class asynchronous_backup_task extends \core\task\adhoc_task
             $sharing_cart_file = $this->copy_backup_file_to_sharing_cart_filearea($file, $root_item);
 
             mtrace("Updating items in sharing cart using contents of backup file...");
-            $base_factory->item()->repository()->update_sharing_cart_item_with_backup_file(
+            $this->base_factory->item()->repository()->update_sharing_cart_item_with_backup_file(
                 $root_item,
                 $sharing_cart_file
             );
@@ -247,7 +254,7 @@ class asynchronous_backup_task extends \core\task\adhoc_task
     private function filter_away_disabled_course_modules(
         \backup_controller $backup_controller
     ): void {
-        global $DB;
+        $db = $this->base_factory->moodle()->db();
 
         mtrace("Excluding activities which are disabled on the site...");
 
@@ -256,7 +263,7 @@ class asynchronous_backup_task extends \core\task\adhoc_task
                 $cm_id = (int)$task->get_moduleid();
                 $modulename = $task->get_modulename();
 
-                $include_activity = $DB->get_record('modules', [
+                $include_activity = $db->get_record('modules', [
                         'name' => $modulename,
                         'visible' => true
                     ]) !== false;
@@ -271,24 +278,22 @@ class asynchronous_backup_task extends \core\task\adhoc_task
 
     private function fail_task(): void
     {
-        global $DB;
-
-        $base_factory = factory::make();
+        $db = $this->base_factory->moodle()->db();
 
         mtrace("Async backup failed, trying to set item status to failed...");
 
         $custom_data = $this->get_custom_data();
         $item = $custom_data->item ?? null;
-        $root_item = $base_factory->item()->repository()->get_by_id($item->id);
+        $root_item = $this->base_factory->item()->repository()->get_by_id($item->id);
         if (!$root_item) {
             mtrace(
-                "Couldn't fetch item (id: {$item->id}) from {$DB->get_prefix()}{$base_factory->item()->repository()->get_table()}, aborting..."
+                "Couldn't fetch item (id: {$item->id}) from {$db->get_prefix()}{$this->base_factory->item()->repository()->get_table()}, aborting..."
             );
             return;
         }
 
         $root_item->set_status(entity::STATUS_BACKUP_FAILED);
-        $base_factory->item()->repository()->update($root_item);
+        $this->base_factory->item()->repository()->update($root_item);
 
         mtrace("Async backup failed, item status has been set to failed, aborting...");
     }

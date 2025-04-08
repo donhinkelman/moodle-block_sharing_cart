@@ -49,7 +49,7 @@ GPL v3
 
 Change Log
 ----------
-* 6.0, release 1 2025.04.07
+* 6.0, release 1 2025.04.08
     * Major changes
         * Changed the section and activity backups to use the course type backup.
         * Added test to getting the settings for selecting sections and activities.
@@ -57,6 +57,7 @@ Change Log
     * Minor changes
         * Fixed deprecation.
         * Fixed visual errors.
+        * Added a factory for moodle globals.
     * Old sharing cart items
         * No changes have been made to the restore part of the plugin, so older sharing cart items still works
           the same way they did before. (previously failing modules will still fail.)

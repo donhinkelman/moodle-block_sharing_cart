@@ -1,38 +1,36 @@
 <?php
-// This file is part of Moodle - https://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace block_sharing_cart\app\backup;
 
+// @codeCoverageIgnoreStart
+defined('MOODLE_INTERNAL') || die();
+// @codeCoverageIgnoreEnd
+
 use block_sharing_cart\app\item\entity;
+use block_sharing_cart\app\factory as base_factory;
 
 class backup_settings_helper
 {
-    public function get_course_settings_by_item(entity $item, bool $users): array
+    private base_factory $base_factory;
+
+    public function __construct(base_factory $base_factory)
+    {
+        $this->base_factory = $base_factory;
+    }
+
+    public function get_course_settings_by_item(entity $item, bool $include_users): array
     {
         $settings = [];
 
-        [$section_id, $module_id] = $this->get_ids_by_item($item);
+        [$section_id, $course_module_id] = $this->get_ids_by_item($item);
 
         $sections = $this->get_course_sections_by_section_id($section_id);
 
-        $modules = $this->get_course_modules_by_section_id($section_id);
+        $course_modules = $this->get_course_modules_by_section_id($section_id);
 
-        $settings += $this->get_module_settings($modules, $section_id, $module_id, $users);
+        $settings += $this->get_course_module_settings($course_modules, $section_id, $course_module_id, $include_users);
 
-        $settings += $this->get_section_settings($sections, $section_id, $users);
+        $settings += $this->get_section_settings($sections, $section_id, $include_users);
 
         return $settings;
     }
@@ -44,20 +42,20 @@ class backup_settings_helper
         if($item->type === 'section') {
             return [$item->old_instance_id, $module_id];
         }
-        global $DB;
         $module_id = $item->old_instance_id;
-        $course = $DB->get_record('course_modules',['id' => $module_id],'section');
-        if ($course === false){
-            throw new \Exception('Course module Not found.');
-        }
-        $section_id = $course->section;
+        $section_id = $this->base_factory->moodle()->db()->get_record(
+            'course_modules',
+            ['id' => $module_id],
+            'section',
+            MUST_EXIST
+        )->section;
 
         return [$section_id, $module_id];
     }
 
-    private function get_course_sections_by_section_id(mixed $section_id): array
+    private function get_course_sections_by_section_id(int $section_id): array
     {
-        global $DB;
+        $db = $this->base_factory->moodle()->db();
         // Get all sections in the course by section_id
         $sql = "SELECT cs.id, cs.sequence
                    FROM {course_sections} cs
@@ -67,77 +65,69 @@ class backup_settings_helper
         $params =  [
             'section_id' => $section_id
         ];
-        $output = $DB->get_records_sql($sql, $params);
-        if (empty($output)) {
-            throw new \Exception('No sections found by section id: ' . $section_id);
-        }
-        return $output;
+
+        return $db->get_records_sql($sql, $params);
     }
 
     private function get_course_modules_by_section_id(int $section_id): array
     {
-        global $DB;
-        // Get all course_modules in within the course by section_id
-        $sql = "SELECT cm.id, cm.section, mo.name
-                  FROM {course_modules} cm
-            INNER JOIN {modules} as mo on cm.module = mo.id
-                 WHERE cm.course = (SELECT cs.course
-                                      FROM {course_sections} cs
-                                     WHERE cs.id = :section_id)";
+        $db = $this->base_factory->moodle()->db();
+        // Get all course_modules within course by section_id
+        $sql = "SELECT cm.id, cm.section, m.name
+                FROM {course_modules} cm
+                JOIN {modules} as m on cm.module = m.id
+                WHERE cm.course = (SELECT cs.course
+                                   FROM {course_sections} cs
+                                   WHERE cs.id = :section_id)";
         $params = [
             'section_id' => $section_id
         ];
-        $output = $DB->get_records_sql($sql, $params);
-        if (empty($output)){
-            throw new \Exception('Course have no modules.');
-        }
-        return $output;
+
+        return $db->get_records_sql($sql, $params);
     }
 
-    private function get_section_settings(array $sections, int $section_id, bool $users): array
+    private function get_section_settings(array $sections, int $section_id, bool $include_users): array
     {
         $settings = [];
         foreach ($sections as $section){
-            $settings += [
-                "section_".$section->id."_userinfo" => false,
-                "section_".$section->id."_included" => false
-            ];
+            $settings["section_".$section->id."_userinfo"] = false;
+            $settings["section_".$section->id."_included"] = false;
         }
 
-        $settings["section_".$section_id."_userinfo"] = $users;
+        $settings["section_".$section_id."_userinfo"] = $include_users;
         $settings["section_".$section_id."_included"] = true;
 
         return $settings;
     }
 
-    private function get_module_settings(array $modules, int $section_id, ?int $module_id, bool $users): array
+    private function get_course_module_settings(
+        array $course_modules,
+        int $section_id,
+        ?int $course_module_id,
+        bool $include_users
+    ): array
     {
         $settings = [];
-        foreach ($modules as $module) {
-            $settings += [
-                $module->name . "_" . $module->id . "_userinfo" => false,
-                $module->name . "_" . $module->id . "_included" => false
-            ];
+        foreach ($course_modules as $module) {
+            $settings[$module->name . "_" . $module->id . "_userinfo"] = false;
+            $settings[$module->name . "_" . $module->id . "_included"] = false;
+
         }
 
-        if ($module_id !== null) {
+        if ($course_module_id !== null) {
             // get the one module
-            $keep_modules = array_filter($modules, function ($v) use ($module_id) {
-                return (int) $v->id === $module_id;
+            $keep_modules = array_filter($course_modules, static function ($course_module) use ($course_module_id) {
+                return (int) $course_module->id === $course_module_id;
             });
         } else {
             // get all section modules
-            $keep_modules = array_filter($modules, function ($v) use ($section_id) {
-                return (int) $v->section === $section_id;
+            $keep_modules = array_filter($course_modules, static function ($course_module) use ($section_id) {
+                return (int) $course_module->section === $section_id;
             });
         }
 
-        if (empty($keep_modules)){
-            throw new \Exception('No modules to include in section.');
-        }
-
         foreach ($keep_modules as $module) {
-            $settings[$module->name . "_" . $module->id . "_userinfo"] = $users;
+            $settings[$module->name . "_" . $module->id . "_userinfo"] = $include_users;
             $settings[$module->name . "_" . $module->id . "_included"] = true;
         }
         return $settings;

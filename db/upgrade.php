@@ -563,52 +563,54 @@ function xmldb_block_sharing_cart_upgrade($oldversion = 0): bool
         upgrade_block_savepoint(true, 2024111302, 'sharing_cart');
     }
 
-    if ($oldversion < 2025040700) {
+    if ($oldversion < 2025040800) {
         $xmldb_table = new xmldb_table('block_sharing_cart_items');
-        if (!$dbman->field_exists($xmldb_table, 'version')) {
-            $dbman->add_field(
-                $xmldb_table,
-                new xmldb_field(
-                    'version', XMLDB_TYPE_INTEGER, '10',true, XMLDB_NOTNULL,
-                    null, 0, 'original_course_fullname'
-                )
-            );
-        }
 
-        $item_records = $DB->get_recordset('block_sharing_cart_items');
-        foreach ($item_records as $item_record) {
-            if ($item_record->version !== null)
-            {
-                continue;
+        if ($dbman->table_exists($xmldb_table)) {
+            if (!$dbman->field_exists($xmldb_table, 'version')) {
+                $dbman->add_field(
+                    $xmldb_table,
+                    new xmldb_field(
+                        'version', XMLDB_TYPE_INTEGER, '10', true, XMLDB_NOTNULL,
+                        null, 0, 'original_course_fullname'
+                    )
+                );
             }
 
-            $version = $item_record->old_instance_id === '0' ? 1 : 2 ;
+            $item_records = $DB->get_recordset('block_sharing_cart_items');
+            foreach ($item_records as $item_record) {
+                if ($item_record->version !== null) {
+                    continue;
+                }
 
-            $DB->update_record(
-                'block_sharing_cart_items',
-                (object)[
-                    'id' => $item_record->id,
-                    'version' => $version
-                ]
+                $version = $item_record->old_instance_id === '0' ? 1 : 2;
+
+                $DB->update_record(
+                    'block_sharing_cart_items',
+                    (object)[
+                        'id' => $item_record->id,
+                        'version' => $version
+                    ]
+                );
+            }
+
+            // Removes the default of field version of table block_sharing_cart_items
+            $dbman->change_field_default(
+                $xmldb_table,
+                new xmldb_field(
+                    'version', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL,
+                    null, null, 'original_course_fullname'
+                )
             );
-        }
 
-        // Removes the default of field version of table block_sharing_cart_items
-        $dbman->change_field_default(
-            $xmldb_table,
-            new xmldb_field(
-                'version', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL,
-                null, null, 'original_course_fullname'
-            )
-        );
-
-        $xmldb_index = new xmldb_index('version', XMLDB_INDEX_NOTUNIQUE, ['version']);
-        if (!$dbman->index_exists($xmldb_table, $xmldb_index)) {
-            $dbman->add_index($xmldb_table, $xmldb_index);
+            $xmldb_index = new xmldb_index('version', XMLDB_INDEX_NOTUNIQUE, ['version']);
+            if (!$dbman->index_exists($xmldb_table, $xmldb_index)) {
+                $dbman->add_index($xmldb_table, $xmldb_index);
+            }
         }
 
         // Sharing_cart savepoint reached.
-        upgrade_block_savepoint(true, 2025040700, 'sharing_cart');
+        upgrade_block_savepoint(true, 2025040800, 'sharing_cart');
     }
 
     return true;

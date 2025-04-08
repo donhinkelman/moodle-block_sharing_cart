@@ -18,14 +18,10 @@ require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 class handler
 {
     private base_factory $base_factory;
-    private \moodle_database $db;
 
     public function __construct(base_factory $base_factory)
     {
-        Global $DB;
-
         $this->base_factory = $base_factory;
-        $this->db = $DB;
     }
 
     private function get_backup_info(\stored_file $file): object
@@ -49,7 +45,12 @@ class handler
     ): asynchronous_backup_task {
         global $USER;
 
-        $course_id = $this->db->get_record('course_modules', ['id' =>  $course_module_id], 'course',MUST_EXIST)->course;
+        $course_id = $this->base_factory->moodle()->db()->get_record(
+            'course_modules',
+            ['id' =>  $course_module_id],
+            'course',
+            MUST_EXIST
+        )->course;
 
         $backup_controller = $this->base_factory->backup()->backup_controller(
             \backup::TYPE_1COURSE,
@@ -64,7 +65,12 @@ class handler
     {
         global $USER;
 
-        $course_id = $this->db->get_record('course_sections', ['id' =>  $section_id], 'course',MUST_EXIST)->course;
+        $course_id = $this->base_factory->moodle()->db()->get_record(
+            'course_sections',
+            ['id' =>  $section_id],
+            'course',
+            MUST_EXIST
+        )->course;
 
         $backup_controller = $this->base_factory->backup()->backup_controller(
             \backup::TYPE_1COURSE,

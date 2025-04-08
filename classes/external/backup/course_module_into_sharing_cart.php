@@ -72,7 +72,7 @@ class course_module_into_sharing_cart extends external_api
             'type' => new external_value(PARAM_TEXT, 'The type of the item', VALUE_REQUIRED),
             'name' => new external_value(PARAM_TEXT, 'The name of the item', VALUE_REQUIRED),
             'status' => new external_value(PARAM_INT, 'The status of the item', VALUE_REQUIRED),
-            'version' => new external_value(PARAM_INT, 'The status of the item', VALUE_REQUIRED),
+            'version' => new external_value(PARAM_INT, 'The version of the item', VALUE_REQUIRED),
             'timecreated' => new external_value(PARAM_INT, 'The time the item was created', VALUE_REQUIRED),
             'timemodified' => new external_value(PARAM_INT, 'The time the item was last modified', VALUE_REQUIRED),
         ]);

@@ -30,7 +30,7 @@ class item implements \renderable, \core\output\named_templatable
 
     public static function export_item_for_template(entity $item, array $not_running_backup_tasks): object
     {
-        global $DB;
+        $db = base_factory::make()->moodle()->db();
 
         $item_context = (object)$item->to_array();
 
@@ -52,7 +52,7 @@ class item implements \renderable, \core\output\named_templatable
         $item_context->status_failed = $item->get_status() === entity::STATUS_BACKUP_FAILED;
         $item_context->is_current_version = $item->get_version() === entity::CURRENT_BACKUP_VERSION;
 
-        $item_context->module_is_disabled_on_site = $item->is_module() === true && $DB->get_record('modules', [
+        $item_context->module_is_disabled_on_site = $item->is_module() === true && $db->get_record('modules', [
                 'name' => str_replace('mod_', '', $item->get_type()),
                 'visible' => false
             ]);
