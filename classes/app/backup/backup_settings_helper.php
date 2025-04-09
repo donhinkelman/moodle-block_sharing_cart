@@ -37,20 +37,20 @@ class backup_settings_helper
 
     private function get_ids_by_item(entity $item): array
     {
-        $module_id = null;
+        $course_module_id = null;
 
         if($item->type === 'section') {
-            return [$item->old_instance_id, $module_id];
+            return [$item->old_instance_id, $course_module_id];
         }
-        $module_id = $item->old_instance_id;
+        $course_module_id = $item->old_instance_id;
         $section_id = $this->base_factory->moodle()->db()->get_record(
             'course_modules',
-            ['id' => $module_id],
+            ['id' => $course_module_id],
             'section',
             MUST_EXIST
         )->section;
 
-        return [$section_id, $module_id];
+        return [$section_id, $course_module_id];
     }
 
     private function get_course_sections_by_section_id(int $section_id): array
@@ -108,9 +108,9 @@ class backup_settings_helper
     ): array
     {
         $settings = [];
-        foreach ($course_modules as $module) {
-            $settings[$module->name . "_" . $module->id . "_userinfo"] = false;
-            $settings[$module->name . "_" . $module->id . "_included"] = false;
+        foreach ($course_modules as $course_module) {
+            $settings[$course_module->name . "_" . $course_module->id . "_userinfo"] = false;
+            $settings[$course_module->name . "_" . $course_module->id . "_included"] = false;
 
         }
 
@@ -126,9 +126,9 @@ class backup_settings_helper
             });
         }
 
-        foreach ($keep_modules as $module) {
-            $settings[$module->name . "_" . $module->id . "_userinfo"] = $include_users;
-            $settings[$module->name . "_" . $module->id . "_included"] = true;
+        foreach ($keep_modules as $course_module) {
+            $settings[$course_module->name . "_" . $course_module->id . "_userinfo"] = $include_users;
+            $settings[$course_module->name . "_" . $course_module->id . "_included"] = true;
         }
         return $settings;
     }
