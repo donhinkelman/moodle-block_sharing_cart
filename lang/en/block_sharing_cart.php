@@ -6,12 +6,8 @@ $string['pluginname'] = 'Sharing Cart';
 // Block
 $string['items'] = 'Items';
 $string['restores'] = 'Restores';
-$string['no_items'] = 'No items.<br>
-<br>
-Drag & drop activities or sections into the sharing cart or click the <i class="fa fa-shopping-basket"></i> icon, to add items to the Sharing Cart.';
-$string['no_restores'] = '<div class="no-restores text-muted">No restores in progress.<br>
-<br>
-Click the <i class="fa fa-clone"></i> icon to add items from the Sharing Cart to the course.</div>';
+$string['no_items'] = 'No items.<br><br>Drag & drop activities or sections into the sharing cart or click the <i class="fa fa-shopping-basket"></i> icon, to add items to the Sharing Cart.';
+$string['no_restores'] = '<div class="no-restores text-muted">No restores in progress.<br><br>Click the <i class="fa fa-clone"></i> icon to add items from the Sharing Cart to the course.</div>';
 
 $string['module_is_disabled_on_site'] = 'This module have been disabled on the site, you will be unable to restore it.';
 

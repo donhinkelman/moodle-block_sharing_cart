@@ -6,12 +6,8 @@ $string['pluginname'] = 'Delingskurv';
 // Block
 $string['items'] = 'Backups';
 $string['restores'] = 'Kopieringer';
-$string['no_items'] = 'Ingen backups.<br>
-<br>
-Træk og slip aktiviteter eller sektioner ind i delingskurven eller klik på <i class="fa fa-shopping-basket"></i> ikonet, for at tilføje elementer til Delingskurven.';
-$string['no_restores'] = '<div class="no-restores text-muted">Ingen kopieringer i gang.<br>
-<br>
-Klik på <i class="fa fa-clone"></i> ikonet for at tilføje elementer fra Delingskurven til kurset.</div>';
+$string['no_items'] = 'Ingen backups.<br><br>Træk og slip aktiviteter eller sektioner ind i delingskurven eller klik på <i class="fa fa-shopping-basket"></i> ikonet, for at tilføje elementer til Delingskurven.';
+$string['no_restores'] = '<div class="no-restores text-muted">Ingen kopieringer i gang.<br><br>Klik på <i class="fa fa-clone"></i> ikonet for at tilføje elementer fra Delingskurven til kurset.</div>';
 
 $string['module_is_disabled_on_site'] = 'Dette modul er blevet deaktiveret på siden, og du vil ikke kunne gendanne det.';
 

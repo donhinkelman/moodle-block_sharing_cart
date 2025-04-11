@@ -58,6 +58,7 @@ Change Log
         * Fixed deprecation.
         * Fixed visual errors.
         * Added a factory for moodle globals.
+        * Changed lang strings to not span multiple line.
     * Old sharing cart items
         * No changes have been made to the restore part of the plugin, so older sharing cart items still works
           the same way they did before. (previously failing modules will still fail.)

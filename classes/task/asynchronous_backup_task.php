@@ -91,8 +91,10 @@ class asynchronous_backup_task extends \core\task\adhoc_task
             $duration = time() - $started;
             mtrace('Backup completed in: ' . $duration . ' seconds');
         } catch (\Exception $e) {
+            mtrace("An error occurred during asynchronous backup task execution");
             mtrace($e->getMessage());
             mtrace($e->getTraceAsString());
+            $bc->set_status(\backup::STATUS_FINISHED_ERR);
 
             $this->fail_task();
         }
@@ -130,7 +132,8 @@ class asynchronous_backup_task extends \core\task\adhoc_task
                 'grade_histories' => false,
                 'users' => false,
                 'anonymize' => false,
-                'include_badges' => false
+                'include_badges' => false,
+                'filename' => 'backup-'. $item_entity->get_type() . '_' . $item_entity->get_timecreated() . '.mbz'
             ];
 
             $context = $this->get_backup_controller_context($backup_controller);
