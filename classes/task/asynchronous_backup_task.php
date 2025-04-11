@@ -133,7 +133,7 @@ class asynchronous_backup_task extends \core\task\adhoc_task
                 'users' => false,
                 'anonymize' => false,
                 'include_badges' => false,
-                'filename' => 'backup-'. $item_entity->get_type() . '_' . $item_entity->get_timecreated() . '.mbz'
+                'filename' => 'sharing_cart_backup-' . $item_entity->get_id() . '.mbz'
             ];
 
             $context = $this->get_backup_controller_context($backup_controller);
