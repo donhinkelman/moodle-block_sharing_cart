@@ -39,6 +39,7 @@ Change Log
 * 5.0, release 2 2025.04.22
     * 	Merge pull request #225 from catalyst/issue-224
     * 	Merge pull request #228 from mgerszew/MOODLE_42_STABLE!
+    * 	Other minor updates and consistant version numbering
 
 * 5.0, release 1 2024.08.05
     * Total refactor of the whole plugin:
