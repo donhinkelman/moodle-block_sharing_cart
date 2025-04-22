@@ -3,13 +3,14 @@ Sharing Cart
 
 Purpose
 -------
-The Sharing Cart is a block that enables sharing of Moodle content
-(resources, activities and sections) between multiple courses on your site.
-You can share among teachers or among your own courses.
-It can copy single course items and section, with or without user data. - similar to the "Import" function in Course
-Administration.
-Items can be collected and saved on the Sharing Cart indefinitely,
-serving as a library of frequently used course items available for duplication.
+* The Sharing Cart is a block that enables sharing of Moodle content
+  (resources, activities and sections) between multiple courses on your site.
+* You can share among teachers or among your own courses.
+* It can copy single course items and sections, with or without user data.
+  - similar to the "Import" function in Course Administration.
+* Items can be collected and saved on the Sharing Cart indefinitely,
+  serving as a library of frequently used course items available for duplication.
+  This creates an accumulation of files in the cart, so periodic bulk deletion manually is needed. 
 
 Requirements
 ------------
@@ -35,6 +36,9 @@ GPL v3
 
 Change Log
 ----------
+* 5.0, release 2 2025.04.22
+    * 	Merge pull request #225 from catalyst/issue-224
+    * 	Merge pull request #228 from mgerszew/MOODLE_42_STABLE!
 
 * 5.0, release 1 2024.08.05
     * Total refactor of the whole plugin:
