@@ -15,6 +15,8 @@ class entity extends \block_sharing_cart\app\entity
 
     public const TYPE_SECTION = 'section';
 
+    Public const CURRENT_BACKUP_VERSION = 3;
+
     public function get_user_id(): int
     {
         return $this->record['user_id'] ?? 0;
@@ -103,6 +105,11 @@ class entity extends \block_sharing_cart\app\entity
         return $this;
     }
 
+    public function get_version(): int
+    {
+        return $this->record['version'] ?? self::CURRENT_BACKUP_VERSION;
+    }
+
     public function get_timecreated(): int
     {
         return $this->record['timecreated'] ?? 0;
@@ -159,6 +166,7 @@ class entity extends \block_sharing_cart\app\entity
             'status' => $this->get_status(),
             'sortorder' => $this->get_sortorder(),
             'original_course_fullname' => $this->get_original_course_fullname(),
+            'version' => $this->get_version(),
             'timecreated' => $this->get_timecreated(),
             'timemodified' => $this->get_timemodified(),
         ];

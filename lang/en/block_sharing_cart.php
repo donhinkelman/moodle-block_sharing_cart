@@ -6,12 +6,8 @@ $string['pluginname'] = 'Sharing Cart';
 // Block
 $string['items'] = 'Items';
 $string['restores'] = 'Restores';
-$string['no_items'] = 'No items.<br>
-<br>
-Drag & drop activities or sections into the sharing cart or click the <i class="fa fa-shopping-basket"></i> icon, to add items to the Sharing Cart.';
-$string['no_restores'] = '<div class="no-restores text-muted">No restores in progress.<br>
-<br>
-Click the <i class="fa fa-clone"></i> icon to add items from the Sharing Cart to the course.</div>';
+$string['no_items'] = 'No items.<br><br>Drag & drop activities or sections into the sharing cart or click the <i class="fa fa-shopping-basket"></i> icon, to add items to the Sharing Cart.';
+$string['no_restores'] = '<div class="no-restores text-muted">No restores in progress.<br><br>Click the <i class="fa fa-clone"></i> icon to add items from the Sharing Cart to the course.</div>';
 
 $string['module_is_disabled_on_site'] = 'This module have been disabled on the site, you will be unable to restore it.';
 
@@ -38,6 +34,8 @@ $string['copy_user_data'] = 'Do you want to copy user data? (Eg. glossary/wiki/d
 $string['anonymize_user_data'] = 'Do you want to anonymize the user data?';
 $string['atleast_one_course_module_must_be_included'] = 'Atleast one course module must be included, please select at least one course module to include.';
 $string['legacy_section_info'] = 'This is a legacy section. The sharing cart is unable to copy this section, but the individual activities are still available.';
+$string['old_version_section_info'] = 'This section was backed up using a previous version.';
+$string['old_version_module_info'] = 'This item was backed up using a previous version.';
 $string['restore_failed'] = 'The restore failed (task id: {$a}). This message will disappear after a while.';
 $string['backup_failed'] = 'The backup failed. You can delete the item from the Sharing Cart and try again.';
 $string['maybe_the_queue_is_stuck'] = 'If you would like to run the restore now, click the button above.';

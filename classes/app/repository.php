@@ -16,10 +16,8 @@ abstract class repository
 
     public function __construct(base_factory $base_factory)
     {
-        global $DB;
-
         $this->base_factory = $base_factory;
-        $this->db = $DB;
+        $this->db = $this->base_factory->moodle()->db();
     }
 
     abstract public function get_table(): string;
