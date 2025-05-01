@@ -206,7 +206,6 @@ export default class BlockElement {
 
             this.getItemCheckboxes().forEach((checkbox) => {
                 checkbox.classList.remove('d-none');
-                checkbox.checked = false;
             });
         });
 
@@ -216,11 +215,13 @@ export default class BlockElement {
             bulkDeleteButton.disabled = true;
             enableBulkDeleteButton.classList.remove('d-none');
             selectAllContainer.classList.add('d-none');
+            this.#bulkDeleteEnabled = false;
 
             this.getItemCheckboxes().forEach((checkbox) => {
                 checkbox.classList.add('d-none');
                 checkbox.checked = false;
             });
+            this.updateSelectAllState();
         });
 
         bulkDeleteButton.addEventListener('click', async () => {

@@ -3,13 +3,14 @@ Sharing Cart
 
 Purpose
 -------
-The Sharing Cart is a block that enables sharing of Moodle content
-(resources, activities and sections) between multiple courses on your site.
-You can share among teachers or among your own courses.
-It can copy single course items and section, with or without user data. - similar to the "Import" function in Course
-Administration.
-Items can be collected and saved on the Sharing Cart indefinitely,
-serving as a library of frequently used course items available for duplication.
+* The Sharing Cart is a block that enables sharing of Moodle content
+  (resources, activities and sections) between multiple courses on your site.
+* You can share among teachers or among your own courses.
+* It can copy single course items and sections, with or without user data.
+  - similar to the "Import" function in Course Administration.
+* Items can be collected and saved on the Sharing Cart indefinitely,
+  serving as a library of frequently used course items available for duplication.
+  This creates an accumulation of files in the cart, so periodic bulk deletion manually is needed. 
 
 Requirements
 ------------
@@ -29,13 +30,46 @@ Capabilities
 - moodle/backup:anonymise
     - Required to be able to anonymize user data. (A checkbox will appear when copying an activity or section)
 
+Versions
+-------
+* Version 1:
+  * Items added from block_sharing_cart_sections & block_sharing_cart (pre-5.0 upgrade).
+    Activities are grouped to simulate sections. Backups are individual files.
+* Version 2:
+  * Items added in 5.0 release 1. Uses TYPE_1SECTION for sections and TYPE_1ACTIVITY for activities.
+* Version 3:
+  * Items added in 6.0 release 1+. Uses TYPE_1COURSE for both sections and activities. TYPE_1SECTION and
+    TYPE_1ACTIVITY backups have proven unreliable; TYPE_1COURSE offers more stable backup/restore functionality.
+
+Important: This versioning helps users identify legacy sharing cart items.
+As of 6.0 release 1, restoration of Legacy items is still supported.
+
 License
 -------
 GPL v3
 
 Change Log
 ----------
-
+* 6.0, release 1 2025.04.22
+    * Major changes
+        * Changed the section and activity backups to use the course type backup.
+        * Added test to getting the settings for selecting sections and activities.
+        * Added version field to block_sharing_cart_items.
+    * Minor changes
+        * Fixed deprecation.
+        * Fixed visual errors.
+        * Added a factory for moodle globals.
+        * Changed lang strings to not span multiple line.
+    * Old sharing cart items
+        * No changes have been made to the restore part of the plugin, so older sharing cart items still works
+          the same way they did before. (previously failing modules will still fail.)
+        * Old sharing cart items will be given a version number (1 or 2),
+          depended on if they were inserted doing the upgrade that also created the block_sharing_cart_items or later.
+        * Old sharing cart items and sections will be marked with a blue info icon.
+* 5.0, release 2 2025.04.22
+    * 	Merge pull request #225 from catalyst/issue-224
+    * 	Merge pull request #228 from mgerszew/MOODLE_42_STABLE!
+    * 	Other minor updates and consistant version numbering
 * 5.0, release 1 2024.08.05
     * Total refactor of the whole plugin:
         * Improvements

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+        bootstrap="../../lib/phpunit/bootstrap.php"
+        convertErrorsToExceptions="true"
+        convertNoticesToExceptions="true"
+        convertWarningsToExceptions="true"
+        processIsolation="false"
+        backupGlobals="false"
+        backupStaticAttributes="false"
+        cacheResult="false"
+        stopOnError="false"
+        stopOnFailure="false"
+        stopOnIncomplete="false"
+        stopOnSkipped="false"
+        beStrictAboutTestsThatDoNotTestAnything="false"
+        beStrictAboutOutputDuringTests="true"
+        defaultTestSuite="unit"
+>
+    <coverage includeUncoveredFiles="true" processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">classes</directory>
+        </include>
+        <exclude>
+            <directory suffix=".php">classes/admin_settings</directory>
+        </exclude>
+    </coverage>
+    <php>
+        <const name="PHPUNIT_SEQUENCE_START" value="138000"/>
+    </php>
+
+    <!--All core suites need to be manually added here-->
+    <testsuites>
+        <testsuite name="unit">
+            <directory suffix="_test.php">tests/integration</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

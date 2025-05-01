@@ -6,12 +6,8 @@ $string['pluginname'] = 'Delingskurv';
 // Block
 $string['items'] = 'Backups';
 $string['restores'] = 'Kopieringer';
-$string['no_items'] = 'Ingen backups.<br>
-<br>
-Træk og slip aktiviteter eller sektioner ind i delingskurven eller klik på <i class="fa fa-shopping-basket"></i> ikonet, for at tilføje elementer til Delingskurven.';
-$string['no_restores'] = '<div class="no-restores text-muted">Ingen kopieringer i gang.<br>
-<br>
-Klik på <i class="fa fa-clone"></i> ikonet for at tilføje elementer fra Delingskurven til kurset.</div>';
+$string['no_items'] = 'Ingen backups.<br><br>Træk og slip aktiviteter eller sektioner ind i delingskurven eller klik på <i class="fa fa-shopping-basket"></i> ikonet, for at tilføje elementer til Delingskurven.';
+$string['no_restores'] = '<div class="no-restores text-muted">Ingen kopieringer i gang.<br><br>Klik på <i class="fa fa-clone"></i> ikonet for at tilføje elementer fra Delingskurven til kurset.</div>';
 
 $string['module_is_disabled_on_site'] = 'Dette modul er blevet deaktiveret på siden, og du vil ikke kunne gendanne det.';
 
@@ -38,6 +34,8 @@ $string['copy_user_data'] = 'Vil du kopiere brugerdata? (f.eks. ordbog/wiki/data
 $string['anonymize_user_data'] = 'Vil du anonymisere brugerdata?';
 $string['atleast_one_course_module_must_be_included'] = 'Mindst et kursusmodul skal inkluderes, vælg venligst mindst et kursusmodul at inkludere.';
 $string['legacy_section_info'] = 'Dette er en gammel sektion. Delingskurven kan ikke kopiere denne sektion, men de enkelte aktiviteter er stadig tilgængelige.';
+$string['old_version_section_info'] = 'Denne sektion blev backup\'et med en tidligere version.';
+$string['old_version_module_info'] = 'Dette element blev backup\'et med en tidligere version.';
 $string['restore_failed'] = 'Gendannelsen mislykkedes (task id: {$a}). Denne besked vil forsvinde efter et stykke tid.';
 $string['backup_failed'] = 'Backuppen mislykkedes. Du kan slette elementet fra Delingskurven og prøve igen.';
 $string['maybe_the_queue_is_stuck'] = 'Hvis du vil køre kopieringen nu, skal du klikke på knappen ovenfor.';
