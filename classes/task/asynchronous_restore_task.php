@@ -8,6 +8,7 @@ defined('MOODLE_INTERNAL') || die();
 // @codeCoverageIgnoreEnd
 
 use async_helper;
+use block_sharing_cart\app\factory as base_factory;
 
 global $CFG;
 require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
@@ -24,12 +25,12 @@ class asynchronous_restore_task extends \core\task\adhoc_task
      */
     public function execute(): void
     {
-        global $DB;
+        $db = base_factory::make()->moodle()->db();
         $started = time();
 
         $customdata = $this->get_custom_data();
         $restoreid = $customdata->backupid;
-        $restorerecord = $DB->get_record(
+        $restorerecord = $db->get_record(
             'backup_controllers',
             ['backupid' => $restoreid],
             'id, controller',
@@ -164,9 +165,9 @@ class asynchronous_restore_task extends \core\task\adhoc_task
 
     private function update_section_number(\restore_controller $restore_controller, int $section_id): void
     {
-        global $DB;
+        $db = base_factory::make()->moodle()->db();
 
-        $new_section_number = $DB->get_field(
+        $new_section_number = $db->get_field(
             'course_sections',
             'section',
             ['id' => $section_id],

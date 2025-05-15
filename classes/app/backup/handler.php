@@ -45,9 +45,16 @@ class handler
     ): asynchronous_backup_task {
         global $USER;
 
+        $course_id = $this->base_factory->moodle()->db()->get_record(
+            'course_modules',
+            ['id' =>  $course_module_id],
+            'course',
+            MUST_EXIST
+        )->course;
+
         $backup_controller = $this->base_factory->backup()->backup_controller(
-            \backup::TYPE_1ACTIVITY,
-            $course_module_id,
+            \backup::TYPE_1COURSE,
+            $course_id,
             $USER->id
         );
 
@@ -58,9 +65,16 @@ class handler
     {
         global $USER;
 
+        $course_id = $this->base_factory->moodle()->db()->get_record(
+            'course_sections',
+            ['id' =>  $section_id],
+            'course',
+            MUST_EXIST
+        )->course;
+
         $backup_controller = $this->base_factory->backup()->backup_controller(
-            \backup::TYPE_1SECTION,
-            $section_id,
+            \backup::TYPE_1COURSE,
+            $course_id,
             $USER->id
         );
 
@@ -107,7 +121,6 @@ class handler
         array $settings = []
     ): asynchronous_backup_task {
         $asynctask = new asynchronous_backup_task();
-        $asynctask->set_blocking(false);
         $asynctask->set_custom_data([
             'backupid' => $backup_controller->get_backupid(),
             'item' => $root_item->to_array(),

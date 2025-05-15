@@ -98,6 +98,7 @@ class repository extends \block_sharing_cart\app\repository
                     'type' => "mod_{$cm_info->modname}",
                     'name' => $cm_info->get_formatted_name(),
                     'status' => $status,
+                    'version' => entity::CURRENT_BACKUP_VERSION,
                     'timecreated' => $time,
                     'timemodified' => $time,
                 ]
@@ -126,6 +127,7 @@ class repository extends \block_sharing_cart\app\repository
                     'type' => entity::TYPE_SECTION,
                     'name' => $course_format->get_section_name($section),
                     'status' => $status,
+                    'version' => entity::CURRENT_BACKUP_VERSION,
                     'timecreated' => $time,
                     'timemodified' => $time,
                 ]
