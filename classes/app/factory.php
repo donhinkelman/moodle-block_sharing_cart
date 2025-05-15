@@ -33,4 +33,9 @@ class factory
     {
         return new item\factory($this);
     }
+
+    public function moodle(): moodle\factory
+    {
+        return new moodle\factory($this);
+    }
 }

@@ -29,7 +29,7 @@ class import_item_modal_body implements \renderable, \core\output\named_templata
 
     public function export_for_template(\renderer_base $output): array
     {
-        global $DB;
+        $db = $this->base_factory->moodle()->db();
 
         $section = array_values(
             $this->base_factory->backup()->handler()->get_backup_item_tree(
@@ -48,7 +48,7 @@ class import_item_modal_body implements \renderable, \core\output\named_templata
             $activity->type = 'coursemodule';
             $activity->mod_icon = $output->image_url('icon', "mod_{$activity->modulename}");
             $activity->course_modules = [];
-            $activity->module_is_disabled_on_site = $DB->get_record('modules', [
+            $activity->module_is_disabled_on_site = $db->get_record('modules', [
                 'name' => $activity->modulename,
                 'visible' => false
             ]);

@@ -35,4 +35,9 @@ class factory
     {
         return new handler($this->base_factory);
     }
+
+    public function settings_helper()
+    {
+        return new backup_settings_helper($this->base_factory);
+    }
 }
