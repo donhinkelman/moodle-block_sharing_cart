@@ -50,7 +50,7 @@ GPL v3
 
 Change Log
 ----------
-* 6.0, release 1 2025.04.22
+* 5.0, release 3 2025.04.22
     * Major changes
         * Changed the section and activity backups to use the course type backup.
         * Added test to getting the settings for selecting sections and activities.
