@@ -5,6 +5,12 @@ import {get_string, get_strings} from "core/str";
 import Ajax from "core/ajax";
 import Notification from "core/notification";
 
+/**
+ * @typedef BackupSettings
+ * @property {boolean} users - Whether to backup user data.
+ * @property {boolean} anonymize - Whether to anonymize user data.
+ */
+
 export default class BlockElement {
     /**
      * @type {BaseFactory}
@@ -418,11 +424,30 @@ export default class BlockElement {
     }
 
     /**
-     * @param {String} itemName
-     * @param {CallableFunction} onSave
+     * @param {string} name
+     * @param {(BackupSettings) => void} onSave
+     * @returns {Promise<Modal>}
+     */
+    async createBackupCourseModuleToSharingCartModal(name, onSave) {
+        return this.createBackupItemToSharingCartModal('module', name, onSave);
+    }
+
+    /**
+     * @param {string} name
+     * @param {(BackupSettings) => void} onSave
+     * @returns {Promise<Modal>}
+     */
+    async createBackupSectionToSharingCartModal(name, onSave) {
+        return this.createBackupItemToSharingCartModal('section', name, onSave);
+    }
+
+    /**
+     * @param {string} backupType
+     * @param {string} itemName
+     * @param {(BackupSettings) => void} onSave
      * @return {Promise<Modal>}
      */
-    async createBackupItemToSharingCartModal(itemName, onSave) {
+    async createBackupItemToSharingCartModal(backupType, itemName, onSave) {
         const strings = await get_strings([
             {
                 key: 'backup_item',
@@ -445,6 +470,7 @@ export default class BlockElement {
         const {html, js} = await this.#baseFactory.moodle().template().renderTemplate(
             'block_sharing_cart/modal/backup_to_sharing_cart_modal_body',
             {
+                is_section_backup: backupType === 'section',
                 show_user_data_backup: this.#canBackupUserdata,
                 show_anonymize_user_data: this.#canBackupUserdata && this.#canAnonymizeUserdata,
             }
@@ -502,7 +528,7 @@ export default class BlockElement {
             return;
         }
 
-        const modal = await this.createBackupItemToSharingCartModal(sectionName, (settings) => {
+        const saver = (settings) => {
             Ajax.call([{
                 methodname: 'block_sharing_cart_backup_section_into_sharing_cart',
                 args: {
@@ -516,8 +542,9 @@ export default class BlockElement {
                     Notification.exception(data);
                 }
             }]);
-        });
+        };
 
+        const modal = await this.createBackupSectionToSharingCartModal(sectionName, saver);
         await modal.show();
     }
 
@@ -526,8 +553,7 @@ export default class BlockElement {
      */
     async addCourseModuleBackupToSharingCart(courseModuleId) {
         const courseModuleName = this.#course.getCourseModuleName(courseModuleId);
-
-        const modal = await this.createBackupItemToSharingCartModal(courseModuleName, (settings) => {
+        const saver = (settings) => {
             Ajax.call([{
                 methodname: 'block_sharing_cart_backup_course_module_into_sharing_cart',
                 args: {
@@ -541,7 +567,8 @@ export default class BlockElement {
                     Notification.exception(data);
                 }
             }]);
-        });
+        };
+        const modal = await this.createBackupCourseModuleToSharingCartModal(courseModuleName, saver);
         await modal.show();
     }
 

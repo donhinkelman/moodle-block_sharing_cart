@@ -41,6 +41,7 @@ $string['backup_failed'] = 'Backuppen mislykkedes. Du kan slette elementet fra D
 $string['maybe_the_queue_is_stuck'] = 'Hvis du vil køre kopieringen nu, skal du klikke på knappen ovenfor.';
 $string['drop_here'] = 'Slip her...';
 $string['original_course'] = 'Originalt kursus:';
+$string['copy_section_warning'] = 'Advarsel! - Du er ved at kopiere en sektion. Dette kan tage et stykke tid, hvis der er mange spørgsmål i kursusbanken og aktiviteter i sektionen.';
 
 $string['copy_this_course'] = 'Kopier dette kursus';
 $string['bulk_delete'] = 'Slet flere';
@@ -59,6 +60,7 @@ $string['you_may_need_to_reload_the_course_warning'] = 'Element(er) indsat. Du s
 
 // Capabilities
 $string['sharing_cart:addinstance'] = 'Tilføj en ny Delingskurv blok';
+$string['sharing_cart:manual_run_task'] = 'Kør kopiering opgaver manuelt';
 
 // Settings
 $string['settings:show_sharing_cart_basket'] = 'Vis delingskurv kurv';
