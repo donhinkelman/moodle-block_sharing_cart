@@ -14,4 +14,11 @@ $capabilities = [
         ],
         'clonepermissionsfrom' => 'moodle/site:manageblocks',
     ],
+    'block/sharing_cart:manual_run_task' => [
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
 ];

@@ -49,6 +49,7 @@ class asynchronous_restore_task extends \core\task\adhoc_task
             mtrace('Bad restore controller status, invalid controller, ending restore execution.');
             return;
         }
+        /** @var \restore_controller $rc */
         $rc = \restore_controller::load_controller($restoreid);
         try {
             $rc->set_progress(new \core\progress\db_updater($restorerecord->id, 'backup_controllers', 'progress'));
@@ -80,8 +81,16 @@ class asynchronous_restore_task extends \core\task\adhoc_task
                 mtrace('Bad backup controller status, is: ' . $status . ' should be 700, marking job as failed.');
             }
 
-            $duration = time() - $started;
+            $finished = time();
+            $duration = $finished - $started;
             mtrace('Restore completed in: ' . $duration . ' seconds');
+
+            $this->trigger_restored_event(
+                $rc,
+                $started,
+                $finished
+            );
+
         } catch (\Exception $e) {
             // If an exception is thrown, mark the restore as failed.
             $rc->set_status(\backup::STATUS_FINISHED_ERR);
@@ -224,5 +233,54 @@ class asynchronous_restore_task extends \core\task\adhoc_task
                 $task->get_setting('included')->set_value($include_activity);
             }
         }
+    }
+
+    private function trigger_restored_event(
+        \restore_controller $controller,
+        int $started,
+        int $finished
+    ): void {
+        foreach ($controller->get_plan()->get_tasks() as $task) {
+            if ($task instanceof \restore_activity_task) {
+                $this->trigger_restore_course_module_event($task, $started, $finished);
+                continue;
+            }
+
+            if ($task instanceof \restore_section_task) {
+                $this->trigger_restore_section_event($task, $started, $finished);
+            }
+        }
+    }
+
+    private function trigger_restore_course_module_event(
+        \restore_activity_task $task,
+        int $started,
+        int $finished
+    ): void {
+        $event = \block_sharing_cart\event\restored_course_module::create_by_course_module(
+            $task->get_courseid(),
+            $task->get_moduleid(),
+            $task->get_modulename(),
+            $task->get_userid(),
+            $started,
+            $finished
+        );
+        $event->trigger();
+    }
+
+    private function trigger_restore_section_event(
+        \restore_section_task $task,
+        int $started,
+        int $finished
+    ): void
+    {
+        $event = \block_sharing_cart\event\restored_section::create_by_section(
+            $task->get_courseid(),
+            $task->get_sectionid(),
+            $task->get_userid(),
+            $started,
+            $finished
+        );
+        $event->trigger();
     }
 }
