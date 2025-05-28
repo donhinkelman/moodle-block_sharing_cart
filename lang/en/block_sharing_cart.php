@@ -41,7 +41,7 @@ $string['backup_failed'] = 'The backup failed. You can delete the item from the 
 $string['maybe_the_queue_is_stuck'] = 'If you would like to run the restore now, click the button above.';
 $string['drop_here'] = 'Drop here...';
 $string['original_course'] = 'Original course:';
-$string['copy_section_warning'] = 'Warning! - You are about to copy a section. This could take a while, if there are a lot of the question bank in the course and the activities in the section.';
+$string['copy_section_warning'] = 'Warning! - You are about to copy a section. This could take a while, if there are a lot of questions in the question bank and the activities in the section.';
 
 $string['copy_this_course'] = 'Copy this course';
 $string['bulk_delete'] = 'Bulk delete';
