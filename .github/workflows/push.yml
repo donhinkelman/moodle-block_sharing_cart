@@ -3,10 +3,13 @@ name: Integration & Unit test
 on:
   pull_request:
     branches:
+      - main
       - master
       - MOODLE_42_STABLE
       - MOODLE_43_STABLE
       - MOODLE_44_STABLE
+      - MOODLE_45_STABLE
+      - MOODLE_50_STABLE
 
 env:
   php: 8.2
@@ -14,44 +17,64 @@ env:
 jobs:
   PHPUnit:
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental }}
+    continue-on-error: ${{ matrix.experimental || false }}
     strategy:
       matrix:
-        include:
-          ## Moodle 4.2+ with PHP 8.0
+        os: [ubuntu-22.04]
+        php: [8.0, 8.1, 8.2, 8.3]
+        db: [mysqli]
+        moodle: [MOODLE_402_STABLE, MOODLE_403_STABLE, MOODLE_404_STABLE, MOODLE_405_STABLE, MOODLE_500_STABLE]
+        experimental: [false]
+        # Exclude unsupported combinations
+        exclude:
+          # Moodle 4.2+ with PHP 8.3
           - os: ubuntu-22.04
-            php: 8.0
+            php: 8.3
             db: mysqli
             moodle: MOODLE_402_STABLE
             experimental: false
-          ## Moodle 4.2+ with PHP 8.1
+          # Moodle 4.3+ with PHP 8.3
           - os: ubuntu-22.04
-            php: 8.1
-            db: mysqli
-            moodle: MOODLE_402_STABLE
-            experimental: false
-          ## Moodle 4.2+ with PHP 8.2
-          - os: ubuntu-22.04
-            php: 8.2
-            db: mysqli
-            moodle: MOODLE_402_STABLE
-            experimental: false
-          ## Moodle 4.3+ with PHP 8.2
-          - os: ubuntu-22.04
-            php: 8.2
+            php: 8.3
             db: mysqli
             moodle: MOODLE_403_STABLE
             experimental: false
-          ## Moodle 4.4+ with PHP 8.2
+            # Moodle 4.4+ with PHP 8.0
           - os: ubuntu-22.04
-            php: 8.2
+            php: 8.0
             db: mysqli
             moodle: MOODLE_404_STABLE
             experimental: false
-          # Future supported versions
-          ## Moodle development version with PHP 8.2
+          # Moodle 4.5+ with PHP 8.0
           - os: ubuntu-22.04
-            php: 8.2
+            php: 8.0
+            db: mysqli
+            moodle: MOODLE_405_STABLE
+            experimental: false
+          # Moodle 5.0+ with PHP 8.0
+          - os: ubuntu-22.04
+            php: 8.0
+            db: mysqli
+            moodle: MOODLE_500_STABLE
+            experimental: false
+          # Moodle 5.0+ with PHP 8.1
+          - os: ubuntu-22.04
+            php: 8.1
+            db: mysqli
+            moodle: MOODLE_500_STABLE
+            experimental: false
+
+        # Include supported combinations
+        includes:
+          - os: ubuntu-22.04
+            php: 8.4
+            db: mysqli
+            moodle: MOODLE_500_STABLE
+            experimental: false
+          # Future supported versions
+          ## Moodle development version with PHP 8.4
+          - os: ubuntu-22.04
+            php: 8.4
             db: mysqli
             moodle: main
             experimental: true
@@ -62,7 +85,7 @@ jobs:
         uses: johanmeiring/mysql-action@tmpfs-patch
         with:
           collation server: utf8mb4_unicode_ci
-          mysql version: 8.0
+          mysql version: 8.4
           mysql database: test
           mysql user: test
           mysql password: test
