@@ -32,7 +32,7 @@ $string['into_sharing_cart'] = 'into Sharing Cart';
 $string['backup_settings'] = 'Backup settings';
 $string['copy_user_data'] = 'Do you want to copy user data? (Eg. glossary/wiki/database entries)';
 $string['anonymize_user_data'] = 'Do you want to anonymize the user data?';
-$string['atleast_one_course_module_must_be_included'] = 'Atleast one course module must be included, please select at least one course module to include.';
+$string['atleast_one_course_module_must_be_included'] = 'At least one course module must be included, please select at least one course module to include.';
 $string['legacy_section_info'] = 'This is a legacy section. The sharing cart is unable to copy this section, but the individual activities are still available.';
 $string['old_version_section_info'] = 'This section was backed up using a previous version.';
 $string['old_version_module_info'] = 'This item was backed up using a previous version.';
@@ -41,7 +41,7 @@ $string['backup_failed'] = 'The backup failed. You can delete the item from the 
 $string['maybe_the_queue_is_stuck'] = 'If you would like to run the restore now, click the button above.';
 $string['drop_here'] = 'Drop here...';
 $string['original_course'] = 'Original course:';
-$string['copy_section_warning'] = 'Warning! - You are about to copy a section. This could take a while, if there are a lot of questions in the question bank and the activities in the section.';
+$string['copy_quiz_warning'] = 'Warning! - You are about to copy a quiz into the sharing cart. This could take a while, if there are a lot of questions in the course.';
 
 $string['copy_this_course'] = 'Copy this course';
 $string['bulk_delete'] = 'Bulk delete';

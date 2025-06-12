@@ -424,30 +424,45 @@ export default class BlockElement {
     }
 
     /**
+     * @param {number} courseModuleId
      * @param {string} name
      * @param {(BackupSettings) => void} onSave
      * @returns {Promise<Modal>}
      */
-    async createBackupCourseModuleToSharingCartModal(name, onSave) {
-        return this.createBackupItemToSharingCartModal('module', name, onSave);
+    async createBackupCourseModuleToSharingCartModal(courseModuleId, name, onSave) {
+        return this.createBackupItemToSharingCartModal('module', courseModuleId, name, onSave);
     }
 
     /**
+     * @param {number} sectionId
      * @param {string} name
      * @param {(BackupSettings) => void} onSave
      * @returns {Promise<Modal>}
      */
-    async createBackupSectionToSharingCartModal(name, onSave) {
-        return this.createBackupItemToSharingCartModal('section', name, onSave);
+    async createBackupSectionToSharingCartModal(sectionId, name, onSave) {
+        return this.createBackupItemToSharingCartModal('section', sectionId, name, onSave);
     }
 
     /**
      * @param {string} backupType
+     * @param {number} itemId
+     * @returns {boolean}
+     */
+    #hasQuiz(backupType, itemId) {
+        if (backupType === 'section') {
+            return this.#course.hasSectionCourseModuleType(itemId, 'quiz');
+        }
+        return this.#course.isCourseModuleTypeById(itemId, 'quiz');
+    }
+
+    /**
+     * @param {string} backupType
+     * @param {number} itemId
      * @param {string} itemName
      * @param {(BackupSettings) => void} onSave
      * @return {Promise<Modal>}
      */
-    async createBackupItemToSharingCartModal(backupType, itemName, onSave) {
+    async createBackupItemToSharingCartModal(backupType, itemId, itemName, onSave) {
         const strings = await get_strings([
             {
                 key: 'backup_item',
@@ -470,7 +485,7 @@ export default class BlockElement {
         const {html, js} = await this.#baseFactory.moodle().template().renderTemplate(
             'block_sharing_cart/modal/backup_to_sharing_cart_modal_body',
             {
-                is_section_backup: backupType === 'section',
+                has_quiz: this.#hasQuiz(backupType, itemId),
                 show_user_data_backup: this.#canBackupUserdata,
                 show_anonymize_user_data: this.#canBackupUserdata && this.#canAnonymizeUserdata,
             }
@@ -493,7 +508,6 @@ export default class BlockElement {
         modal.getRoot().on(ModalEvents.save, () => {
             const modalUserdataCheckbox = document.getElementById('modal-userdata-checkbox');
             const modalAnonymizeCheckbox = document.getElementById('modal-anonymize-checkbox');
-
             onSave({
                 users: modalUserdataCheckbox?.checked ?? false,
                 anonymize: modalAnonymizeCheckbox?.checked ?? false
@@ -544,7 +558,11 @@ export default class BlockElement {
             }]);
         };
 
-        const modal = await this.createBackupSectionToSharingCartModal(sectionName, saver);
+        const modal = await this.createBackupSectionToSharingCartModal(
+            sectionId,
+            sectionName,
+            saver
+        );
         await modal.show();
     }
 
@@ -568,7 +586,11 @@ export default class BlockElement {
                 }
             }]);
         };
-        const modal = await this.createBackupCourseModuleToSharingCartModal(courseModuleName, saver);
+        const modal = await this.createBackupCourseModuleToSharingCartModal(
+            courseModuleId,
+            courseModuleName,
+            saver
+        );
         await modal.show();
     }
 

@@ -1,9 +1,9 @@
 <div>
-    {{#is_section_backup}}
-        <div class="mb-2 p-2 alert-warning">
-            <p class="mb-0">{{#str}}copy_section_warning, block_sharing_cart{{/str}}</p>
+    {{#has_quiz}}
+        <div class="mb-2 p-2 alert alert-warning">
+            <p class="mb-0">{{#str}}copy_quiz_warning, block_sharing_cart{{/str}}</p>
         </div>
-    {{/is_section_backup}}
+    {{/has_quiz}}
     <div>
         {{#show_user_data_backup}}
             <h6>{{#str}}backup_settings, block_sharing_cart{{/str}}:</h6>
