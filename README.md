@@ -66,6 +66,8 @@ GPL v3
 
 Change Log
 ----------
+* 5.0, release 5 2025.06.11
+    * Fixed question bank backup & restore process. Includes question bank only when an activity have dependency on it.
 * 5.0, release 4 2025.05.26
     * Fixed minor issues that caused session lock.
     * Added capability block/sharing_cart:manual_run_task to allow specific user to manually run the backup/restore task.
