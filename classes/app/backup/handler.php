@@ -9,6 +9,8 @@ defined('MOODLE_INTERNAL') || die();
 
 use block_sharing_cart\app\factory as base_factory;
 use block_sharing_cart\app\item\entity;
+use block_sharing_cart\event\backup_course_module;
+use block_sharing_cart\event\backup_section;
 use block_sharing_cart\task\asynchronous_backup_task;
 
 global $CFG;
@@ -45,18 +47,24 @@ class handler
     ): asynchronous_backup_task {
         global $USER;
 
-        $course_id = $this->base_factory->moodle()->db()->get_record(
+        $record = $this->base_factory->moodle()->db()->get_record(
             'course_modules',
             ['id' =>  $course_module_id],
-            'course',
+            'id, course',
             MUST_EXIST
-        )->course;
+        );
 
         $backup_controller = $this->base_factory->backup()->backup_controller(
-            \backup::TYPE_1COURSE,
-            $course_id,
+            \backup::TYPE_1ACTIVITY,
+            $course_module_id,
             $USER->id
         );
+
+        backup_course_module::create_by_course_module(
+            $record->course,
+            $course_module_id,
+            $USER->id
+        )->trigger();
 
         return $this->queue_async_backup($backup_controller, $root_item, $settings);
     }
@@ -78,7 +86,15 @@ class handler
             $USER->id
         );
 
-        return $this->queue_async_backup($backup_controller, $root_item, $settings);
+        $task = $this->queue_async_backup($backup_controller, $root_item, $settings);
+
+        backup_section::create_by_section(
+            $course_id,
+            $section_id,
+            $USER->id
+        )->trigger();
+
+        return $task;
     }
 
     public function get_backup_course_info(\stored_file $file): array
@@ -90,6 +106,7 @@ class handler
             'fullname' => $info->original_course_fullname
         ];
     }
+
     public function get_backup_item_tree(\stored_file $file): array
     {
         $tree = [];

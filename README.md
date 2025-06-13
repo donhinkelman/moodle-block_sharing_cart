@@ -29,6 +29,19 @@ Capabilities
     - Required to be able to copy user data. (A checkbox will appear when copying an activity or section)
 - moodle/backup:anonymise
     - Required to be able to anonymize user data. (A checkbox will appear when copying an activity or section)
+- block/sharing_cart:manual_run_task
+    - Required to be able to manually run the backup/restore task from the block.
+
+Events
+------
+- block_sharing_cart/backup_course_module
+    - Triggered when a course module is added to the Sharing Cart.
+- block_sharing_cart/backup_section
+    - Triggered when a new section is added to the Sharing Cart.
+- block_sharing_cart/restored_course_module
+    - Triggered when a course module is restored from the Sharing Cart.
+- block_sharing_cart/restored_section
+    - Triggered when a course module or section is restored from the Sharing Cart.
 
 Versions
 -------
@@ -38,8 +51,11 @@ Versions
 * Version 2:
   * Items added in 5.0 release 1. Uses TYPE_1SECTION for sections and TYPE_1ACTIVITY for activities.
 * Version 3:
-  * Items added in 6.0 release 1+. Uses TYPE_1COURSE for both sections and activities. TYPE_1SECTION and
+  * Items added in 5.0 release 1+. Uses TYPE_1COURSE for both sections and activities. TYPE_1SECTION and
     TYPE_1ACTIVITY backups have proven unreliable; TYPE_1COURSE offers more stable backup/restore functionality.
+* Version 4:
+  * Items added in 5.0 release 4+. Uses TYPE_1COURSE for sections and TYPE_1ACTIVITY for activities.
+    TYPE_1ACTIVITY for activities was to avoid copying all question banks from the course.
 
 Important: This versioning helps users identify legacy sharing cart items.
 As of 6.0 release 1, restoration of Legacy items is still supported.
@@ -50,6 +66,13 @@ GPL v3
 
 Change Log
 ----------
+* 5.0, release 5 2025.06.11
+    * Fixed question bank backup & restore process. Includes question bank only when an activity have dependency on it.
+* 5.0, release 4 2025.05.26
+    * Fixed minor issues that caused session lock.
+    * Added capability block/sharing_cart:manual_run_task to allow specific user to manually run the backup/restore task.
+    * Added a warning message when backing up a section.
+    * Switched backup method when copying a single activity to use the activity type backup instead of the course type backup to avoid copying all the question banks from the course.
 * 5.0, release 3 2025.04.22
     * Major changes
         * Changed the section and activity backups to use the course type backup.
