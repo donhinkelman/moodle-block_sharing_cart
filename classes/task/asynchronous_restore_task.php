@@ -51,6 +51,7 @@ class asynchronous_restore_task extends \core\task\adhoc_task
         }
         /** @var \restore_controller $rc */
         $rc = \restore_controller::load_controller($restoreid);
+        $rc->execute_precheck(true);
         try {
             $rc->set_progress(new \core\progress\db_updater($restorerecord->id, 'backup_controllers', 'progress'));
 

@@ -50,8 +50,6 @@ class handler
         entity $item,
         array $settings = []
     ): asynchronous_restore_task {
-        $restore_controller->execute_precheck(true);
-
         $asynctask = new asynchronous_restore_task();
         $asynctask->set_custom_data([
             'backupid' => $restore_controller->get_restoreid(),
