@@ -66,12 +66,12 @@ GPL v3
 
 Change Log
 ----------
-* 5.0, release 5 2025.06.11
+* 5.0, release 4 2025.06.20
+    * Change language strings
     * Fixed question bank backup & restore process. Includes question bank only when an activity have dependency on it.
-* 5.0, release 4 2025.05.26
     * Fixed minor issues that caused session lock.
-    * Added capability block/sharing_cart:manual_run_task to allow specific user to manually run the backup/restore task.
-    * Added a warning message when backing up a section.
+    * Added capability block/sharing_cart:manual_run_task to allow specific user to manually run the backup/restore task. By default, this capability is set to allow for the manager role archetype.
+    * Added a warning message when backing up a section with mod_quiz.
     * Switched backup method when copying a single activity to use the activity type backup instead of the course type backup to avoid copying all the question banks from the course.
 * 5.0, release 3 2025.04.22
     * Major changes

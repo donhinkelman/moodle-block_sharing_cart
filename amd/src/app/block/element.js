@@ -473,7 +473,7 @@ export default class BlockElement {
                 component: 'block_sharing_cart',
             },
             {
-                key: 'backup',
+                key: 'copy',
                 component: 'block_sharing_cart',
             },
             {
@@ -717,8 +717,8 @@ export default class BlockElement {
                 component: 'block_sharing_cart',
             },
             {
-                key: 'import',
-                component: 'core',
+                key: 'copy',
+                component: 'block_sharing_cart',
             },
             {
                 key: 'cancel',

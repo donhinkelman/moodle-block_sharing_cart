@@ -44,7 +44,7 @@ class block_sharing_cart extends block_base
                 'confirm_delete_item',
                 'confirm_delete_items',
                 'backup_without_user_data',
-                'backup',
+                'copy',
                 'backup_item',
                 'into_sharing_cart',
                 'copy_user_data',
@@ -58,7 +58,6 @@ class block_sharing_cart extends block_base
                 'deselect_all',
             ], 'block_sharing_cart');
             $this->page->requires->strings_for_js([
-                'import',
                 'delete',
                 'cancel',
             ], 'core');
