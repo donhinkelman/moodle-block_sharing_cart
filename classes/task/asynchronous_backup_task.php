@@ -17,7 +17,62 @@ require_once($CFG->dirroot . '/backup/moodle2/backup_plan_builder.class.php');
 
 class asynchronous_backup_task extends \core\task\adhoc_task
 {
-    protected base_factory $base_factory;
+    protected bool $output = true;
+    protected ?base_factory $base_factory = null;
+    private ?\backup_controller $controller = null;
+
+    protected function factory(): base_factory
+    {
+        return $this->base_factory ??= base_factory::make();
+    }
+
+    protected function db(): \moodle_database
+    {
+        return $this->factory()->moodle()->db();
+    }
+
+    protected function get_backup_id(): string
+    {
+        return $this->get_custom_data()->backupid ?? '';
+    }
+
+    protected function output(string $message): void
+    {
+        if (!$this->output) {
+            return;
+        }
+        mtrace($message);
+    }
+
+    public function get_backup_controller(): ?\backup_controller
+    {
+        try {
+            if ($this->controller === null) {
+                $backupid = $this->get_backup_id();
+                $record = $this->db()->get_record(
+                    'backup_controllers',
+                    ['backupid' => $backupid],
+                    'id, controller',
+                    MUST_EXIST
+                );
+
+                // Get the backup controller by backup id. If controller is invalid, this task can never complete.
+                if ($record->controller === '') {
+                    return null;
+                }
+
+                $this->controller = \backup_controller::load_controller($backupid);
+                $this->controller->set_progress(new \core\progress\db_updater(
+                    $record->id,
+                    'backup_controllers',
+                    'progress'
+                ));
+            }
+            return $this->controller;
+        } catch (\Exception) {
+            return null;
+        }
+    }
 
     /**
      * Should always resemble
@@ -29,34 +84,25 @@ class asynchronous_backup_task extends \core\task\adhoc_task
      */
     public function execute(): void
     {
-        $this->base_factory = base_factory::make();
-        $db = $this->base_factory->moodle()->db();
+        $bc = $this->get_backup_controller();
 
         /*
          * This task cannot be rerun, so we need to handle all exceptions.
          * If an exception occurs and the item exists, we need to set the status of the item to failed.
          * If an exception occurs and the item does not exist, we need to log the error and abort.
-         * By catching all exceptions, we can ensure that the task will always complete and not rerun, which would always fail.
+         * By catching all exceptions, we can ensure that the task will always complete and not rerun,
+         * which would always fail.
          */
         try {
             $started = time();
 
-            $backupid = $this->get_custom_data()->backupid;
-            $backuprecord = $db->get_record(
-                'backup_controllers',
-                ['backupid' => $backupid],
-                'id, controller',
-                MUST_EXIST
-            );
-            mtrace('Processing asynchronous backup for backup: ' . $backupid);
+            $backupid = $this->get_backup_id();
+            $this->output('Processing asynchronous backup for backup: ' . $backupid);
 
-            // Get the backup controller by backup id. If controller is invalid, this task can never complete.
-            if ($backuprecord->controller === '') {
-                mtrace('Bad backup controller status, invalid controller, ending backup execution.');
+            if ($bc === null) {
+                $this->output('Bad backup controller status, invalid controller, ending backup execution.');
                 return;
             }
-            $bc = \backup_controller::load_controller($backupid);
-            $bc->set_progress(new \core\progress\db_updater($backuprecord->id, 'backup_controllers', 'progress'));
 
             // Do some preflight checks on the backup.
             $status = $bc->get_status();
@@ -80,7 +126,7 @@ class asynchronous_backup_task extends \core\task\adhoc_task
                 // If status isn't 700, it means the process has failed.
                 // Retrying isn't going to fix it, so marked operation as failed.
                 $bc->set_status(\backup::STATUS_FINISHED_ERR);
-                mtrace('Bad backup controller status, is: ' . $status . ' should be 700, marking job as failed.');
+                $this->output('Bad backup controller status, is: ' . $status . ' should be 700, marking job as failed.');
             }
 
             $this->after_backup_finished_hook($bc);
@@ -89,12 +135,12 @@ class asynchronous_backup_task extends \core\task\adhoc_task
             $bc->destroy();
 
             $duration = time() - $started;
-            mtrace('Backup completed in: ' . $duration . ' seconds');
+            $this->output('Backup completed in: ' . $duration . ' seconds');
         } catch (\Exception $e) {
-            mtrace("An error occurred during asynchronous backup task execution");
-            mtrace($e->getMessage());
-            mtrace($e->getTraceAsString());
-            $bc->set_status(\backup::STATUS_FINISHED_ERR);
+            $this->output("An error occurred during asynchronous backup task execution");
+            $this->output($e->getMessage());
+            $this->output($e->getTraceAsString());
+            $bc?->set_status(\backup::STATUS_FINISHED_ERR);
 
             $this->fail_task();
         }
@@ -105,19 +151,27 @@ class asynchronous_backup_task extends \core\task\adhoc_task
         return false;
     }
 
-    private function before_backup_started_hook(\backup_controller $backup_controller): void
+    protected function before_backup_started_hook(\backup_controller $backup_controller): void
     {
         try {
-            mtrace('Executing before_backup_started_hook...');
+            $this->output('Executing before_backup_started_hook...');
             $custom_data = $this->get_custom_data();
 
-            $db = $this->base_factory->moodle()->db();
-            $item_entity = $this->base_factory->item()->repository()->get_by_id($custom_data->item->id);
+            $db = $this->db();
+            $item_entity = $this->factory()->item()->repository()->get_by_id($custom_data->item->id);
 
             if ($item_entity->get_type() === 'section') {
-                $db->get_record('course_sections',['id' => $item_entity->get_old_instance_id()] , strictness: MUST_EXIST);
+                $db->get_record(
+                    'course_sections',
+                    ['id' => $item_entity->get_old_instance_id()],
+                    strictness: MUST_EXIST
+                );
             } else {
-                $db->get_record('course_modules',['id' => $item_entity->get_old_instance_id()] , strictness: MUST_EXIST);
+                $db->get_record(
+                    'course_modules',
+                    ['id' => $item_entity->get_old_instance_id()],
+                    strictness: MUST_EXIST
+                );
             }
 
             $settings = [
@@ -149,7 +203,9 @@ class asynchronous_backup_task extends \core\task\adhoc_task
 
                 $settings['anonymize'] = true;
             }
-            $settings += $this->base_factory->backup()->settings_helper()->get_course_settings_by_item($item_entity, $settings['users']);
+            $settings += $this->factory()->backup()
+                ->settings_helper()
+                ->get_course_settings_by_item($item_entity, $settings['users']);
 
             $plan = $backup_controller->get_plan();
             foreach ($settings as $name => $value) {
@@ -165,23 +221,25 @@ class asynchronous_backup_task extends \core\task\adhoc_task
                 }
             }
 
+            $this->toggle_question_bank_setting($plan, $item_entity);
+
             $this->filter_away_disabled_course_modules($backup_controller);
 
-            mtrace('Executing before_backup_started_hook completed, continuing with backup...');
+            $this->output('Executing before_backup_started_hook completed, continuing with backup...');
         } catch (\Exception $e) {
-            mtrace("An error occurred during before_backup_started_hook");
+            $this->output("An error occurred during before_backup_started_hook");
             throw $e;
         }
     }
 
-    private function after_backup_finished_hook(\backup_controller $backup_controller): void
+    protected function after_backup_finished_hook(\backup_controller $backup_controller): void
     {
         try {
-            mtrace('Executing after_backup_finished_hook...');
+            $this->output('Executing after_backup_finished_hook...');
 
             $custom_data = $this->get_custom_data();
             $item = $custom_data->item ?? null;
-            $root_item = $this->base_factory->item()->repository()->get_by_id($item->id);
+            $root_item = $this->factory()->item()->repository()->get_by_id($item->id);
             if (!$root_item) {
                 throw new \Exception(
                     "Couldn't fetch item (id: {$item->id})"
@@ -192,7 +250,7 @@ class asynchronous_backup_task extends \core\task\adhoc_task
                 throw new \Exception("Backup failed");
             }
 
-            mtrace("Fetching backup results...");
+            $this->output("Fetching backup results...");
             $backup_results = $backup_controller->get_results();
 
             /**
@@ -200,22 +258,22 @@ class asynchronous_backup_task extends \core\task\adhoc_task
              */
             $file = $backup_results['backup_destination'] ?? null;
             if (!$file) {
-                mtrace("Backup results: " . print_r($backup_results, true));
+                $this->output("Backup results: " . print_r($backup_results, true));
                 throw new \Exception("No backup file found in results");
             }
 
-            mtrace("Copying backup file into sharing cart...");
+            $this->output("Copying backup file into sharing cart...");
             $sharing_cart_file = $this->copy_backup_file_to_sharing_cart_filearea($file, $root_item);
 
-            mtrace("Updating items in sharing cart using contents of backup file...");
-            $this->base_factory->item()->repository()->update_sharing_cart_item_with_backup_file(
+            $this->output("Updating items in sharing cart using contents of backup file...");
+            $this->factory()->item()->repository()->update_sharing_cart_item_with_backup_file(
                 $root_item,
                 $sharing_cart_file
             );
 
-            mtrace('Executing after_backup_finished_hook completed...');
+            $this->output('Executing after_backup_finished_hook completed...');
         } catch (\Exception $e) {
-            mtrace("An error occurred during after_backup_finished_hook");
+            $this->output("An error occurred during after_backup_finished_hook");
             throw $e;
         }
     }
@@ -257,9 +315,9 @@ class asynchronous_backup_task extends \core\task\adhoc_task
     private function filter_away_disabled_course_modules(
         \backup_controller $backup_controller
     ): void {
-        $db = $this->base_factory->moodle()->db();
+        $db = $this->db();
 
-        mtrace("Excluding activities which are disabled on the site...");
+        $this->output("Excluding activities which are disabled on the site...");
 
         foreach ($backup_controller->get_plan()->get_tasks() as $task) {
             if ($task instanceof \backup_activity_task) {
@@ -272,7 +330,7 @@ class asynchronous_backup_task extends \core\task\adhoc_task
                     ]) !== false;
 
                 if ($include_activity === false){
-                    mtrace('...' . ("Excluding activity: (id: $cm_id)"));
+                    $this->output('...' . ("Excluding activity: (id: $cm_id)"));
                     $task->get_setting('included')->set_value(false);
                 }
             }
@@ -281,23 +339,107 @@ class asynchronous_backup_task extends \core\task\adhoc_task
 
     private function fail_task(): void
     {
-        $db = $this->base_factory->moodle()->db();
+        $db = $this->db();
 
-        mtrace("Async backup failed, trying to set item status to failed...");
+        $this->output("Async backup failed, trying to set item status to failed...");
 
         $custom_data = $this->get_custom_data();
         $item = $custom_data->item ?? null;
-        $root_item = $this->base_factory->item()->repository()->get_by_id($item->id);
+        $root_item = $this->factory()->item()->repository()->get_by_id($item->id);
         if (!$root_item) {
-            mtrace(
-                "Couldn't fetch item (id: {$item->id}) from {$db->get_prefix()}{$this->base_factory->item()->repository()->get_table()}, aborting..."
+            $table = "{$db->get_prefix()}{$this->factory()->item()->repository()->get_table()}";
+            $this->output(
+                "Couldn't fetch item (id: {$item->id}) from {$table}, aborting..."
             );
             return;
         }
 
         $root_item->set_status(entity::STATUS_BACKUP_FAILED);
-        $this->base_factory->item()->repository()->update($root_item);
+        $this->factory()->item()->repository()->update($root_item);
 
-        mtrace("Async backup failed, item status has been set to failed, aborting...");
+        $this->output("Async backup failed, item status has been set to failed, aborting...");
+    }
+
+    private function get_course_modules_settings_by_item(
+        int $course_id,
+        entity $item
+    ): array
+    {
+        try {
+            $item_id = $item->get_old_instance_id();
+            if (empty($item_id)) {
+                return [];
+            }
+
+            $mod_info = get_fast_modinfo($course_id);
+            $cms = [];
+
+            if ($item->get_type() === 'section') {
+                $section = $mod_info->get_section_info_by_id($item_id);
+                if (empty($section->sequence)) {
+                    return [];
+                }
+                $cms = array_map(static function ($id) {
+                    return (int)$id;
+                }, explode(',', $section->sequence));
+
+            } else {
+                $cms[] = $item_id;
+            }
+
+            $settings = [];
+            foreach ($cms as $id) {
+                $cm = $mod_info->get_cm($id);
+                $name = "{$cm->modname}_{$cm->id}_included";
+                $settings[$name] = $id;
+            }
+            return $settings;
+        } catch (\Exception) {
+             return [];
+        }
+    }
+
+    private function toggle_question_bank_setting(
+        \backup_plan $plan,
+        entity $item
+    ): void
+    {
+        if (!$plan->setting_exists('questionbank')) {
+            return;
+        }
+
+        $question_bank_setting = $plan->get_setting('questionbank');
+        $status = $question_bank_setting->get_status();
+        if (\base_setting::NOT_LOCKED !== $status) {
+            $question_bank_setting->set_status(\base_setting::NOT_LOCKED);
+        }
+
+        $question_bank_setting->set_value(false);
+
+        $course_id = $plan->get_courseid();
+        if (empty($course_id)) {
+            $question_bank_setting->set_status($status);
+            return;
+        }
+
+        $course_modules = $this->get_course_modules_settings_by_item(
+            $course_id,
+            $item
+        );
+
+        $dependencies = $question_bank_setting->get_dependencies();
+        foreach ($dependencies as $name => $dependency) {
+            if (!isset($course_modules[$name])) {
+                continue;
+            }
+            if (!$plan->setting_exists($name)) {
+                continue;
+            }
+
+            $question_bank_setting->set_value(true);
+            break;
+        }
+
+        $question_bank_setting->set_status($status);
     }
 }

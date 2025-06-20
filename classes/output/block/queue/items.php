@@ -61,12 +61,23 @@ class items implements \renderable, \core\output\named_templatable
                 'to_section_id' => $backup_settings->move_to_section_id ?? null,
                 'is_running' => $is_running,
                 'is_failed' => $is_failed,
-                'show_run_now' => !$is_running && !$is_failed && $has_waited_5_seconds,
+                'show_run_now' => $this->allow_to_run_now() && !$is_running && !$is_failed && $has_waited_5_seconds,
             ];
         }
 
         return [
             'queue_items' => array_values($queue_items)
         ];
+    }
+
+    private function allow_to_run_now(): bool
+    {
+        global $USER;
+
+        return has_capability(
+            'block/sharing_cart:manual_run_task',
+            \core\context\system::instance(),
+            $USER
+        );
     }
 }

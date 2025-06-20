@@ -1,5 +1,53 @@
 import {getCurrentCourseEditor} from "core_courseformat/courseeditor";
 
+/**
+ * @typedef {import("core_courseformat/factory").BaseFactory} BaseFactory
+ * @typedef {import("core_courseformat/local/courseeditor/courseeditor").CourseEditor} CourseEditor
+ */
+
+/**
+ * @typedef Section
+ * @property {number} id
+ * @property {number} section
+ * @property {number} number
+ * @property {string} title
+ * @property {boolean} hassummary
+ * @property {string} rawtitle
+ * @property {string[]} cmlist
+ * @property {boolean} visible
+ * @property {string} sectionurl
+ * @property {boolean} current
+ * @property {boolean} indexcollapsed
+ * @property {boolean} contentcollapsed
+ * @property {boolean} hasrestrictions
+ * @property {boolean} bulkeditable
+ * @property {string|null} component
+ * @property {number|null} itemid
+ */
+
+/**
+ * @typedef CourseModule
+ * @property {number} id
+ * @property {string} anchor
+ * @property {string} name
+ * @property {boolean} visible
+ * @property {boolean} stealth
+ * @property {string} sectionid
+ * @property {number} sectionnumber
+ * @property {boolean} uservisible
+ * @property {boolean} hascmrestrictions
+ * @property {string} modname
+ * @property {number} indent
+ * @property {number} groupmode
+ * @property {string} module
+ * @property {string} plugin
+ * @property {boolean} delegatesection
+ * @property {boolean} accessvisible
+ * @property {string} url
+ * @property {boolean} istrackeduser
+ * @property {boolean} allowstealth
+ */
+
 export default class CourseElement {
     /**
      * @type {BaseFactory}
@@ -137,6 +185,14 @@ export default class CourseElement {
     }
 
     /**
+     * @param {number|string} courseModuleId
+     * @returns {CourseModule|null}
+     */
+    getCourseModule(courseModuleId) {
+        return this.reactive.state.cm.get(courseModuleId);
+    }
+
+    /**
      * @param {String} courseModuleId
      * @returns {String}
      */
@@ -144,6 +200,37 @@ export default class CourseElement {
         const courseModule = this.reactive.state.cm.get(courseModuleId);
 
         return courseModule.name ?? 'Unknown';
+    }
+
+    /**
+     * @param {number|string} sectionId
+     * @param {string} type
+     * @returns {boolean}
+     */
+    hasSectionCourseModuleType(sectionId, type) {
+        let cms = this.getSectionCourseModules(sectionId);
+        if (!cms) {
+            return false;
+        }
+        for (const id of cms) {
+            if (this.isCourseModuleTypeById(id, type)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param {number|string} courseModuleId
+     * @param {string} type
+     * @returns {boolean}
+     */
+    isCourseModuleTypeById(courseModuleId, type) {
+        const courseModule = this.getCourseModule(courseModuleId);
+        if (!courseModule) {
+            return false;
+        }
+        return courseModule?.module === type;
     }
 
     /**

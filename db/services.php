@@ -14,6 +14,7 @@ $functions = [
         'description' => 'Takes a course module id and creates a sharing cart backup. Returns the item placeholder sharing cart item',
         'type' => 'write',
         'ajax' => true,
+        'readonlysession' => false,
         'capabilities' => ''
     ],
     'block_sharing_cart_backup_section_into_sharing_cart' => [
@@ -22,6 +23,7 @@ $functions = [
         'description' => 'Takes a section id and creates a sharing cart backup. Returns the item placeholder sharing cart item',
         'type' => 'write',
         'ajax' => true,
+        'readonlysession' => false,
         'capabilities' => ''
     ],
 
@@ -34,6 +36,7 @@ $functions = [
         'description' => 'Takes a sharing cart item and restores it into a section',
         'type' => 'write',
         'ajax' => true,
+        'readonlysession' => false,
         'capabilities' => ''
     ],
 
@@ -42,6 +45,7 @@ $functions = [
         'methodname' => 'execute',
         'description' => 'Reorder sharing cart items',
         'type' => 'write',
+        'readonlysession' => false,
         'ajax' => true,
         'capabilities' => ''
     ],
@@ -51,6 +55,7 @@ $functions = [
         'description' => 'Deletes an item from the sharing cart',
         'type' => 'write',
         'ajax' => true,
+        'readonlysession' => false,
         'capabilities' => ''
     ],
     'block_sharing_cart_delete_items_from_sharing_cart' => [
@@ -59,6 +64,7 @@ $functions = [
         'description' => 'Deletes items from the sharing cart',
         'type' => 'write',
         'ajax' => true,
+        'readonlysession' => false,
         'capabilities' => ''
     ],
     'block_sharing_cart_get_item_from_sharing_cart' => [
@@ -76,6 +82,7 @@ $functions = [
         'description' => 'Run a block_sharing_cart task now',
         'type' => 'write',
         'ajax' => true,
+        'readonlysession' => false,
         'capabilities' => ''
     ]
 ];
