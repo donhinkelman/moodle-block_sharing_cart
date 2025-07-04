@@ -66,6 +66,8 @@ GPL v3
 
 Change Log
 ----------
+* 5.0, release 5 2025.07.02
+    * Changed block/sharing_cart:manual_run_task capability to prevent as default for all users.
 * 5.0, release 4 2025.06.20
     * Change language strings
     * Fixed question bank backup & restore process. Includes question bank only when an activity have dependency on it.
