@@ -6,14 +6,15 @@
     {{#original_course_fullname}}title="{{#str}}original_course, block_sharing_cart{{/str}} {{.}}"{{/original_course_fullname}}
 >
     <div class="item-body">
-        {{#is_root}}
-            <input class="d-none mr-1" type="checkbox" data-action="bulk_select" value="{{id}}"/>
-        {{/is_root}}
-        <div class="info">
-            {{> block_sharing_cart/block/item/icon }}
-            <span class="name">{{{name}}}</span>
-        </div>
-        <span class="sharing_cart_item_actions">
+        <div class="item-inner-body">
+            {{#is_root}}
+                <input class="d-none mr-1" type="checkbox" data-action="bulk_select" value="{{id}}"/>
+            {{/is_root}}
+            <div class="info">
+                {{> block_sharing_cart/block/item/icon }}
+                <span class="name">{{{name}}}</span>
+            </div>
+            <span class="sharing_cart_item_actions">
             {{^status_awaiting}}
                 {{#is_root}}
                     <i class="fa fa-trash" data-action="delete"
@@ -22,18 +23,24 @@
                 {{#status_finished}}
                     {{#has_file_id}}
                         {{^module_is_disabled_on_site}}
-                            <i class="fa fa-clone" data-action="copy_to_course"
-                               title="{{#str}}copy_item, block_sharing_cart{{/str}}"></i>
+                            {{#can_copy_to_course}}
+                                <i class="fa fa-clone" data-action="copy_to_course"
+                                   title="{{#str}}copy_item, block_sharing_cart{{/str}}"></i>
+                            {{/can_copy_to_course}}
                         {{/module_is_disabled_on_site}}
                     {{/has_file_id}}
                 {{/status_finished}}
             {{/status_awaiting}}
-            {{#has_run_now}}
-                <button class="btn btn-secondary text-nowrap" data-action="run_now" data-task-id="{{task_id}}">
-                    {{#str}}run_now, block_sharing_cart{{/str}}
-                </button>
-            {{/has_run_now}}
+                {{#show_run_now}}
+                    <button class="btn btn-secondary text-nowrap" data-action="run_now" data-task-id="{{task_id}}">
+                        {{#str}}run_now, block_sharing_cart{{/str}}
+                    </button>
+                {{/show_run_now}}
         </span>
+        </div>
+        {{#show_run_now}}
+            <small>{{#str}}maybe_the_queue_is_stuck, block_sharing_cart{{/str}}</small>
+        {{/show_run_now}}
     </div>
     <div class="sharing_cart_item_children">
         {{#children}}

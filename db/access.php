@@ -16,7 +16,7 @@ $capabilities = [
     ],
     'block/sharing_cart:manual_run_task' => [
         'captype' => 'read',
-        'contextlevel' => CONTEXT_BLOCK,
+        'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [
             'guest' => CAP_PREVENT,
             'user' => CAP_PREVENT,

@@ -153,7 +153,7 @@ export default class QueueElement {
                     this.#reactive.dispatch('sectionState', sectionIds).then(() => {
                         Toast.add(getString('you_may_need_to_reload_the_course_warning', 'block_sharing_cart'), {
                             closeButton: true,
-                            autohide: false,
+                            autohide: true,
                             type: 'warning'
                         });
                     });

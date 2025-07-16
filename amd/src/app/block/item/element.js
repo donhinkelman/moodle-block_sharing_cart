@@ -62,8 +62,15 @@ export default class ItemElement {
             methodname: 'block_sharing_cart_get_item_from_sharing_cart',
             args: {
                 item_id: this.getItemId(),
+                course_id: M.cfg.courseId
             },
             done: async(item) => {
+                const actionsContainer = this.#element.querySelector(':scope > .item-body .sharing_cart_item_actions');
+                const runNowButton = actionsContainer?.querySelector('[data-action="run_now"]');
+                if (!runNowButton && item.show_run_now) {
+                    await this.#blockElement.renderItem(item);
+                }
+
                 if (item.status === 0) {
                     // Cap the timeout at 10 seconds
                     const timeOut = currentTry > 10 ? 10000 : currentTry * 1000;

@@ -32,23 +32,22 @@ class content implements \renderable, \core\output\named_templatable
     {
         global $USER, $DB;
 
-        $not_running_backup_tasks = $DB->get_records('task_adhoc', [
+        $backup_tasks = $DB->get_records('task_adhoc', [
             'userid' => $USER->id,
             'classname' => "\\block_sharing_cart\\task\\asynchronous_backup_task",
-            'timestarted' => null
-        ], fields: "id, customdata");
-        array_walk($not_running_backup_tasks, static function ($task) {
+        ]);
+        array_walk($backup_tasks, static function (object $task) {
             $task->item_id = json_decode($task->customdata)?->item?->id;
             unset($task->customdata);
         });
-        $not_running_backup_tasks = array_combine(
-            array_column($not_running_backup_tasks, 'item_id'),
-            $not_running_backup_tasks
+        $backup_tasks = array_combine(
+            array_column($backup_tasks, 'item_id'),
+            $backup_tasks
         );
 
         $all_item_contexts = $this->base_factory->item()->repository()->get_by_user_id($this->user_id)->map(
-            static function (entity $item) use ($not_running_backup_tasks) {
-                return item::export_item_for_template($item, $not_running_backup_tasks);
+            static function (entity $item) use ($backup_tasks) {
+                return item::export_item_for_template($item, $backup_tasks);
             }
         );
 
@@ -72,7 +71,8 @@ class content implements \renderable, \core\output\named_templatable
             'items' => $this->export_items_for_template(),
             'canBackupUserdata' => has_capability('moodle/backup:userinfo', $course_context),
             'canAnonymizeUserdata' => has_capability('moodle/backup:anonymise', $course_context),
-            'showSharingCartBasket' => (bool)get_config('block_sharing_cart', 'show_sharing_cart_basket'),
+            'canBackup' => has_capability('moodle/backup:backupactivity', $course_context),
+            'showSharingCartBasket' => get_config('block_sharing_cart', 'show_sharing_cart_basket'),
             'showCopySectionInBlock' => (bool)get_config('block_sharing_cart', 'show_copy_section_in_block'),
             'contextid' => $course_context->id,
         ];
