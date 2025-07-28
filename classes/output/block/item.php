@@ -28,9 +28,24 @@ class item implements \renderable, \core\output\named_templatable
         return 'block_sharing_cart/block/item';
     }
 
-    public static function export_item_for_template(entity $item, array $not_running_backup_tasks): object
+    public static function export_item_for_template(entity $item, array $backup_tasks): object
     {
-        $db = base_factory::make()->moodle()->db();
+        global $USER, $PAGE;
+
+        $allow_to_run_now = has_capability('block/sharing_cart:manual_run_task', \core\context\system::instance(), $USER);
+
+        $base_factory = base_factory::make();
+        $db = $base_factory->moodle()->db();
+
+        $backup_task = $backup_tasks[$item->get_id()] ?? null;
+        $is_running = $backup_task && $backup_task->timestarted !== null;
+        $is_failed = $backup_task && $backup_task->faildelay > 0;
+        $has_waited_5_seconds = $backup_task && time() - $backup_task->timecreated > 5;
+
+        if ($is_failed || ($backup_task === null && $item->get_status() !== entity::STATUS_BACKEDUP)) {
+            $item->set_status(entity::STATUS_BACKUP_FAILED);
+            $base_factory->item()->repository()->update($item);
+        }
 
         $item_context = (object)$item->to_array();
 
@@ -40,15 +55,14 @@ class item implements \renderable, \core\output\named_templatable
 
         $item_context->is_module = $item->is_module();
         $item_context->mod_icon = self::get_mod_icon($item);
+        $item_context->can_copy_to_course = has_capability('moodle/restore:restoreactivity', $PAGE->context, $USER);
 
-        $item_context->status_awaiting = $item->get_status() === entity::STATUS_AWAITING_BACKUP;
-        $item_context->has_run_now = $item_context->status_awaiting && isset(
-                $not_running_backup_tasks[$item->get_id()]
-            );
-        $item_context->task_id = $item_context->has_run_now ? $not_running_backup_tasks[$item->get_id()]->id : null;
+        $item_context->show_run_now = $allow_to_run_now && !$is_running && !$is_failed && $has_waited_5_seconds;
+        $item_context->task_id = $item_context->show_run_now ? $backup_task->id : null;
         $item_context->has_file_id = $item->get_file_id() !== null || factory::make()->item()->repository(
             )->get_parent_item_recursively_by_item($item)->get_file_id() !== null;
         $item_context->status_finished = $item->get_status() === entity::STATUS_BACKEDUP;
+        $item_context->status_awaiting = $item->get_status() === entity::STATUS_AWAITING_BACKUP;
         $item_context->status_failed = $item->get_status() === entity::STATUS_BACKUP_FAILED;
         $item_context->is_current_version = $item->get_version() === entity::CURRENT_BACKUP_VERSION;
 
@@ -87,25 +101,24 @@ class item implements \renderable, \core\output\named_templatable
     {
         global $USER, $DB;
 
-        $not_running_backup_tasks = $DB->get_records('task_adhoc', [
+        $backup_tasks = $DB->get_records('task_adhoc', [
             'userid' => $USER->id,
             'classname' => "\\block_sharing_cart\\task\\asynchronous_backup_task",
-            'timestarted' => null
-        ], fields: "id, customdata");
-        array_walk($not_running_backup_tasks, static function ($task) {
+        ]);
+        array_walk($backup_tasks, static function (object $task) {
             $task->item_id = json_decode($task->customdata)?->item?->id;
             unset($task->customdata);
         });
-        $not_running_backup_tasks = array_combine(
-            array_column($not_running_backup_tasks, 'item_id'),
-            $not_running_backup_tasks
+        $backup_tasks = array_combine(
+            array_column($backup_tasks, 'item_id'),
+            $backup_tasks
         );
 
         $all_item_contexts = $this->base_factory->item()->repository()->get_recursively_by_parent_id(
             $this->item->get_id()
         )->map(
-            function (entity $item) use ($not_running_backup_tasks) {
-                return $this->export_item_for_template($item, $not_running_backup_tasks);
+            function (entity $item) use ($backup_tasks) {
+                return $this->export_item_for_template($item, $backup_tasks);
             }
         );
 
