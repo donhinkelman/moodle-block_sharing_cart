@@ -1,5 +1,5 @@
 .block.block_sharing_cart {
-  &.dragging_item {
+  &:has(#block_sharing_cart[data-can-backup="1"]).dragging_item {
     z-index: 98;
     position: relative;
     backdrop-filter: blur(2px);
@@ -80,55 +80,60 @@
 
       .item-body {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         padding: 0.5rem;
-        align-items: center;
-        gap: 0.5rem;
 
-        .info {
-          display: flex;
-          align-items: center;
-          width: 100%;
-          min-width: 0;
-          flex: 1 1 auto;
-
-          i.fa-spinner {
-            animation: spin 2s linear infinite;
-
-            @keyframes spin {
-              0% {
-                transform: rotate(0deg);
-              }
-              100% {
-                transform: rotate(360deg);
-              }
-            }
-          }
-
-          .name {
-            margin-left: 0.5rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-        }
-
-        .sharing_cart_item_actions {
+        .item-inner-body {
           display: flex;
           flex-direction: row;
           align-items: center;
-          margin-left: auto;
           gap: 0.5rem;
 
-          i {
-            cursor: pointer;
+          .info {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            min-width: 0;
+            flex: 1 1 auto;
+
+            i.fa-spinner {
+              animation: spin 2s linear infinite;
+
+              @keyframes spin {
+                0% {
+                  transform: rotate(0deg);
+                }
+                100% {
+                  transform: rotate(360deg);
+                }
+              }
+            }
+
+            .name {
+              margin-left: 0.5rem;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+          }
+
+          .sharing_cart_item_actions {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-left: auto;
+            gap: 0.5rem;
+
+            i {
+              cursor: pointer;
+            }
           }
         }
-      }
 
-      .sharing_cart_item_children {
-        display: flex;
-        flex-direction: column;
+        .sharing_cart_item_children {
+          display: flex;
+          flex-direction: column;
+        }
       }
     }
   }

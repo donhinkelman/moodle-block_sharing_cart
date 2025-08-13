@@ -53,6 +53,11 @@ export default class BlockElement {
     #canBackupUserdata = false;
 
     /**
+     * @type {boolean}
+     */
+    #canBackup = false;
+
+    /**
      * @type {Boolean}
      */
     #canAnonymizeUserdata = false;
@@ -82,13 +87,15 @@ export default class BlockElement {
      * @param {HTMLElement} element
      * @param {Boolean} canBackupUserdata
      * @param {Boolean} canAnonymizeUserdata
+     * @param {Boolean} canBackup
      * @param {Boolean} showSharingCartBasket
      */
-    constructor(baseFactory, element, canBackupUserdata, canAnonymizeUserdata, showSharingCartBasket) {
+    constructor(baseFactory, element, canBackupUserdata, canAnonymizeUserdata, canBackup, showSharingCartBasket) {
         this.#baseFactory = baseFactory;
         this.#element = element;
         this.#canBackupUserdata = canBackupUserdata;
         this.#canAnonymizeUserdata = canAnonymizeUserdata;
+        this.#canBackup = canBackup;
         this.#showSharingCartBasket = showSharingCartBasket;
     }
 
@@ -141,6 +148,10 @@ export default class BlockElement {
     }
 
     setupDragAndDrop() {
+        if (!this.#canBackup) {
+            return;
+        }
+
         const dropZone = this.#element;
 
         dropZone.addEventListener('dragover', (e) => {
@@ -608,7 +619,7 @@ export default class BlockElement {
             const element = await this.#baseFactory.moodle().template().createElementFromFragment(
                 'block_sharing_cart',
                 'item',
-                1,
+                M.cfg.courseContextId,
                 {
                     item_id: item.id,
                 }
@@ -639,7 +650,8 @@ export default class BlockElement {
                 status: 0,
                 old_instance_id: item.old_instance_id,
                 status_awaiting: true,
-                has_run_now: true,
+                show_run_now: false,
+                can_copy_to_course: item.can_copy_to_course ?? false,
                 task_id: item.task_id ?? null,
                 status_finished: false,
                 status_failed: false,
