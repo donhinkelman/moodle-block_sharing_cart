@@ -4,16 +4,19 @@ namespace block_sharing_cart\output\block\queue;
 
 // @codeCoverageIgnoreStart
 defined('MOODLE_INTERNAL') || die();
-
 // @codeCoverageIgnoreEnd
 
+
 use block_sharing_cart\app\factory as base_factory;
+use core\context\system;
 
 class items implements \renderable, \core\output\named_templatable
 {
     private base_factory $base_factory;
 
-    public function __construct(base_factory $base_factory)
+    public function __construct(
+        base_factory $base_factory
+    )
     {
         $this->base_factory = $base_factory;
     }

@@ -33,6 +33,7 @@ export default class Block extends BaseComponent {
 
         this.canBackupUserdata = descriptor.canBackupUserdata ?? false;
         this.canAnonymizeUserdata = descriptor.canAnonymizeUserdata ?? false;
+        this.canBackup = descriptor.canBackup ?? false;
         this.showSharingCartBasket = descriptor.showSharingCartBasket ?? false;
     }
 
@@ -42,14 +43,16 @@ export default class Block extends BaseComponent {
      * @param {String} target
      * @param {Boolean} canBackupUserdata
      * @param {Boolean} canAnonymizeUserdata
+     * @param {Boolean} canBackup
      * @param {Boolean} showSharingCartBasket
      */
-    static init(target, canBackupUserdata, canAnonymizeUserdata, showSharingCartBasket) {
+    static init(target, canBackupUserdata, canAnonymizeUserdata, canBackup, showSharingCartBasket) {
         return new this({
             element: document.getElementById(target),
             reactive: getCurrentCourseEditor(),
             canBackupUserdata,
             canAnonymizeUserdata,
+            canBackup,
             showSharingCartBasket
         });
     }
@@ -62,6 +65,7 @@ export default class Block extends BaseComponent {
         const {course, block, queue} = this.baseFactory.block().eventHandler().onLoad(
             this.canBackupUserdata,
             this.canAnonymizeUserdata,
+            this.canBackup,
             this.showSharingCartBasket
         );
 
@@ -170,7 +174,7 @@ export default class Block extends BaseComponent {
     async _refreshSection({element}) {
         this._refreshCopySectionOptions();
 
-        if (this.showSharingCartBasket) {
+        if (this.showSharingCartBasket && this.canBackup) {
             let backupButton = await this.getBackupToSharingCartButton();
 
             const sectionTitle = document.querySelector(
@@ -210,7 +214,7 @@ export default class Block extends BaseComponent {
      * @param {Object} param.element
      */
     async _refreshCourseModule({element}) {
-        if (this.showSharingCartBasket) {
+        if (this.showSharingCartBasket && this.canBackup) {
             const backupButton = await this.getBackupToSharingCartButton();
 
             const courseModuleActionMenu = document.querySelector(

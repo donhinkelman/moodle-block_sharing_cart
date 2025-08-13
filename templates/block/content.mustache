@@ -1,4 +1,4 @@
-<div id="block_sharing_cart" data-contextid="{{contextid}}">
+<div id="block_sharing_cart" data-contextid="{{contextid}}" data-can-backup="{{canBackup}}">
     <div class="drop_here_text">
         <strong class="m-auto">{{#str}}drop_here, block_sharing_cart{{/str}}</strong>
     </div>
@@ -37,7 +37,7 @@
                         {{> block_sharing_cart/block/item}}
                     {{/items}}
 
-                    <div class="no-items text-muted {{#items}}d-none{{/items}}">
+                    <div class="no-items text-muted {{#items.0}}d-none{{/items.0}}">
                         {{#str}}no_items, block_sharing_cart{{/str}}
                     </div>
                 </div>
@@ -49,19 +49,20 @@
             </button>
         </div>
         {{#showCopySectionInBlock}}
-            <div id="copy_section_container">
-                <hr>
-                <select class="custom-select w-100">
-                    <option disabled selected>{{#str}}choosedots, core{{/str}}</option>
-                </select>
-                <button type="button" class="btn btn-primary mt-3 w-100">{{#str}}
-                    copy_section, block_sharing_cart{{/str}}</button>
-            </div>
+            {{#canBackup}}
+                <div id="copy_section_container">
+                    <hr>
+                    <select class="custom-select w-100">
+                        <option disabled selected>{{#str}}choosedots, core{{/str}}</option>
+                    </select>
+                    <button type="button" class="btn btn-primary mt-3 w-100">{{#str}}copy_section, block_sharing_cart{{/str}}</button>
+                </div>
+            {{/canBackup}}
         {{/showCopySectionInBlock}}
     </div>
 </div>
 {{#js}}
     require(['block_sharing_cart/local/block'], (component) => {
-    component.init('block_sharing_cart', {{canBackupUserdata}}, {{canAnonymizeUserdata}}, {{showSharingCartBasket}}, {{courseContextId}});
+    component.init('block_sharing_cart', {{canBackupUserdata}}, {{canAnonymizeUserdata}}, {{canBackup}}, {{showSharingCartBasket}}, {{courseContextId}});
     });
 {{/js}}

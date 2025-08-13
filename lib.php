@@ -63,7 +63,6 @@ function block_sharing_cart_output_fragment_item_queue($args)
     global $OUTPUT;
 
     $base_factory = \block_sharing_cart\app\factory::make();
-
     $template = new \block_sharing_cart\output\block\queue\items($base_factory);
 
     return fix_utf8($OUTPUT->render($template));
