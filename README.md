@@ -73,6 +73,7 @@ Change Log
 * 5.0, release 6 2025.09.24
     * Added a CLI script to delete all the items from the sharing cart.
     * Fix an issue when restoring non-local backup files.
+    * Fixed an issue where sharing cart backups would show up in the moodle core backup UI
 * 5.0, release 5 2025.07.02
     * Changed block/sharing_cart:manual_run_task capability to prevent as default for all users.
 * 5.0, release 4 2025.06.20
