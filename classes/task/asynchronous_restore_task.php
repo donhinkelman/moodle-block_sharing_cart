@@ -91,7 +91,6 @@ class asynchronous_restore_task extends \core\task\adhoc_task
                 $started,
                 $finished
             );
-
         } catch (\Exception $e) {
             // If an exception is thrown, mark the restore as failed.
             $rc->set_status(\backup::STATUS_FINISHED_ERR);
@@ -273,8 +272,7 @@ class asynchronous_restore_task extends \core\task\adhoc_task
         \restore_section_task $task,
         int $started,
         int $finished
-    ): void
-    {
+    ): void {
         $event = \block_sharing_cart\event\restored_section::create_by_section(
             $task->get_courseid(),
             $task->get_sectionid(),
@@ -283,5 +281,10 @@ class asynchronous_restore_task extends \core\task\adhoc_task
             $finished
         );
         $event->trigger();
+    }
+
+    public function get_name(): string
+    {
+        return parent::get_name() . ' (block_sharing_cart)';
     }
 }
