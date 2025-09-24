@@ -3,14 +3,15 @@ Sharing Cart
 
 Purpose
 -------
+
 * The Sharing Cart is a block that enables sharing of Moodle content
   (resources, activities and sections) between multiple courses on your site.
 * You can share among teachers or among your own courses.
 * It can copy single course items and sections, with or without user data.
-  - similar to the "Import" function in Course Administration.
+    - similar to the "Import" function in Course Administration.
 * Items can be collected and saved on the Sharing Cart indefinitely,
   serving as a library of frequently used course items available for duplication.
-  This creates an accumulation of files in the cart, so periodic bulk deletion manually is needed. 
+  This creates an accumulation of files in the cart, so periodic bulk deletion manually is needed.
 
 Requirements
 ------------
@@ -34,6 +35,7 @@ Capabilities
 
 Events
 ------
+
 - block_sharing_cart/backup_course_module
     - Triggered when a course module is added to the Sharing Cart.
 - block_sharing_cart/backup_section
@@ -45,17 +47,18 @@ Events
 
 Versions
 -------
+
 * Version 1:
-  * Items added from block_sharing_cart_sections & block_sharing_cart (pre-5.0 upgrade).
-    Activities are grouped to simulate sections. Backups are individual files.
+    * Items added from block_sharing_cart_sections & block_sharing_cart (pre-5.0 upgrade).
+      Activities are grouped to simulate sections. Backups are individual files.
 * Version 2:
-  * Items added in 5.0 release 1. Uses TYPE_1SECTION for sections and TYPE_1ACTIVITY for activities.
+    * Items added in 5.0 release 1. Uses TYPE_1SECTION for sections and TYPE_1ACTIVITY for activities.
 * Version 3:
-  * Items added in 5.0 release 1+. Uses TYPE_1COURSE for both sections and activities. TYPE_1SECTION and
-    TYPE_1ACTIVITY backups have proven unreliable; TYPE_1COURSE offers more stable backup/restore functionality.
+    * Items added in 5.0 release 1+. Uses TYPE_1COURSE for both sections and activities. TYPE_1SECTION and
+      TYPE_1ACTIVITY backups have proven unreliable; TYPE_1COURSE offers more stable backup/restore functionality.
 * Version 4:
-  * Items added in 5.0 release 4+. Uses TYPE_1COURSE for sections and TYPE_1ACTIVITY for activities.
-    TYPE_1ACTIVITY for activities was to avoid copying all question banks from the course.
+    * Items added in 5.0 release 4+. Uses TYPE_1COURSE for sections and TYPE_1ACTIVITY for activities.
+      TYPE_1ACTIVITY for activities was to avoid copying all question banks from the course.
 
 Important: This versioning helps users identify legacy sharing cart items.
 As of 6.0 release 1, restoration of Legacy items is still supported.
@@ -66,15 +69,21 @@ GPL v3
 
 Change Log
 ----------
+
+* 5.0, release 6 2025.09.24
+    * Added a CLI script to delete all the items from the sharing cart.
+    * Fix an issue when restoring non-local backup files.
 * 5.0, release 5 2025.07.02
     * Changed block/sharing_cart:manual_run_task capability to prevent as default for all users.
 * 5.0, release 4 2025.06.20
     * Change language strings
     * Fixed question bank backup & restore process. Includes question bank only when an activity have dependency on it.
     * Fixed minor issues that caused session lock.
-    * Added capability block/sharing_cart:manual_run_task to allow specific user to manually run the backup/restore task. By default, this capability is set to allow for the manager role archetype.
+    * Added capability block/sharing_cart:manual_run_task to allow specific user to manually run the backup/restore
+      task. By default, this capability is set to allow for the manager role archetype.
     * Added a warning message when backing up a section with mod_quiz.
-    * Switched backup method when copying a single activity to use the activity type backup instead of the course type backup to avoid copying all the question banks from the course.
+    * Switched backup method when copying a single activity to use the activity type backup instead of the course type
+      backup to avoid copying all the question banks from the course.
 * 5.0, release 3 2025.04.22
     * Major changes
         * Changed the section and activity backups to use the course type backup.
@@ -92,9 +101,9 @@ Change Log
           depended on if they were inserted doing the upgrade that also created the block_sharing_cart_items or later.
         * Old sharing cart items and sections will be marked with a blue info icon.
 * 5.0, release 2 2025.04.22
-    * 	Merge pull request #225 from catalyst/issue-224
-    * 	Merge pull request #228 from mgerszew/MOODLE_42_STABLE!
-    * 	Other minor updates and consistant version numbering
+    * Merge pull request #225 from catalyst/issue-224
+    * Merge pull request #228 from mgerszew/MOODLE_42_STABLE!
+    * Other minor updates and consistant version numbering
 * 5.0, release 1 2024.08.05
     * Total refactor of the whole plugin:
         * Improvements
