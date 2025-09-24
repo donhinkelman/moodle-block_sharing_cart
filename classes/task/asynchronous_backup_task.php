@@ -446,4 +446,9 @@ class asynchronous_backup_task extends \core\task\adhoc_task
 
         $question_bank_setting->set_status($status);
     }
+
+    public function get_name(): string
+    {
+        return parent::get_name() . ' (block_sharing_cart)';
+    }
 }
