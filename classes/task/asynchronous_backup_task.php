@@ -62,11 +62,13 @@ class asynchronous_backup_task extends \core\task\adhoc_task
                 }
 
                 $this->controller = \backup_controller::load_controller($backupid);
-                $this->controller->set_progress(new \core\progress\db_updater(
-                    $record->id,
-                    'backup_controllers',
-                    'progress'
-                ));
+                $this->controller->set_progress(
+                    new \core\progress\db_updater(
+                        $record->id,
+                        'backup_controllers',
+                        'progress'
+                    )
+                );
             }
             return $this->controller;
         } catch (\Exception) {
@@ -126,7 +128,9 @@ class asynchronous_backup_task extends \core\task\adhoc_task
                 // If status isn't 700, it means the process has failed.
                 // Retrying isn't going to fix it, so marked operation as failed.
                 $bc->set_status(\backup::STATUS_FINISHED_ERR);
-                $this->output('Bad backup controller status, is: ' . $status . ' should be 700, marking job as failed.');
+                $this->output(
+                    'Bad backup controller status, is: ' . $status . ' should be 700, marking job as failed.'
+                );
             }
 
             $this->after_backup_finished_hook($bc);
@@ -265,6 +269,9 @@ class asynchronous_backup_task extends \core\task\adhoc_task
             $this->output("Copying backup file into sharing cart...");
             $sharing_cart_file = $this->copy_backup_file_to_sharing_cart_filearea($file, $root_item);
 
+            $this->output("Deleting original backup file...");
+            $file->delete();
+
             $this->output("Updating items in sharing cart using contents of backup file...");
             $this->factory()->item()->repository()->update_sharing_cart_item_with_backup_file(
                 $root_item,
@@ -329,7 +336,7 @@ class asynchronous_backup_task extends \core\task\adhoc_task
                         'visible' => true
                     ]) !== false;
 
-                if ($include_activity === false){
+                if ($include_activity === false) {
                     $this->output('...' . ("Excluding activity: (id: $cm_id)"));
                     $task->get_setting('included')->set_value(false);
                 }
@@ -363,8 +370,7 @@ class asynchronous_backup_task extends \core\task\adhoc_task
     private function get_course_modules_settings_by_item(
         int $course_id,
         entity $item
-    ): array
-    {
+    ): array {
         try {
             $item_id = $item->get_old_instance_id();
             if (empty($item_id)) {
@@ -382,7 +388,6 @@ class asynchronous_backup_task extends \core\task\adhoc_task
                 $cms = array_map(static function ($id) {
                     return (int)$id;
                 }, explode(',', $section->sequence));
-
             } else {
                 $cms[] = $item_id;
             }
@@ -395,15 +400,14 @@ class asynchronous_backup_task extends \core\task\adhoc_task
             }
             return $settings;
         } catch (\Exception) {
-             return [];
+            return [];
         }
     }
 
     private function toggle_question_bank_setting(
         \backup_plan $plan,
         entity $item
-    ): void
-    {
+    ): void {
         if (!$plan->setting_exists('questionbank')) {
             return;
         }
@@ -441,5 +445,10 @@ class asynchronous_backup_task extends \core\task\adhoc_task
         }
 
         $question_bank_setting->set_status($status);
+    }
+
+    public function get_name(): string
+    {
+        return parent::get_name() . ' (block_sharing_cart)';
     }
 }

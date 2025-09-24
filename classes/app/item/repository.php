@@ -242,4 +242,9 @@ class repository extends \block_sharing_cart\app\repository
             )
         )[0] ?? null;
     }
+
+    public function get_count(): int
+    {
+        return $this->db->count_records($this->get_table());
+    }
 }
