@@ -32,7 +32,7 @@ class handler
          * @var \file_storage $fs
          */
         $fs = get_file_storage();
-        $file_path = $fs->get_file_system()->get_local_path_from_storedfile($file);
+        $file_path = $fs->get_file_system()->get_local_path_from_storedfile($file, true);
 
         /** @var object $info */
         $info = \backup_general_helper::get_backup_information_from_mbz($file_path);
