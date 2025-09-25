@@ -29,7 +29,16 @@ class import_item_modal_body implements \renderable, \core\output\named_templata
 
     public function export_for_template(\renderer_base $output): array
     {
-        $db = $this->base_factory->moodle()->db();
+         $db = $this->base_factory->moodle()->db();
++        $canrestoreconfigure = false;
++        try {
++            $context = $output->page->context ?? null;
++            if ($context) {
++                $canrestoreconfigure = has_capability('moodle/restore:configure', $context);
++            }
++        } catch (\Throwable $e) {
++            $canrestoreconfigure = false;
++        }
 
         $section = array_values(
             $this->base_factory->backup()->handler()->get_backup_item_tree(
@@ -65,10 +74,11 @@ class import_item_modal_body implements \renderable, \core\output\named_templata
         $section->module_is_disabled_on_site = false;
         unset($section->sectionid, $section->activities);
 
-        return [
-            'sections' => [
-                $section
-            ]
-        ];
+       return [
++            'can_restore_configure' => $canrestoreconfigure,
++            'sections' => [
++                $section
++            ]
++        ];
     }
 }
