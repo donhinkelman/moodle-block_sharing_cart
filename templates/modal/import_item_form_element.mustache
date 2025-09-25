@@ -1,8 +1,10 @@
 <div class="form-check">
     <label class="form-check-label"
            {{#module_is_disabled_on_site}}title="{{#str}}module_is_disabled_on_site, block_sharing_cart{{/str}}"{{/module_is_disabled_on_site}}>
-        <input type="checkbox" class="form-check-input" data-id="{{id}}"
-               data-type="{{type}}" {{#module_is_disabled_on_site}}disabled{{/module_is_disabled_on_site}} {{^module_is_disabled_on_site}}checked{{/module_is_disabled_on_site}}/>
+        {{#can_restore_configure}}
+            <input type="checkbox" class="form-check-input" data-id="{{id}}"
++                   data-type="{{type}}" {{#module_is_disabled_on_site}}disabled{{/module_is_disabled_on_site}} {{^module_is_disabled_on_site}}checked{{/module_is_disabled_on_site}}/>
++       {{/can_restore_configure}}
         {{#mod_icon}}
             <img src="{{mod_icon}}" alt="" style="height: 1rem;"/>
         {{/mod_icon}}
