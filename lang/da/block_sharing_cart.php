@@ -59,6 +59,8 @@ $string['copy_section'] = 'Kopiér sektion';
 
 $string['you_may_need_to_reload_the_course_warning'] = 'Element(er) indsat. Du skal muligvis genindlæse kursussiden for at se ændringerne afspejlet korrekt.';
 
+$string['you_do_not_have_permission_to_configure_restores'] = 'Du har ikke tilladelse til at konfigurere gendannelser. Kontakt venligst din administrator, hvis du mener, dette er en fejl.';
+
 // Capabilities
 $string['sharing_cart:addinstance'] = 'Tilføj en ny Delingskurv blok';
 $string['sharing_cart:manual_run_task'] = 'Kør kopiering opgaver manuelt';

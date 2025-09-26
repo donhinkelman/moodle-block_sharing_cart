@@ -9,7 +9,6 @@ defined('MOODLE_INTERNAL') || die();
 
 use block_sharing_cart\app\factory as base_factory;
 use block_sharing_cart\app\item\entity;
-use block_sharing_cart\output\block\item;
 
 class import_item_modal_body implements \renderable, \core\output\named_templatable
 {
@@ -27,18 +26,18 @@ class import_item_modal_body implements \renderable, \core\output\named_templata
         return 'block_sharing_cart/modal/import_item_modal_body';
     }
 
+    private function can_configure_restore(): bool
+    {
+        $page = $this->base_factory->moodle()->page();
+
+        return has_capability('moodle/restore:configure', $page->context);
+    }
+
     public function export_for_template(\renderer_base $output): array
     {
-         $db = $this->base_factory->moodle()->db();
-+        $canrestoreconfigure = false;
-+        try {
-+            $context = $output->page->context ?? null;
-+            if ($context) {
-+                $canrestoreconfigure = has_capability('moodle/restore:configure', $context);
-+            }
-+        } catch (\Throwable $e) {
-+            $canrestoreconfigure = false;
-+        }
+        $db = $this->base_factory->moodle()->db();
+
+        $can_configure_restore = $this->can_configure_restore();
 
         $section = array_values(
             $this->base_factory->backup()->handler()->get_backup_item_tree(
@@ -61,6 +60,7 @@ class import_item_modal_body implements \renderable, \core\output\named_templata
                 'name' => $activity->modulename,
                 'visible' => false
             ]);
+            $activity->locked = $activity->module_is_disabled_on_site || $can_configure_restore === false;
         }
 
         $section->title = $this->item->get_name();
@@ -72,13 +72,14 @@ class import_item_modal_body implements \renderable, \core\output\named_templata
         $section->mod_icon = null;
         $section->course_modules = array_values($section->activities);
         $section->module_is_disabled_on_site = false;
+        $section->locked = false;
         unset($section->sectionid, $section->activities);
 
-       return [
-+            'can_restore_configure' => $canrestoreconfigure,
-+            'sections' => [
-+                $section
-+            ]
-+        ];
+        return [
+            'can_configure_restore' => $this->can_configure_restore(),
+            'sections' => [
+                $section
+            ]
+        ];
     }
 }

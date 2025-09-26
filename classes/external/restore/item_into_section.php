@@ -55,18 +55,19 @@ class item_into_section extends external_api
         if ($item->get_user_id() !== (int)$USER->id) {
             return false;
         }
-         
+
+        $course_id = (int)$DB->get_field('course_sections', 'course', ['id' => $params['section_id']], MUST_EXIST);
+        $context = \core\context\course::instance($course_id);
+
+        $settings = [];
+
         // Only pass include/exclude list when the user can configure restore in the target course context.
-+        $courseid = (int)$DB->get_field('course_sections', 'course', ['id' => $params['section_id']], MUST_EXIST);
-+        $context = \context_course::instance($courseid);
-+
-+        $settings = [];
-+        if (has_capability('moodle/restore:configure', $context)) {
-+            $settings['course_modules_to_include'] = $params['course_modules_to_include'] ?? [];
-+        }
-+
-+        $base_factory->restore()->handler()->restore_item_into_section($item, $params['section_id'], $settings);
-        
+        if (has_capability('moodle/restore:configure', $context)) {
+            $settings['course_modules_to_include'] = $params['course_modules_to_include'] ?? [];
+        }
+
+        $base_factory->restore()->handler()->restore_item_into_section($item, $params['section_id'], $settings);
+
         return true;
     }
 
