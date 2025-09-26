@@ -1,8 +1,9 @@
 <div class="form-check">
     <label class="form-check-label"
-           {{#module_is_disabled_on_site}}title="{{#str}}module_is_disabled_on_site, block_sharing_cart{{/str}}"{{/module_is_disabled_on_site}}>
+           {{#module_is_disabled_on_site}}title="{{#str}}module_is_disabled_on_site, block_sharing_cart{{/str}}"{{/module_is_disabled_on_site}}
+        {{^module_is_disabled_on_site}}{{#locked}}title="{{#str}}you_do_not_have_permission_to_configure_restores, block_sharing_cart{{/str}}"{{/locked}}{{/module_is_disabled_on_site}}>
         <input type="checkbox" class="form-check-input" data-id="{{id}}"
-               data-type="{{type}}" {{#module_is_disabled_on_site}}disabled{{/module_is_disabled_on_site}} {{^module_is_disabled_on_site}}checked{{/module_is_disabled_on_site}}/>
+               data-type="{{type}}" {{#locked}}disabled{{/locked}} {{^module_is_disabled_on_site}}checked{{/module_is_disabled_on_site}}/>
         {{#mod_icon}}
             <img src="{{mod_icon}}" alt="" style="height: 1rem;"/>
         {{/mod_icon}}

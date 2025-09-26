@@ -59,6 +59,8 @@ $string['copy_section'] = 'Copy section';
 
 $string['you_may_need_to_reload_the_course_warning'] = 'Element(s) inserted. You may need to reload the course page to see the changes reflected correctly.';
 
+$string['you_do_not_have_permission_to_configure_restores'] = 'You do not have permission to configure restores. Please contact your administrator if you think this is a mistake.';
+
 // Capabilities
 $string['sharing_cart:addinstance'] = 'Add a new Sharing Cart block';
 $string['sharing_cart:manual_run_task'] = 'Manually run the backup/restore task';
