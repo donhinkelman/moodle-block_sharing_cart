@@ -190,7 +190,7 @@ class asynchronous_backup_task extends \core\task\adhoc_task
                 'grade_histories' => false,
                 'users' => false,
                 'anonymize' => false,
-                'include_badges' => false,
+                'badges' => false,
                 'filename' => 'sharing_cart_backup-' . $item_entity->get_id() . '.mbz'
             ];
 
