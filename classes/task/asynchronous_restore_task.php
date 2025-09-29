@@ -229,7 +229,6 @@ class asynchronous_restore_task extends \core\task\adhoc_task
                 mtrace(
                     '...' . ($include_activity ? "Including activity: (id: $cm_id)" : "Excluding activity: (id: $cm_id)")
                 );
-
                 $task->get_setting('included')->set_value($include_activity);
             }
         }
