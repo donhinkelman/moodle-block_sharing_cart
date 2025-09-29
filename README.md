@@ -75,6 +75,9 @@ Change Log
     * Fix an issue when restoring non-local backup files.
     * Fixed an issue where sharing cart backups would show up in the moodle core backup UI
     * Renamed sharing cart backup/restore tasks to differ from core tasks
+    * Fix issue where if you didn't have the `moodle/restore:configure` capability, you couldn't restore a sharing cart
+      item.
+    * Fix issue where badges were included when restoring a sharing cart item.
 * 5.0, release 5 2025.07.02
     * Changed block/sharing_cart:manual_run_task capability to prevent as default for all users.
 * 5.0, release 4 2025.06.20
