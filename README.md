@@ -61,7 +61,7 @@ Versions
       TYPE_1ACTIVITY for activities was to avoid copying all question banks from the course.
 
 Important: This versioning helps users identify legacy sharing cart items.
-As of 6.0 release 1, restoration of Legacy items is still supported.
+As of 5.0 release 1, restoration of Legacy items is still supported.
 
 License
 -------
@@ -69,7 +69,7 @@ GPL v3
 
 Change Log
 ----------
-
+* 5.1, release 1 2026.xx.xx  Coming soon.
 * 5.0, release 6 2025.09.24
     * Added a CLI script to delete all the items from the sharing cart.
     * Fix an issue when restoring non-local backup files.
