@@ -1,3 +1,13 @@
+# ⚠️ Archived Repository
+
+**This repository is archived and no longer maintained here.**
+
+The Sharing Cart Moodle block has been taken over by moxis. **All future development, issues, releases, and other work will happen in the new repository:**
+
+https://github.com/praxisdigital/moodle-block_sharing_cart
+
+---
+
 Sharing Cart
 ============
 
