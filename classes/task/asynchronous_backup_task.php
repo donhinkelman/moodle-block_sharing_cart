@@ -119,7 +119,9 @@ class asynchronous_backup_task extends \core\task\adhoc_task
                 $bc->execute_plan();
 
                 // Send message to user if enabled.
-                $messageenabled = (bool)get_config('backup', 'backup_async_message_users');
+                $coremessageenabled = (bool)get_config('backup', 'backup_async_message_users');
+                $cartmessageenabled = (bool)get_config('block_sharing_cart', 'backup_async_message_users');
+                $messageenabled = ($coremessageenabled && $cartmessageenabled);
                 if ($messageenabled && $bc->get_status() == \backup::STATUS_FINISHED_OK) {
                     $asynchelper = new async_helper('backup', $backupid);
                     $asynchelper->send_message();
