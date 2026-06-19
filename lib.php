@@ -67,3 +67,51 @@ function block_sharing_cart_output_fragment_item_queue($args)
 
     return fix_utf8($OUTPUT->render($template));
 }
+
+/**
+ * Plugin file handler to allow sharing cart backups to be downloaded.
+ *
+ * @param stdClass $course the course object
+ * @param stdClass $cm the course module object
+ * @param context $context the newmodule's context
+ * @param string $filearea the name of the file area
+ * @param array $args extra arguments (itemid, path)
+ * @param bool $forcedownload whether or not force download
+ * @param array $options additional options affecting the file serving
+ * @return void|false
+ * @throws coding_exception
+ * @throws dml_exception
+ * @throws moodle_exception
+ * @throws require_login_exception
+ * @package block_sharing_cart
+ */
+function block_sharing_cart_pluginfile(
+    $course,
+    $cm,
+    context $context,
+    $filearea,
+    $args,
+    $forcedownload,
+    array $options = []
+) {
+    require_login($course, false, $cm);
+    if (!has_all_capabilities(['moodle/backup:backupactivity', 'moodle/restore:restoreactivity'], $context)) {
+        return false;
+    }
+
+    if ($filearea !== 'backup') {
+        return false;
+    }
+    $factory = \block_sharing_cart\app\factory::make();
+    $itemid = array_shift($args);
+    $item = $factory->item()->repository()->get_by_id((int)$itemid);
+    if (!$item) {
+        return false;
+    }
+    $file = $factory->item()->repository()->get_stored_file_by_item($item);
+    if ($file) {
+        send_stored_file($file, 0, 0, $forcedownload, $options);
+        return true;
+    }
+    send_file_not_found();
+}
