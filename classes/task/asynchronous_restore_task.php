@@ -70,7 +70,9 @@ class asynchronous_restore_task extends \core\task\adhoc_task
                 $this->after_restore_finished_hook($rc);
 
                 // Send message to user if enabled.
-                $messageenabled = (bool)get_config('backup', 'backup_async_message_users');
+                $coremessageenabled = (bool)get_config('backup', 'backup_async_message_users');
+                $cartmessageenabled = (bool)get_config('block_sharing_cart', 'backup_async_message_users');
+                $messageenabled = ($coremessageenabled && $cartmessageenabled);
                 if ($messageenabled && $rc->get_status() == \backup::STATUS_FINISHED_OK) {
                     $asynchelper = new async_helper('restore', $restoreid);
                     $asynchelper->send_message();

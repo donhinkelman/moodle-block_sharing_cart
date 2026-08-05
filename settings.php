@@ -38,4 +38,13 @@ if ($ADMIN->fulltree) {
             false
         )
     );
+
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'block_sharing_cart/backup_async_message_users',
+            new lang_string('asyncemailenable', 'backup'),
+            new lang_string('asyncemailenabledetail', 'backup'),
+            1
+        )
+    );
 }
