@@ -150,6 +150,8 @@ class asynchronous_restore_task extends \core\task\adhoc_task
                 $this->only_include_specified_course_modules($restore_controller, $course_modules_to_include);
             }
 
+            $this->disable_enrolment_method_restore($restore_controller);
+
             $has_atleast_one_course_module_included = false;
             foreach ($restore_controller->get_plan()->get_tasks() as $task) {
                 if (($task instanceof \restore_activity_task) && $task->get_setting('included')->get_value()) {
@@ -213,6 +215,38 @@ class asynchronous_restore_task extends \core\task\adhoc_task
                 $section_xml->asXML($section_xml_path);
             }
         }
+    }
+
+    /**
+     * Prevents restoring an enrolment method into the target course.
+     *
+     * A section/activity backup always carries the source course's enrol instances
+     * in enrolments.xml, regardless of the 'users' setting: only the associated
+     * user_enrolments are gated by 'users', not the enrolment methods themselves
+     * (see backup_enrolments_structure_step). Restoring one of those instances
+     * (e.g. cohort sync) re-triggers live enrolment syncing against the target
+     * course (see enrol_cohort_plugin::restore_instance()), silently enrolling
+     * users who were never meant to gain access via a content copy.
+     *
+     * Sharing cart only ever restores into an existing course, so the target's
+     * own enrolment methods must never be touched by pasting in content: this is
+     * forced regardless of the 'users' setting, which only controls whether
+     * copied activities keep their prior submissions/attempts/completion data.
+     */
+    private function disable_enrolment_method_restore(\restore_controller $restore_controller): void
+    {
+        $plan = $restore_controller->get_plan();
+
+        if (!$plan->setting_exists('enrolments')) {
+            return;
+        }
+
+        $setting = $plan->get_setting('enrolments');
+        if ($setting->get_status() !== \base_setting::NOT_LOCKED) {
+            return;
+        }
+
+        $setting->set_value(\backup::ENROL_NEVER);
     }
 
     private function only_include_specified_course_modules(
