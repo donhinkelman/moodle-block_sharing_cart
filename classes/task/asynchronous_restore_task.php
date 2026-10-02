@@ -152,6 +152,10 @@ class asynchronous_restore_task extends \core\task\adhoc_task
 
             $this->disable_enrolment_method_restore($restore_controller);
 
+            $this->disable_group_restore($restore_controller);
+
+            $this->disable_competency_restore($restore_controller);
+
             $has_atleast_one_course_module_included = false;
             foreach ($restore_controller->get_plan()->get_tasks() as $task) {
                 if (($task instanceof \restore_activity_task) && $task->get_setting('included')->get_value()) {
@@ -247,6 +251,62 @@ class asynchronous_restore_task extends \core\task\adhoc_task
         }
 
         $setting->set_value(\backup::ENROL_NEVER);
+    }
+
+    /**
+     * Prevents restoring groups/groupings into the target course.
+     *
+     * A section/activity backup always carries the source course's group and
+     * grouping definitions (names, idnumbers) regardless of which section or
+     * activity was selected: 'groups' defaults to true and is never gated by
+     * per-section/activity 'included' settings (see backup_groups_structure_step).
+     * Only group_members is gated by 'users', so what comes across is empty
+     * group shells bearing the source course's names.
+     *
+     * On restore, groups are matched onto the target course by name (see
+     * restore_groups_structure_step::process_group()): a name match reuses the
+     * existing group's id, a non-match creates a new, empty one. Either way,
+     * this is course-level structure unrelated to the copied content, so it is
+     * forced off regardless of the 'users' setting, same as enrolment methods.
+     */
+    private function disable_group_restore(\restore_controller $restore_controller): void
+    {
+        $plan = $restore_controller->get_plan();
+
+        if (!$plan->setting_exists('groups')) {
+            return;
+        }
+
+        $setting = $plan->get_setting('groups');
+        if ($setting->get_status() !== \base_setting::NOT_LOCKED) {
+            return;
+        }
+
+        $setting->set_value(false);
+    }
+
+    /**
+     * Prevents restoring course competency links into the target course.
+     *
+     * backup_course_competencies_structure_step backs up the source course's
+     * competency-framework links unconditionally at course-task level, the
+     * same as groups/enrolments: it is unrelated to which section or activity
+     * was selected. Forced off regardless of the 'users' setting.
+     */
+    private function disable_competency_restore(\restore_controller $restore_controller): void
+    {
+        $plan = $restore_controller->get_plan();
+
+        if (!$plan->setting_exists('competencies')) {
+            return;
+        }
+
+        $setting = $plan->get_setting('competencies');
+        if ($setting->get_status() !== \base_setting::NOT_LOCKED) {
+            return;
+        }
+
+        $setting->set_value(false);
     }
 
     private function only_include_specified_course_modules(
