@@ -179,7 +179,7 @@ export default class CourseElement {
                     clipboardTarget.parentElement.classList.remove('hidden');
                     clipboardTarget.addEventListener(
                         'click',
-                        this.#blockElement.confirmImportBackupFromSharingCart.bind(this.#blockElement, item, sectionId),
+                        this.#blockElement.confirmImportBackupFromSharingCart.bind(this.#blockElement, item, sectionId, {}),
                         {
                             signal: this.#clipboardTargetListenerAbortController.signal
                         }
@@ -201,7 +201,44 @@ export default class CourseElement {
             clipboardTarget.parentElement.classList.remove('hidden');
             clipboardTarget.addEventListener(
                 'click',
-                this.#blockElement.confirmImportBackupFromSharingCart.bind(this.#blockElement, item, sectionId),
+                this.#blockElement.confirmImportBackupFromSharingCart.bind(this.#blockElement, item, sectionId, {}),
+                {
+                    signal: this.#clipboardTargetListenerAbortController.signal
+                }
+            );
+        });
+
+        this.updateCourseLevelClipboardTargets(item, element);
+    }
+
+    /**
+     * Course level targets rendered by the course format (for example the front page of a nesting format):
+     * the copied section is created as a new section under data-parent-section-id (0 = top level of data-course-id).
+     *
+     * @param {ItemElement} item
+     * @param {Element} element clipboard target template
+     */
+    updateCourseLevelClipboardTargets(item, element) {
+        if (!item.isSection()) {
+            return;
+        }
+
+        this.#element.querySelectorAll('[data-region="sharing-cart-course-target"]').forEach((placeholder) => {
+            const clipboardTarget = placeholder.querySelector('.clipboard_target') ?? element.cloneNode(true);
+            placeholder.appendChild(clipboardTarget);
+            clipboardTarget.classList.remove('hidden');
+
+            const parentSectionId = parseInt(placeholder.dataset.parentSectionId ?? '0', 10) || 0;
+            const courseId = parseInt(placeholder.dataset.courseId ?? '0', 10) || 0;
+
+            clipboardTarget.addEventListener(
+                'click',
+                this.#blockElement.confirmImportBackupFromSharingCart.bind(
+                    this.#blockElement,
+                    item,
+                    parentSectionId,
+                    {asNewSection: true, courseId: courseId}
+                ),
                 {
                     signal: this.#clipboardTargetListenerAbortController.signal
                 }

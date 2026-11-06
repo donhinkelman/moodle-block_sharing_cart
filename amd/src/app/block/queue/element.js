@@ -158,8 +158,10 @@ export default class QueueElement {
                     sectionIds.push(sectionId);
                 });
 
-                if (sectionIds.length > 0) {
-                    this.#reactive.dispatch('sectionState', sectionIds).then(() => {
+                // A restore may have created sections the client state does not know yet (nested sections, or a
+                // section inserted at course level), so refresh the whole course state, not only the target section.
+                if (removedElements.length > 0) {
+                    this.#reactive.dispatch('courseState').then(() => {
                         Toast.add(getString('you_may_need_to_reload_the_course_warning', 'block_sharing_cart'), {
                             closeButton: true,
                             autohide: true,

@@ -19,6 +19,11 @@ namespace block_sharing_cart\output\modal;
 use block_sharing_cart\app\factory as basefactory;
 use block_sharing_cart\app\item\entity;
 
+defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
+require_once($CFG->dirroot . '/course/format/lib.php');
+
 /**
  * Class output\modal\import_item_modal_body for the Sharing Cart block.
  *
@@ -33,6 +38,8 @@ class import_item_modal_body implements \core\output\named_templatable, \rendera
     private entity $item;
     /** @var int $clipboardtargetid */
     private int $clipboardtargetid = 0;
+    /** @var bool $asnewsection whether the item is inserted as a new section (no merge, so nothing to replace) */
+    private bool $asnewsection = false;
     /** @var \moodle_database $db */
     private \moodle_database $db;
 
@@ -42,12 +49,49 @@ class import_item_modal_body implements \core\output\named_templatable, \rendera
      * @param basefactory $basefactory
      * @param entity $item
      * @param int $clipboardtargetid
+     * @param bool $asnewsection
      */
-    public function __construct(basefactory $basefactory, entity $item, int $clipboardtargetid) {
+    public function __construct(
+        basefactory $basefactory,
+        entity $item,
+        int $clipboardtargetid,
+        bool $asnewsection = false
+    ) {
         $this->basefactory = $basefactory;
         $this->item = $item;
         $this->clipboardtargetid = $clipboardtargetid;
+        $this->asnewsection = $asnewsection;
         $this->db = $this->basefactory->moodle()->db();
+    }
+
+    /**
+     * When a section merges into an existing one, core keeps the target's title and description unless they are
+     * empty. Offer to replace them when the target actually has something to replace.
+     *
+     * @return array
+     */
+    private function get_replace_section_details_context(): array {
+        $context = ['can_replace_section_details' => false, 'target_section_name' => ''];
+
+        if ($this->asnewsection || !$this->item->is_section() || $this->clipboardtargetid <= 0) {
+            return $context;
+        }
+
+        $targetsection = $this->db->get_record('course_sections', ['id' => $this->clipboardtargetid]);
+        if (!$targetsection) {
+            return $context;
+        }
+
+        $hasname = (string)$targetsection->name !== '';
+        $hassummary = trim(strip_tags((string)$targetsection->summary)) !== ''
+            || str_contains((string)$targetsection->summary, '<img');
+
+        $context['can_replace_section_details'] = $hasname || $hassummary;
+        $context['target_section_name'] = format_string(
+            course_get_format($targetsection->course)->get_section_name($targetsection)
+        );
+
+        return $context;
     }
 
     /**
@@ -66,98 +110,107 @@ class import_item_modal_body implements \core\output\named_templatable, \rendera
      * @return bool
      */
     private function can_configure_restore(): bool {
-        $PAGE = $this->basefactory->moodle()->page();
+        $page = $this->basefactory->moodle()->page();
 
-        return has_capability('moodle/restore:configure', $PAGE->context);
+        return has_capability('moodle/restore:configure', $page->context);
     }
 
     /**
-     * export_for_template
+     * The tree is built from the cart items below the restored item (any depth): nested sections, core subsections
+     * and activities. Checkboxes carry the item's original id and type so the block script can split them into
+     * course_modules_to_include and sections_to_include.
      *
-     * @param \renderer_base $OUTPUT
+     * @param \renderer_base $output
      * @return array
      */
-    public function export_for_template(\renderer_base $OUTPUT): array {
+    public function export_for_template(\renderer_base $output): array {
         $canconfigurerestore = $this->can_configure_restore();
-        $itemtree = array_values(
-            $this->basefactory->backup()->handler()->get_backup_item_tree(
-                $this->basefactory->item()->repository()->get_stored_file_by_item($this->item)
-            )
-        );
 
-        $section = [];
-        if (!empty($itemtree)) {
-            $section = $itemtree[array_key_first($itemtree)];
-        }
-
-        foreach ($section->activities as $activity) {
-            if ($activity->modulename === "subsection") {
-                foreach ($activity->subsection_activities as $subsectionactivity) {
-                    $subsectionactivity->title = format_string($subsectionactivity->title);
-                    $subsectionactivity->title = strlen($subsectionactivity->title) > 50 ? substr(
-                        $subsectionactivity->title,
-                        0,
-                        50
-                    ) . '...' : $subsectionactivity->title;
-
-                    $subsectionactivity->id = $subsectionactivity->moduleid;
-                    $subsectionactivity->type = 'coursemodule';
-                    $subsectionactivity->mod_icon = $OUTPUT->image_url('icon', "mod_{$subsectionactivity->modulename}");
-                    $subsectionactivity->module_is_disabled_on_site = $this->db->get_record('modules', [
-                        'name' => $subsectionactivity->modulename,
-                        'visible' => false,
-                    ]);
-                    $subsectionactivity->locked = $subsectionactivity->module_is_disabled_on_site || $canconfigurerestore === false;
-                    $subsectionactivity->course_modules = [];
-                }
-                $activity->course_modules = $activity->subsection_activities;
-                $activity->id = $activity->moduleid;
-
+        $childrenbyparent = [];
+        $descendants = $this->basefactory->item()->repository()->get_recursively_by_parent_id($this->item->get_id());
+        foreach ($descendants as $entity) {
+            if ($entity->get_parent_item_id() === null) {
                 continue;
             }
-
-            $activity->title = format_string($activity->title);
-            $activity->title = strlen($activity->title) > 50 ? substr(
-                $activity->title,
-                0,
-                50
-            ) . '...' : $activity->title;
-
-            $activity->id = $activity->moduleid;
-            $activity->type = 'coursemodule';
-            $activity->mod_icon = $OUTPUT->image_url('icon', "mod_{$activity->modulename}");
-            if (!isset($activity->course_modules)) {
-                $activity->course_modules = [];
-            }
-            $activity->module_is_disabled_on_site = $this->db->get_record('modules', [
-                'name' => $activity->modulename,
-                'visible' => false,
-            ]);
-            $activity->locked = $activity->module_is_disabled_on_site || $canconfigurerestore === false;
+            $childrenbyparent[$entity->get_parent_item_id()][] = $entity;
         }
+        foreach ($childrenbyparent as &$siblings) {
+            usort($siblings, static function (entity $a, entity $b): int {
+                return (($a->get_sortorder() ?? 0) <=> ($b->get_sortorder() ?? 0)) ?: ($a->get_id() <=> $b->get_id());
+            });
+        }
+        unset($siblings);
 
-        $section->title = $this->item->get_name();
-        $section->title = strlen($section->title) > 50 ? trim(
-            substr($section->title, 0, 50)
-        ) . '...' : $section->title;
+        $section = $this->export_node($this->item, $childrenbyparent, $output, $canconfigurerestore);
 
-        $section->id = $section->sectionid;
-        $section->type = $this->item->get_type();
+        // The restored item itself is always included; it is the header of the form.
         $section->is_subsection = $this->item->is_subsection();
         $section->is_section = $this->item->is_section();
-
         $section->mod_icon = null;
-        $section->course_modules = array_values($section->activities);
         $section->module_is_disabled_on_site = false;
         $section->locked = false;
 
         return [
-            'can_configure_restore' => $this->can_configure_restore(),
+            'can_configure_restore' => $canconfigurerestore,
             'user_msgs' => $this->get_user_msgs($section),
             'sections' => [
                 $section,
             ],
+        ] + $this->get_replace_section_details_context();
+    }
+
+    /**
+     * Template context for one cart item and, recursively, the items below it.
+     *
+     * @param entity $item
+     * @param array $childrenbyparent child entities keyed by parent item id, in display order
+     * @param \renderer_base $output
+     * @param bool $canconfigurerestore
+     * @return object
+     */
+    private function export_node(
+        entity $item,
+        array $childrenbyparent,
+        \renderer_base $output,
+        bool $canconfigurerestore
+    ): object {
+        $ismodule = $item->is_module();
+
+        $moduleisdisabledonsite = false;
+        if ($ismodule) {
+            $moduleisdisabledonsite = (bool)$this->db->get_record('modules', [
+                'name' => str_replace('mod_', '', $item->get_type()),
+                'visible' => false,
+            ]);
+        }
+
+        $node = (object)[
+            'id' => $item->get_old_instance_id(),
+            'title' => $this->truncate(format_string($item->get_name())),
+            'type' => $item->is_section() ? 'section' : 'coursemodule',
+            'is_section' => $item->is_section(),
+            'is_subsection' => $item->is_subsection(),
+            'mod_icon' => $ismodule ? $output->image_url('icon', $item->get_type()) : null,
+            'module_is_disabled_on_site' => $moduleisdisabledonsite,
+            'locked' => $moduleisdisabledonsite || $canconfigurerestore === false,
+            'course_modules' => [],
         ];
+
+        foreach ($childrenbyparent[$item->get_id()] ?? [] as $child) {
+            $node->course_modules[] = $this->export_node($child, $childrenbyparent, $output, $canconfigurerestore);
+        }
+
+        return $node;
+    }
+
+    /**
+     * Shortens a title for display in the modal.
+     *
+     * @param string $title
+     * @return string
+     */
+    private function truncate(string $title): string {
+        return strlen($title) > 50 ? trim(substr($title, 0, 50)) . '...' : $title;
     }
 
     /**
@@ -173,7 +226,7 @@ class import_item_modal_body implements \core\output\named_templatable, \rendera
             $usermsgs[] = get_string('import_subsection_into_default_named_section_warning', 'block_sharing_cart');
         }
 
-        if (empty($section)) {
+        if (empty($section->course_modules)) {
             $usermsgs[] = get_string('empty_section_restore', 'block_sharing_cart');
         }
 

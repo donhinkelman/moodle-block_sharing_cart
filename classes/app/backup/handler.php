@@ -20,6 +20,7 @@ use block_sharing_cart\app\factory as basefactory;
 use block_sharing_cart\app\item\entity;
 use block_sharing_cart\event\backup_course_module;
 use block_sharing_cart\event\backup_section;
+use block_sharing_cart\hook\backup\resolve_section_tree;
 use block_sharing_cart\task\asynchronous_backup_task;
 
 defined('MOODLE_INTERNAL') || die();
@@ -27,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
 require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
+require_once($CFG->dirroot . '/course/format/lib.php');
 
 /**
  * Backup handler for the Sharing Cart block.
@@ -106,12 +108,18 @@ class handler
     /**
      * backup_section
      *
-     * @param object $section
+     * @param object $section course_sections record
      * @param entity $rootitem
      * @param array $settings
+     * @param array|null $sectiontree descendants as returned by resolve_section_tree(); resolved here when null
      * @return array
      */
-    public function backup_section(object $section, entity $rootitem, array $settings = []): array {
+    public function backup_section(
+        object $section,
+        entity $rootitem,
+        array $settings = [],
+        ?array $sectiontree = null
+    ): array {
         global $USER;
 
         $courseid = $this->basefactory->moodle()->db()->get_record(
@@ -120,6 +128,9 @@ class handler
             'course',
             MUST_EXIST
         )->course;
+
+        // The descendant sections of the copied section, as declared by the course format (nested formats only).
+        $settings['section_tree'] = $sectiontree ?? $this->resolve_section_tree((int)$courseid, (int)$section->id);
 
         $backupcontroller = $this->basefactory->backup()->backup_controller(
             \backup::TYPE_1COURSE,
@@ -139,6 +150,84 @@ class handler
     }
 
     /**
+     * Depth-first list of {section_id, parent_section_id, sort_order, name} describing the descendants of a section,
+     * as declared by the course format through the resolve_section_tree hook. Empty for formats that do not nest.
+     *
+     * @param int $courseid
+     * @param int $sectionid
+     * @return array
+     */
+    public function resolve_section_tree(int $courseid, int $sectionid): array {
+        $hook = new resolve_section_tree($courseid, $sectionid);
+        \core\di::get(\core\hook\manager::class)->dispatch($hook);
+
+        $tree = $hook->get_tree();
+        if (empty($tree)) {
+            return [];
+        }
+
+        // Record the display names now; the backup manifest only carries section numbers for unnamed sections.
+        $courseformat = course_get_format($courseid);
+        $sections = $this->basefactory->moodle()->db()->get_records_list(
+            'course_sections',
+            'id',
+            array_map(static fn(object $node): int => $node->section_id, $tree)
+        );
+
+        return array_map(static function (object $node) use ($courseformat, $sections): array {
+            $section = $sections[$node->section_id] ?? null;
+
+            $name = '';
+            if ($section) {
+                $name = (string)$section->name !== ''
+                    ? format_string($section->name)
+                    : $courseformat->get_section_name($section);
+            }
+
+            return [
+                'section_id' => $node->section_id,
+                'parent_section_id' => $node->parent_section_id,
+                'sort_order' => $node->sort_order,
+                'name' => $name,
+            ];
+        }, $tree);
+    }
+
+    /**
+     * Whether there is anything to copy: the section itself or one of its descendants holds a course module. A
+     * structural parent that only contains subsections is copyable through its descendants.
+     *
+     * @param object $section course_sections record with at least 'sequence'
+     * @param array $sectiontree descendants as returned by resolve_section_tree()
+     * @return bool
+     */
+    public function section_has_content(object $section, array $sectiontree): bool {
+        if (trim((string)($section->sequence ?? '')) !== '') {
+            return true;
+        }
+
+        $sectionids = array_map(static fn(array|object $node): int => (int)((object)$node)->section_id, $sectiontree);
+        if (empty($sectionids)) {
+            return false;
+        }
+
+        $descendants = $this->basefactory->moodle()->db()->get_records_list(
+            'course_sections',
+            'id',
+            $sectionids,
+            '',
+            'id, sequence'
+        );
+        foreach ($descendants as $descendant) {
+            if (trim((string)$descendant->sequence) !== '') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * get_backup_course_info
      *
      * @param \stored_file $file
@@ -154,12 +243,16 @@ class handler
     }
 
     /**
-     * get_backup_item_tree
+     * Sections contained in the backup, keyed by their original section id and ordered root first, then the stored
+     * section tree. Core subsections (mod_subsection) are attached to the section owning their parent module and
+     * appear in that section's activities with a 'subsection_activities' list of their own.
      *
      * @param \stored_file $file
+     * @param array $sectiontree depth-first list of {section_id, parent_section_id, sort_order} captured at backup
+     *                            time; empty for backups of a single section.
      * @return array
      */
-    public function get_backup_item_tree(\stored_file $file): array {
+    public function get_backup_item_tree(\stored_file $file, array $sectiontree = []): array {
         $info = $this->get_backup_info($file);
 
         $sections = [];
@@ -173,20 +266,59 @@ class handler
                     'title' => $section->title,
                     'modulename' => $section->modname,
                     'subsection_activities' => [],
-                    ];
-            } else {
-                $sections[$section->sectionid] = (object)[
-                    'sectionid' => $section->sectionid,
-                    'title' => $section->title,
-                    'modulename' => $section->modname,
-                    'activities' => [],
                 ];
+                continue;
             }
+
+            $sections[$section->sectionid] = (object)[
+                'sectionid' => $section->sectionid,
+                'title' => $section->title,
+                'modulename' => $section->modname,
+                'parent_section_id' => 0,
+                'sort_order' => 0,
+                'activities' => [],
+            ];
         }
 
-        // Add all subsections under the section's activities.
-        if (!empty($sections)) {
-            $sections[array_key_first($sections)]->activities = $subsections;
+        // Order the sections root first, then by the stored tree, and record the parent relations.
+        if (!empty($sectiontree) && !empty($sections)) {
+            $ordered = [];
+            foreach ($sections as $sectionid => $section) {
+                $intree = false;
+                foreach ($sectiontree as $node) {
+                    if ((int)((object)$node)->section_id === (int)$sectionid) {
+                        $intree = true;
+                        break;
+                    }
+                }
+                if (!$intree) {
+                    $ordered[$sectionid] = $section;
+                }
+            }
+            foreach ($sectiontree as $node) {
+                $node = (object)$node;
+                if (!isset($sections[$node->section_id])) {
+                    continue;
+                }
+                $sections[$node->section_id]->parent_section_id = (int)$node->parent_section_id;
+                $sections[$node->section_id]->sort_order = (int)$node->sort_order;
+                $ordered[$node->section_id] = $sections[$node->section_id];
+            }
+            $sections = $ordered;
+        }
+
+        // Attach core subsections to the section that owns their parent module.
+        $modulesections = [];
+        foreach ($info->activities as $activity) {
+            $modulesections[$activity->moduleid] = $activity->sectionid;
+        }
+        foreach ($subsections as $subsection) {
+            $ownersectionid = $modulesections[$subsection->moduleid] ?? null;
+            if ($ownersectionid !== null && isset($sections[$ownersectionid])) {
+                $sections[$ownersectionid]->activities['sub_' . $subsection->sectionid] = $subsection;
+            } else if (!empty($sections)) {
+                $sections[array_key_first($sections)]->activities['sub_' . $subsection->sectionid] = $subsection;
+            }
         }
 
         if (empty($sections)) {
@@ -203,7 +335,7 @@ class handler
                 continue;
             }
 
-            // Activities that live in the section.
+            // Activities that live in a section.
             if (isset($sections[$activity->sectionid])) {
                 $sections[$activity->sectionid]->activities[$activity->moduleid] = (object)[
                     'moduleid' => $activity->moduleid,
@@ -215,13 +347,15 @@ class handler
                 continue;
             }
 
-            if (isset($sections["lone_activity"])) {
-                $sections["lone_activity"]->activities[] = $activity;
+            // Activities that live under a core subsection.
+            if (isset($subsections[$activity->sectionid])) {
+                $subsections[$activity->sectionid]->subsection_activities[] = $activity;
                 continue;
             }
 
-            // Activities that live under subsections.
-            $sections[array_key_first($sections)]->activities[$activity->sectionid]->subsection_activities[] = $activity;
+            if (isset($sections["lone_activity"])) {
+                $sections["lone_activity"]->activities[] = $activity;
+            }
         }
 
         return $sections;
