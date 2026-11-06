@@ -93,7 +93,15 @@ function block_sharing_cart_output_fragment_item_restore_form($args) {
         );
     }
 
-    $template = new \block_sharing_cart\output\modal\import_item_modal_body($basefactory, $item, $clipboardtargetid);
+    // Whether the item is inserted as a new section (no merge, so nothing to replace).
+    $asnewsection = (bool)clean_param($args['asnewsection'] ?? 0, PARAM_BOOL);
+
+    $template = new \block_sharing_cart\output\modal\import_item_modal_body(
+        $basefactory,
+        $item,
+        $clipboardtargetid,
+        $asnewsection
+    );
 
     return fix_utf8($OUTPUT->render($template));
 }

@@ -147,4 +147,22 @@ class factory
     public function handler(): handler {
         return new handler($this->basefactory);
     }
+
+    /**
+     * section_planner
+     *
+     * @return section_planner
+     */
+    public function section_planner(): section_planner {
+        return new section_planner($this->basefactory);
+    }
+
+    /**
+     * section_details_replacement
+     *
+     * @return section_details_replacement
+     */
+    public function section_details_replacement(): section_details_replacement {
+        return new section_details_replacement($this->basefactory);
+    }
 }

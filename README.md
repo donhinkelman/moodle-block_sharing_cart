@@ -95,6 +95,17 @@ GPL v3
 Change Log
 ----------
 
+* 5.2, release 3 2026.09.29
+    * Added support for copying sections with a nested structure (e.g. subsections) into the
+      cart and restoring them with the structure preserved, via hooks a course format can
+      implement. See docs/nested_sections_design.md.
+    * Added an option to insert a copied section as a new section (e.g. at course top level)
+      instead of merging it into an existing one.
+    * Added an option to replace the target section's title and description with the copied
+      section's when merging.
+    * Fixed the block only refreshing the target section's state after a restore, which could
+      leave newly restored sections briefly unrendered until a page reload.
+    * Fixed restore_is_valid comparing against the wrong subsection type name.
 * 5.2, release 2 2026.09.21
     * Fixed async restore failing with `error/missing_roles_xml_file` on multi-frontend
       sites when web and cron do not share `backuptempdir`: queue no longer extracts the

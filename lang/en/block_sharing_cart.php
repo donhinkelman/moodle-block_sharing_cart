@@ -23,6 +23,7 @@
  */
 
 $string['anonymize_user_data'] = 'Do you want to anonymize the user data?';
+$string['as_new_section_in'] = 'as a new section in';
 $string['atleast_one_course_module_must_be_included'] = 'At least one course module must be included,' .
     ' please select at least one course module to include.';
 $string['backup_a_section'] = 'Copy a section';
@@ -86,6 +87,9 @@ $string['privacy:metadata:sharing_cart_items:timemodified'] = 'The time this ite
 $string['privacy:metadata:sharing_cart_items:type'] = 'The type of the item';
 $string['privacy:metadata:sharing_cart_items:user_id'] = 'The user ID which the item belongs to';
 $string['rename_item'] = 'Rename item';
+$string['replace_section_details'] = 'Also replace the title and description of "{$a}" with those of the copied section';
+$string['replace_section_details_help_text'] = 'If left unticked, the existing title and description are kept.' .
+    ' The copied activities and subsections are added either way.';
 $string['restore_failed'] = 'The restore failed (task id: {$a}). This message will disappear after a while.';
 $string['restores'] = 'Copies queued';
 $string['run_now'] = 'Run now';
@@ -102,6 +106,7 @@ $string['settings:show_sharing_cart_basket_desc'] = 'Show the sharing cart baske
     ' users can still drag and drop activities & sections into the sharing cart.';
 $string['sharing_cart:addinstance'] = 'Add a new Sharing Cart block';
 $string['sharing_cart:manual_run_task'] = 'Manually run the backup/restore task';
+$string['the_course'] = 'the course';
 $string['you_do_not_have_permission_to_configure_restores'] = 'You do not have permission to configure restores.' .
     ' Please contact your administrator if you think this is a mistake.';
 $string['you_may_need_to_reload_the_course_warning'] = 'Element(s) inserted. You may need to reload' .

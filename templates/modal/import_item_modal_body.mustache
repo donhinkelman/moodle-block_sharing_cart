@@ -41,6 +41,16 @@
         </div>
     {{/sections}}
 
+    {{#can_replace_section_details}}
+        <div class="form-check mt-3">
+            <label class="form-check-label">
+                <input type="checkbox" class="form-check-input" data-action="replace_section_details" data-type="option"/>
+                {{#str}}replace_section_details, block_sharing_cart, {{target_section_name}}{{/str}}
+            </label>
+            <small class="form-text text-muted d-block">{{#str}}replace_section_details_help_text, block_sharing_cart{{/str}}</small>
+        </div>
+    {{/can_replace_section_details}}
+
     {{#user_msgs}}
         <div class="user-messages">
             <small>{{.}}</small>
