@@ -87,6 +87,7 @@ $string['privacy:metadata:sharing_cart_items:type'] = 'Typen af elementet';
 $string['privacy:metadata:sharing_cart_items:user_id'] = 'Bruger-ID\'et, som elementet tilhører';
 $string['rename_item'] = 'Omdøb backup';
 $string['restore_failed'] = 'Gendannelsen mislykkedes (task id: {$a}). Denne besked vil forsvinde efter et stykke tid.';
+$string['restore_selected_item_in_section'] = 'Dette element bliver gendannet i {$a}, fordi dets overordnede sektion ikke er valgt.';
 $string['restores'] = 'Kopieringer i kø';
 $string['run_now'] = 'Kør nu';
 $string['select_all'] = 'Vælg alle';

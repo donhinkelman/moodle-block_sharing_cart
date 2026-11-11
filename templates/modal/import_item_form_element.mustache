@@ -24,7 +24,7 @@
     <label class="form-check-label"
            {{#module_is_disabled_on_site}}title="{{#str}}module_is_disabled_on_site, block_sharing_cart{{/str}}"{{/module_is_disabled_on_site}}
         {{^module_is_disabled_on_site}}{{#locked}}title="{{#str}}you_do_not_have_permission_to_configure_restores, block_sharing_cart{{/str}}"{{/locked}}{{/module_is_disabled_on_site}}>
-        <input type="checkbox" class="form-check-input" data-id="{{id}}"
+        <input type="checkbox" class="form-check-input" data-id="{{id}}" {{#is_container}}data-container="true" data-title="{{title}}"{{/is_container}}
                data-type="{{type}}" {{#locked}}disabled{{/locked}} {{^module_is_disabled_on_site}}checked{{/module_is_disabled_on_site}}>
         {{#mod_icon}}
             <img src="{{mod_icon}}" alt="" style="height: 1rem;">
@@ -34,6 +34,7 @@
         {{/is_section}}
         {{{title}}}
     </label>
+    <small class="form-text text-muted d-none" data-region="restore-placement-hint" aria-live="polite"></small>
     <div class="item-children">
         {{#course_modules}}
             {{> block_sharing_cart/modal/import_item_form_element }}

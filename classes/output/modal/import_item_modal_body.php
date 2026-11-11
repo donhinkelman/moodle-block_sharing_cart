@@ -71,9 +71,19 @@ class import_item_modal_body implements \core\output\named_templatable, \rendera
      * @return array
      */
     private function get_replace_section_details_context(): array {
-        $context = ['can_replace_section_details' => false, 'target_section_name' => ''];
+        $context = [
+            'can_replace_section_details' => false,
+            'target_section_name' => '',
+            'restore_target_name' => '',
+            'restore_source_name' => format_string($this->item->get_name()),
+        ];
 
-        if ($this->asnewsection || !$this->item->is_section() || $this->clipboardtargetid <= 0) {
+        if ($this->asnewsection) {
+            $context['restore_target_name'] = $context['restore_source_name'];
+            return $context;
+        }
+
+        if ($this->clipboardtargetid <= 0) {
             return $context;
         }
 
@@ -82,14 +92,23 @@ class import_item_modal_body implements \core\output\named_templatable, \rendera
             return $context;
         }
 
+        $context['target_section_name'] = format_string(
+            course_get_format($targetsection->course)->get_section_name($targetsection)
+        );
         $hasname = (string)$targetsection->name !== '';
+        // Core fills an unnamed merge target with the copied section's name, even without the replace-details option.
+        $context['restore_target_name'] = $hasname
+            ? $context['target_section_name']
+            : ($this->item->is_section() ? $context['restore_source_name'] : $context['target_section_name']);
+
+        if (!$this->item->is_section()) {
+            return $context;
+        }
+
         $hassummary = trim(strip_tags((string)$targetsection->summary)) !== ''
             || str_contains((string)$targetsection->summary, '<img');
 
         $context['can_replace_section_details'] = $hasname || $hassummary;
-        $context['target_section_name'] = format_string(
-            course_get_format($targetsection->course)->get_section_name($targetsection)
-        );
 
         return $context;
     }
@@ -190,6 +209,7 @@ class import_item_modal_body implements \core\output\named_templatable, \rendera
             'type' => $item->is_section() ? 'section' : 'coursemodule',
             'is_section' => $item->is_section(),
             'is_subsection' => $item->is_subsection(),
+            'is_container' => $item->is_section() || $item->is_subsection(),
             'mod_icon' => $ismodule ? $output->image_url('icon', $item->get_type()) : null,
             'module_is_disabled_on_site' => $moduleisdisabledonsite,
             'locked' => $moduleisdisabledonsite || $canconfigurerestore === false,

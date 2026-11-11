@@ -95,6 +95,9 @@ GPL v3
 Change Log
 ----------
 
+* 5.2, release 4 2026.11.11
+    * You can now deselect a subsection while keeping selected activities. Those activities are restored into the 
+      nearest included parent section.
 * 5.2, release 3 2026.09.29
     * Added support for copying sections with a nested structure (e.g. subsections) into the
       cart and restoring them with the structure preserved, via hooks a course format can

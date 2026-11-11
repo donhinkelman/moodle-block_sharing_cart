@@ -91,6 +91,7 @@ $string['replace_section_details'] = 'Also replace the title and description of 
 $string['replace_section_details_help_text'] = 'If left unticked, the existing title and description are kept.' .
     ' The copied activities and subsections are added either way.';
 $string['restore_failed'] = 'The restore failed (task id: {$a}). This message will disappear after a while.';
+$string['restore_selected_item_in_section'] = 'This item will be restored in {$a} because its parent section is unchecked.';
 $string['restores'] = 'Copies queued';
 $string['run_now'] = 'Run now';
 $string['select_all'] = 'Select all';

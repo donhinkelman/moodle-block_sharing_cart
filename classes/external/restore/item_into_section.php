@@ -63,6 +63,18 @@ class item_into_section extends external_api
                 VALUE_DEFAULT,
                 false
             ),
+            'asnewsection' => new external_value(
+                PARAM_BOOL,
+                'Legacy alias for insertasnewsection',
+                VALUE_DEFAULT,
+                false
+            ),
+            'beforecmid' => new external_value(
+                PARAM_INT,
+                'Legacy insertion anchor; ignored by the current restore flow',
+                VALUE_DEFAULT,
+                0
+            ),
         ]);
     }
 
@@ -75,6 +87,7 @@ class item_into_section extends external_api
      * @param bool $insertasnewsection
      * @param int $courseid
      * @param bool $replacesectiondetails
+     * @param mixed ...$legacyparameters Legacy asnewsection and beforecmid arguments.
      */
     public static function execute(
         int $itemid,
@@ -83,7 +96,8 @@ class item_into_section extends external_api
         array $sectionstoinclude = [],
         bool $insertasnewsection = false,
         int $courseid = 0,
-        bool $replacesectiondetails = false
+        bool $replacesectiondetails = false,
+        mixed ...$legacyparameters
     ): bool {
         global $USER, $DB;
 
@@ -97,7 +111,13 @@ class item_into_section extends external_api
             'insertasnewsection' => $insertasnewsection,
             'courseid' => $courseid,
             'replacesectiondetails' => $replacesectiondetails,
+            'asnewsection' => $legacyparameters['asnewsection'] ?? $legacyparameters[0] ?? false,
+            'beforecmid' => $legacyparameters['beforecmid'] ?? $legacyparameters[1] ?? 0,
         ]);
+
+        // Older pxgrid clients sent asnewsection and beforecmid. Keep accepting both without exposing the newer
+        // optional arguments through the execute() signature, which older format integrations use to detect support.
+        $insertasnewsection = $params['insertasnewsection'] || $params['asnewsection'];
 
         self::validate_context(
             \context_user::instance($USER->id)
@@ -116,7 +136,7 @@ class item_into_section extends external_api
             $courseid = (int)$DB->get_field('course_sections', 'course', ['id' => $params['sectionid']], MUST_EXIST);
         } else {
             // Top level of the course: only meaningful when creating a new section.
-            if (!$params['insertasnewsection'] || $params['courseid'] <= 0) {
+            if (!$insertasnewsection || $params['courseid'] <= 0) {
                 return false;
             }
             $courseid = (int)$DB->get_field('course', 'id', ['id' => $params['courseid']], MUST_EXIST);
@@ -124,7 +144,7 @@ class item_into_section extends external_api
         $context = \core\context\course::instance($courseid);
 
         $settings = [
-            'insert_as_new_section' => $params['insertasnewsection'],
+            'insert_as_new_section' => $insertasnewsection,
             'replace_section_details' => $params['replacesectiondetails'],
         ];
 

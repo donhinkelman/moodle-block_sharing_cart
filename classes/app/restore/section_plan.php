@@ -21,7 +21,8 @@ namespace block_sharing_cart\app\restore;
  *
  * The root section (the restored item's own) either merges into the target section or, with insert_as_new_section,
  * is created as a new section under it (target 0 = top level of the course). Descendant sections always become new
- * sections. Everything else in the backup is excluded.
+ * sections. Activities from excluded sections can still be restored when explicitly selected; they are placed in the
+ * nearest included ancestor section.
  *
  * @package   block_sharing_cart
  * @copyright moxis
@@ -50,6 +51,12 @@ final class section_plan {
      * @var object[]
      */
     public array $sections = [];
+
+    /** @var array<int, int> Every descendant section's original parent section id, including excluded sections. */
+    public array $sectionparents = [];
+
+    /** @var int[]|null Explicitly selected course-module ids; null means use the legacy include-all setting. */
+    public ?array $coursemodulestoinclude = null;
 
     /**
      * Plan for one target section.

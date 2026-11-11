@@ -215,7 +215,8 @@ class asynchronous_restore_task extends \core\task\adhoc_task
                     $this->factory()->item()->repository()->get_by_id((int)($customdata->item->id ?? 0)),
                     $movetosectionid,
                     $insertasnewsection,
-                    array_map('intval', (array)($backupsettings->sections_to_include ?? []))
+                    array_map('intval', (array)($backupsettings->sections_to_include ?? [])),
+                    $coursemodulestoinclude
                 );
                 $planner->apply($restorecontroller, $this->sectionplan);
 
